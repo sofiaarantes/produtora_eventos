@@ -2,7 +2,7 @@
 # MAKEFILE PORTÁVEL MVC EM C
 # ==============================
 
-# Compilador
+# Compilador aqui akakkakakakkakkakakkakkkakgit add 
 CC = gcc
 CFLAGS = -Wall -Wextra -I./model -I./view -I./controller
 
