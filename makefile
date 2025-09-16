@@ -1,10 +1,10 @@
 # ==============================
-# MAKEFILE PORTÁVEL MVC EM C
+# MAKEFILE PORTÁVEL MVC EM C (com wildcard automático)
 # ==============================
 
 # Compilador 
 CC = gcc
-CFLAGS = -Wall -Wextra -I./model -I./view -I./controller
+CFLAGS = -Wall -Wextra -I./model -I./view -I./controller -I./view/main
 
 # Detectar sistema operacional
 ifeq ($(OS),Windows_NT)
@@ -19,12 +19,16 @@ else
     NULLDEV = /dev/null
 endif
 
-# Lista de objetos
-OBJ = main.o \
-      model$(SEP)cliente$(SEP)cliente.o \
-      view$(SEP)cliente$(SEP)cliente_view.o \
-      controller$(SEP)cliente$(SEP)cliente_controller.o
+# ==============================
+# Lista de fontes e objetos (automática, recursiva)
+# ==============================
+# Todos os arquivos .c na raiz e em qualquer subpasta até 4 níveis
+SRC = $(wildcard *.c */*.c */*/*.c */*/*/*.c)
 
+# Objetos correspondentes
+OBJ = $(SRC:.c=.o)
+
+# ==============================
 # Regra padrão
 all: pre_clean $(TARGET)
 
@@ -36,18 +40,9 @@ pre_clean:
 $(TARGET): $(OBJ)
 	$(CC) $(OBJ) -o $(TARGET)
 
-# Compilação de cada objeto
-main.o: main.c
-	$(CC) $(CFLAGS) -c main.c -o main.o
-
-model$(SEP)cliente$(SEP)cliente.o: model$(SEP)cliente$(SEP)cliente.c model$(SEP)cliente$(SEP)cliente.h
-	$(CC) $(CFLAGS) -c model$(SEP)cliente$(SEP)cliente.c -o model$(SEP)cliente$(SEP)cliente.o
-
-view$(SEP)cliente$(SEP)cliente_view.o: view$(SEP)cliente$(SEP)cliente_view.c view$(SEP)cliente$(SEP)cliente_view.h model$(SEP)cliente$(SEP)cliente.h
-	$(CC) $(CFLAGS) -c view$(SEP)cliente$(SEP)cliente_view.c -o view$(SEP)cliente$(SEP)cliente_view.o
-
-controller$(SEP)cliente$(SEP)cliente_controller.o: controller$(SEP)cliente$(SEP)cliente_controller.c controller$(SEP)cliente$(SEP)cliente_controller.h model$(SEP)cliente$(SEP)cliente.h view$(SEP)cliente$(SEP)cliente_view.h
-	$(CC) $(CFLAGS) -c controller$(SEP)cliente$(SEP)cliente_controller.c -o controller$(SEP)cliente$(SEP)cliente_controller.o
+# Compilação de cada objeto (automática)
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 # Limpeza manual
 clean:
