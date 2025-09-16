@@ -1,5 +1,5 @@
 # ==============================
-# MAKEFILE PARA PROJETO MVC EM C
+# MAKEFILE PARA PROJETO MVC EM C 
 # ==============================
 
 # Compilador
@@ -14,19 +14,25 @@ OBJ = main.o \
       view/cliente_view.o \
       controller/cliente_controller.o
 
-# Executável
-TARGET = seed_Alfg2.exe
+# Detectar sistema operacional
+ifeq ($(OS),Windows_NT)
+    # Windows
+    TARGET = produtora_eventos.exe
+    RM = del /Q
+    SEP = \\
+else
+    # Linux
+    TARGET = produtora_eventos
+    RM = rm -f
+    SEP = /
+endif
 
 # Regra padrão: compilar tudo e gerar executável
 all: pre_clean $(TARGET)
 
-# Limpeza antes de compilar: .o e executável
+# Limpeza antes de compilar: objetos e executável
 pre_clean:
-	if exist $(TARGET) del $(TARGET)
-	if exist main.o del main.o
-	if exist model\cliente.o del model\cliente.o
-	if exist view\cliente_view.o del view\cliente_view.o
-	if exist controller\cliente_controller.o del controller\cliente_controller.o
+	$(RM) $(TARGET) $(OBJ) 2>nul || true
 
 # Linkagem dos objetos
 $(TARGET): $(OBJ)
@@ -45,6 +51,6 @@ view/cliente_view.o: view/cliente_view.c view/cliente_view.h model/cliente.h
 controller/cliente_controller.o: controller/cliente_controller.c controller/cliente_controller.h model/cliente.h view/cliente_view.h
 	$(CC) $(CFLAGS) -c controller/cliente_controller.c -o controller/cliente_controller.o
 
-# Limpeza completa (manual)
+# Limpeza manual
 clean:
-	del $(OBJ) $(TARGET)
+	$(RM) $(OBJ) $(TARGET) 2>nul || true
