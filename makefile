@@ -1,56 +1,54 @@
 # ==============================
-# MAKEFILE PARA PROJETO MVC EM C 
+# MAKEFILE PORTÁVEL MVC EM C
 # ==============================
 
 # Compilador
 CC = gcc
-
-# Flags de compilação
 CFLAGS = -Wall -Wextra -I./model -I./view -I./controller
-
-# Objetos
-OBJ = main.o \
-      model/cliente/cliente.o \
-      view/cliente/cliente_view.o \
-      controller/cliente/cliente_controller.o
 
 # Detectar sistema operacional
 ifeq ($(OS),Windows_NT)
-    # Windows
     TARGET = produtora_eventos.exe
-    RM = del /Q
+    RM = del /F /Q
     SEP = \\
+    NULLDEV = NUL
 else
-    # Linux
     TARGET = produtora_eventos
     RM = rm -f
     SEP = /
+    NULLDEV = /dev/null
 endif
 
-# Regra padrão: compilar tudo e gerar executável
+# Lista de objetos
+OBJ = main.o \
+      model$(SEP)cliente$(SEP)cliente.o \
+      view$(SEP)cliente$(SEP)cliente_view.o \
+      controller$(SEP)cliente$(SEP)cliente_controller.o
+
+# Regra padrão
 all: pre_clean $(TARGET)
 
-# Limpeza antes de compilar: objetos e executável
+# Limpeza antes de compilar
 pre_clean:
-	$(RM) $(TARGET) $(OBJ) 2>nul || true
+	-$(RM) $(TARGET) $(OBJ) > $(NULLDEV) 2>&1
 
-# Linkagem dos objetos
+# Linkagem do executável
 $(TARGET): $(OBJ)
 	$(CC) $(OBJ) -o $(TARGET)
 
-# Compilação de cada arquivo .c em .o
+# Compilação de cada objeto
 main.o: main.c
 	$(CC) $(CFLAGS) -c main.c -o main.o
 
-model/cliente/cliente.o: model/cliente/cliente.c model/cliente/cliente.h
-	$(CC) $(CFLAGS) -c model/cliente/cliente.c -o model/cliente/cliente.o
+model$(SEP)cliente$(SEP)cliente.o: model$(SEP)cliente$(SEP)cliente.c model$(SEP)cliente$(SEP)cliente.h
+	$(CC) $(CFLAGS) -c model$(SEP)cliente$(SEP)cliente.c -o model$(SEP)cliente$(SEP)cliente.o
 
-view/cliente/cliente_view.o: view/cliente/cliente_view.c view/cliente/cliente_view.h model/cliente/cliente.h
-	$(CC) $(CFLAGS) -c view/cliente/cliente_view.c -o view/cliente/cliente_view.o
+view$(SEP)cliente$(SEP)cliente_view.o: view$(SEP)cliente$(SEP)cliente_view.c view$(SEP)cliente$(SEP)cliente_view.h model$(SEP)cliente$(SEP)cliente.h
+	$(CC) $(CFLAGS) -c view$(SEP)cliente$(SEP)cliente_view.c -o view$(SEP)cliente$(SEP)cliente_view.o
 
-controller/cliente/cliente_controller.o: controller/cliente/cliente_controller.c controller/cliente/cliente_controller.h model/cliente/cliente.h view/cliente/cliente_view.h
-	$(CC) $(CFLAGS) -c controller/cliente/cliente_controller.c -o controller/cliente/cliente_controller.o
+controller$(SEP)cliente$(SEP)cliente_controller.o: controller$(SEP)cliente$(SEP)cliente_controller.c controller$(SEP)cliente$(SEP)cliente_controller.h model$(SEP)cliente$(SEP)cliente.h view$(SEP)cliente$(SEP)cliente_view.h
+	$(CC) $(CFLAGS) -c controller$(SEP)cliente$(SEP)cliente_controller.c -o controller$(SEP)cliente$(SEP)cliente_controller.o
 
 # Limpeza manual
 clean:
-	$(RM) $(OBJ) $(TARGET) 2>nul || true
+	-$(RM) $(OBJ) $(TARGET) > $(NULLDEV) 2>&1
