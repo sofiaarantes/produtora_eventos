@@ -1,7 +1,7 @@
 #ifndef CLIENTE_VIEW_H
 #define CLIENTE_VIEW_H
 
-#include "../model/cliente.h"
+#include "../model/cliente/cliente.h"
 
 // Mostra dados de um cliente
 void exibir_cliente(const Cliente* cliente);

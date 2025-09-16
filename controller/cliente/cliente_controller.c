@@ -1,6 +1,6 @@
 #include <stdlib.h>
-#include "../model/cliente.h"
-#include "../view/cliente_view.h"
+#include "../model/cliente/cliente.h"
+#include "../view/cliente/cliente_view.h"
 #include "cliente_controller.h"
 
 void iniciar_sistema() {

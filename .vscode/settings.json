@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        ".env*": "dotenv",
+        "cliente_controller.h": "c",
+        "cliente_view.h": "c"
+    }
+}

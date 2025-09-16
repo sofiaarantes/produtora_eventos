@@ -10,9 +10,9 @@ CFLAGS = -Wall -Wextra -I./model -I./view -I./controller
 
 # Objetos
 OBJ = main.o \
-      model/cliente.o \
-      view/cliente_view.o \
-      controller/cliente_controller.o
+      model/cliente/cliente.o \
+      view/cliente/cliente_view.o \
+      controller/cliente/cliente_controller.o
 
 # Detectar sistema operacional
 ifeq ($(OS),Windows_NT)
@@ -42,14 +42,14 @@ $(TARGET): $(OBJ)
 main.o: main.c
 	$(CC) $(CFLAGS) -c main.c -o main.o
 
-model/cliente.o: model/cliente.c model/cliente.h
-	$(CC) $(CFLAGS) -c model/cliente.c -o model/cliente.o
+model/cliente/cliente.o: model/cliente/cliente.c model/cliente/cliente.h
+	$(CC) $(CFLAGS) -c model/cliente/cliente.c -o model/cliente/cliente.o
 
-view/cliente_view.o: view/cliente_view.c view/cliente_view.h model/cliente.h
-	$(CC) $(CFLAGS) -c view/cliente_view.c -o view/cliente_view.o
+view/cliente/cliente_view.o: view/cliente/cliente_view.c view/cliente/cliente_view.h model/cliente/cliente.h
+	$(CC) $(CFLAGS) -c view/cliente/cliente_view.c -o view/cliente/cliente_view.o
 
-controller/cliente_controller.o: controller/cliente_controller.c controller/cliente_controller.h model/cliente.h view/cliente_view.h
-	$(CC) $(CFLAGS) -c controller/cliente_controller.c -o controller/cliente_controller.o
+controller/cliente/cliente_controller.o: controller/cliente/cliente_controller.c controller/cliente/cliente_controller.h model/cliente/cliente.h view/cliente/cliente_view.h
+	$(CC) $(CFLAGS) -c controller/cliente/cliente_controller.c -o controller/cliente/cliente_controller.o
 
 # Limpeza manual
 clean:
