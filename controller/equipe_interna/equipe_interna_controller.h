@@ -5,6 +5,6 @@
 // CONTROLLER: conecta MODEL e VIEW
 // =============================
 
-void gerenciar_cliente();
+void iniciar_sistema();
 
 #endif
