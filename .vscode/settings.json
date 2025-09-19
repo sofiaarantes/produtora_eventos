@@ -5,6 +5,9 @@
         "cliente_view.h": "c",
         "equipe_interna_view.h": "c",
         "cliente.h": "c",
-        "equipe_interna_controller.h": "c"
+        "equipe_interna_controller.h": "c",
+        "main_view.h": "c",
+        "stdlib.h": "c",
+        "equipe_interna.h": "c"
     }
 }

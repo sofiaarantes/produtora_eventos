@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "view/main/main_view.h"
+#include "../view/main/main_view.h"
 
 int primeiro_menu() {
     int escolher = 0;
@@ -17,4 +17,8 @@ int primeiro_menu() {
     printf("Escolha: ");
     scanf("%d", &escolher);
     return escolher;
+}
+
+void exibir_mensagem(const char* msg) {
+    printf("%s\n", msg);
 }

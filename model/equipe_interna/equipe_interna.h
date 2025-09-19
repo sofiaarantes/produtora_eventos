@@ -1,5 +1,5 @@
-#ifndef CLIENTE_H
-#define CLIENTE_H
+#ifndef EQUIPE_INTERNA_H
+#define EQUIPE_INTERNA_H
 
 // =============================
 // Model de Equipe Interna
@@ -15,8 +15,8 @@ typedef struct {
 } EquipeInterna;
 
 // Funções do modelo (CRUD)
-EquipeInterna* criar_equipe_interna(int id, const char* nome, int cpf, const char* funcao, float valor_diaria);
-void atualizar_equipe_interna(EquipeInterna* equipeInterna, const char* nome, int cpf, const char* funcao, float valor_diaria);
-void deletar_equipe_interna(EquipeInterna* equipeInterna);
+EquipeInterna* adicionar_funcionario_eqIn(int id, const char* nome, int cpf, const char* funcao, float valor_diaria);
+void atualizar_funcionario_eqIn(EquipeInterna* equipeInterna, const char* nome, int cpf, const char* funcao, float valor_diaria);
+void deletar_funcionario_eqIn(EquipeInterna* equipeInterna);
 
 #endif

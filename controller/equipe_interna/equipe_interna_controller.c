@@ -1,50 +1,53 @@
 #include <stdlib.h>
-#include "../model/cliente/cliente.h"
-#include "../view/cliente/cliente_view.h"
-#include "../cliente/cliente_controller.h"
+#include "../model/equipe_interna/equipe_interna.h"
+#include "../view/equipe_interna/equipe_interna_view.h"
+#include "../view/main/main_view.h"
+#include "../equipe_interna/equipe_interna_controller.h"
 
 
-void gerenciar_cliente() {
-    Cliente* cliente = NULL;
+void gerenciar_funcionario() {
+    EquipeInterna* equipeInterna = NULL;
     int opcao;
 
     do {
-        opcao = exibir_menu();
+        opcao = exibir_menu_equipe_interna();
         switch (opcao) {
             case 1: {
                 // Agora usamos a função com retorno
-                Cliente temp = ler_dados_cliente();
+                EquipeInterna temp = ler_dados_funcionario();
 
-                if (cliente) {
-                    exibir_mensagem("Já existe um cliente. Delete-o antes de criar outro.");
+                if (equipeInterna) {
+                    exibir_mensagem("Já existe um funcionário. Delete-o antes de criar outro.");
                 } else {
-                    cliente = criar_cliente(temp.id, temp.nome, temp.idade);
-                    exibir_mensagem("Cliente criado com sucesso!");
+                    equipeInterna = adicionar_funcionario_eqIn(temp.id, temp.nome, temp.cpf, temp.funcao, temp.valor_diaria);
+                    exibir_mensagem("Funcionário criado com sucesso!");
                 }
                 break;
             }
             case 2: {
-                if (!cliente) {
-                    exibir_mensagem("Nenhum cliente cadastrado!");
+                if (!equipeInterna) {
+                    exibir_mensagem("Nenhum funcionário cadastrado!");
                 } else {
                     char nome[50];
-                    int idade;
-                    ler_dados_atualizacao(nome, &idade);
-                    atualizar_cliente(cliente, nome, idade);
-                    exibir_mensagem("Cliente atualizado!");
+                    int cpf;
+                    char funcao[100];
+                    float valor_diaria;
+                    ler_dados_atualizacao_funcionario(nome, &cpf, funcao, &valor_diaria);
+                    atualizar_funcionario_eqIn(equipeInterna, nome, cpf, funcao, valor_diaria);
+                    exibir_mensagem("Funcionário atualizado!");
                 }
                 break;
             }
             case 3:
-                exibir_cliente(cliente);
+                exibir_funcionario(equipeInterna);
                 break;
             case 4:
-                if (!cliente) {
-                    exibir_mensagem("Nenhum cliente para deletar!");
+                if (!equipeInterna) {
+                    exibir_mensagem("Nenhum funcionário para deletar!");
                 } else {
-                    deletar_cliente(cliente);
-                    cliente = NULL;
-                    exibir_mensagem("Cliente deletado!");
+                    deletar_funcionario_eqIn(equipeInterna);
+                    equipeInterna = NULL;
+                    exibir_mensagem("Funcionário deletado!");
                 }
                 break;
             case 0:
@@ -55,5 +58,5 @@ void gerenciar_cliente() {
         }
     } while (opcao != 0);
 
-    if (cliente) deletar_cliente(cliente);
+    if (equipeInterna) deletar_funcionario_eqIn(equipeInterna);
 }

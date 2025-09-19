@@ -25,8 +25,6 @@ void exibir_cliente(const Cliente* cliente) {
     printf("+--------------------------+\n");
 }
 
-
-
 int exibir_menu() {
     int opcao;
     printf("\n==== MENU CLIENTE ====\n");
@@ -52,8 +50,4 @@ Cliente ler_dados_cliente() {
 void ler_dados_atualizacao(char* nome, int* idade) {
     printf("Novo nome: "); scanf(" %[^\n]", nome);
     printf("Nova idade: "); scanf("%d", idade);
-}
-
-void exibir_mensagem(const char* msg) {
-    printf("%s\n", msg);
 }

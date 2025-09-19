@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "../model/cliente/cliente.h"
 #include "../view/cliente/cliente_view.h"
+#include "../view/main/main_view.h"
 #include "../cliente/cliente_controller.h"
 
 

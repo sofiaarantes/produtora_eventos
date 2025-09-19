@@ -4,18 +4,15 @@
 #include "../model/equipe_interna/equipe_interna.h"
 
 // Mostra dados de uma equipe
-void exibir_equipe_interna(const EquipeInterna* equipeInterna);
+void exibir_funcionario(const EquipeInterna* equipeInterna);
 
 // Exibe o menu de Equipe e retorna a opção escolhida
 int exibir_menu_equipe_interna();
 
-// Lê os dados de um cliente e RETORNA um Cliente preenchido
-EquipeInterna ler_dados_cliente();
+// Lê os dados de um funcionario e RETORNA um funcionario preenchido
+EquipeInterna ler_dados_funcionario();
 
-// Pega dados atualizados de cliente (mantemos por referência para comparar)
-void ler_dados_atualizacao(char* nome, int* idade);
-
-// Exibe mensagem genérica
-void exibir_mensagem(const char* msg);
+// Pega dados atualizados de funcionario (mantemos por referência para comparar)
+void ler_dados_atualizacao_funcionario(char* nome, int* cpf, char* funcao, float* valor_diaria);
 
 #endif

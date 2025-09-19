@@ -2,11 +2,12 @@
 #include "../model/cliente/cliente.h"        
 #include "../view/cliente/cliente_view.h"               
 #include "../view/main/main_view.h" 
-#include "../cliente/cliente_controller.h" 
-#include "../equipe_interna/equipe_interna_controller.h" 
+#include "../view/equipe_interna/equipe_interna_view.h" 
+#include "../controller/cliente/cliente_controller.h" 
+#include "../controller/equipe_interna/equipe_interna_controller.h" 
 
 //essa funçao é responsavel por controlar o primeiro menu do sistema e chamar cada menu correspondente
-iniciar_sistema(){ 
+void iniciar_sistema(){ 
     int opcao;
     do{ 
         opcao = primeiro_menu();
@@ -26,6 +27,5 @@ iniciar_sistema(){
         default:
             break;
         }
-        /* code */
     } while (opcao != 0);
 }

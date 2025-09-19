@@ -15,7 +15,4 @@ Cliente ler_dados_cliente();
 // Pega dados atualizados de cliente (mantemos por referência para comparar)
 void ler_dados_atualizacao(char* nome, int* idade);
 
-// Exibe mensagem genérica
-void exibir_mensagem(const char* msg);
-
 #endif

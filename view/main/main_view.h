@@ -7,4 +7,7 @@
 
 int primeiro_menu();
 
+// Exibe mensagem genérica
+void exibir_mensagem(const char* msg);
+
 #endif
