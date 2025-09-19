@@ -8,6 +8,8 @@
         "equipe_interna_controller.h": "c",
         "main_view.h": "c",
         "stdlib.h": "c",
-        "equipe_interna.h": "c"
+        "equipe_interna.h": "c",
+        "config_armazenamento.h": "c",
+        "main_controller.h": "c"
     }
 }
