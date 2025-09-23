@@ -1,9 +1,7 @@
-#include <stdlib.h>
-#include "../model/cliente/cliente.h"
-#include "../view/cliente/cliente_view.h"
-#include "../view/main/main_view.h"
-#include "../cliente/cliente_controller.h"
-
+#include <stdlib.h>   
+#include "../../model/cliente/cliente.h"
+#include "../../view/cliente/cliente_view.h"
+#include "cliente_controller.h"
 
 void gerenciar_cliente() {
     Cliente* cliente = NULL;
@@ -13,13 +11,16 @@ void gerenciar_cliente() {
         opcao = exibir_menu();
         switch (opcao) {
             case 1: {
-                // Agora usamos a função com retorno
                 Cliente temp = ler_dados_cliente();
-
                 if (cliente) {
                     exibir_mensagem("Já existe um cliente. Delete-o antes de criar outro.");
                 } else {
-                    cliente = criar_cliente(temp.id, temp.nome, temp.idade);
+                    cliente = criar_cliente(temp.id, temp.nome, temp.idade,
+                                            temp.endereco_completo,
+                                            temp.cpf_cnpj,
+                                            temp.tel,
+                                            temp.email,
+                                            temp.nome_contato);
                     exibir_mensagem("Cliente criado com sucesso!");
                 }
                 break;
@@ -30,8 +31,24 @@ void gerenciar_cliente() {
                 } else {
                     char nome[50];
                     int idade;
-                    ler_dados_atualizacao(nome, &idade);
-                    atualizar_cliente(cliente, nome, idade);
+                    char endereco_completo[100];
+                    char cpf_cnpj[20];
+                    char tel[15];
+                    char email[50];
+                    char nome_contato[50];
+
+                    ler_dados_atualizacao(nome, &idade,
+                                          endereco_completo,
+                                          cpf_cnpj,
+                                          tel,
+                                          email,
+                                          nome_contato);
+                    atualizar_cliente(cliente, nome, idade,
+                                      endereco_completo,
+                                      cpf_cnpj,
+                                      tel,
+                                      email,
+                                      nome_contato);
                     exibir_mensagem("Cliente atualizado!");
                 }
                 break;

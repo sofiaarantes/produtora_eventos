@@ -1,10 +1,10 @@
-#include "controller/main/main_controller.h"
+#include "controller/config_armazenamento/config_armazenamento_controller.h"
 
 // =============================
 // PONTO DE ENTRADA DO SISTEMA
 // =============================
 
 int main() {
-    iniciar_sistema();
+    inicializar_armazenamento();
     return 0;
 }
