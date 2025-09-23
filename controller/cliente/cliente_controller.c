@@ -1,6 +1,7 @@
 #include <stdlib.h>   
 #include "../../model/cliente/cliente.h"
 #include "../../view/cliente/cliente_view.h"
+#include "../../view/main/main_view.h"
 #include "cliente_controller.h"
 
 void gerenciar_cliente() {
@@ -37,12 +38,7 @@ void gerenciar_cliente() {
                     char email[50];
                     char nome_contato[50];
 
-                    ler_dados_atualizacao(nome, &idade,
-                                          endereco_completo,
-                                          cpf_cnpj,
-                                          tel,
-                                          email,
-                                          nome_contato);
+                 ler_dados_atualizados_cliente(nome,&idade,endereco_completo,cpf_cnpj,tel,email,nome_contato);
                     atualizar_cliente(cliente, nome, idade,
                                       endereco_completo,
                                       cpf_cnpj,
