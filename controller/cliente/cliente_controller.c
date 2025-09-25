@@ -2,6 +2,7 @@
 #include "../../model/cliente/cliente.h"
 #include "../../view/cliente/cliente_view.h"
 #include "../../view/main/main_view.h"
+#include "../../model/config_armazenamento/config_armazenamento.h"
 #include "cliente_controller.h"
 
 void gerenciar_cliente() {
@@ -9,6 +10,7 @@ void gerenciar_cliente() {
     int opcao;
 
     do {
+        
         opcao = exibir_menu();
         switch (opcao) {
             case 1: {
@@ -16,12 +18,7 @@ void gerenciar_cliente() {
                 if (cliente) {
                     exibir_mensagem("Já existe um cliente. Delete-o antes de criar outro.");
                 } else {
-                    cliente = criar_cliente(temp.id, temp.nome, temp.idade,
-                                            temp.endereco_completo,
-                                            temp.cpf_cnpj,
-                                            temp.tel,
-                                            temp.email,
-                                            temp.nome_contato);
+                    Cliente* cliente_salvo = criar_cliente(&temp, get_armazenamento());
                     exibir_mensagem("Cliente criado com sucesso!");
                 }
                 break;

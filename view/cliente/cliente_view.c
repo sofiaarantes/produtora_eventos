@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "cliente/cliente_view.h"
+#include "../../util/util.h"
 
 // void exibir_cliente(const Cliente* cliente) {
 //     if (!cliente) {
@@ -22,6 +23,11 @@ void exibir_cliente(const Cliente* cliente) {
     printf("| ID   : %d\n", cliente->id);
     printf("| Nome : %s\n", cliente->nome);
     printf("| Idade: %d\n", cliente->idade);
+    //printf("Telefone: (%c%c) %c%c%c%c%c-%c%c%c%c\n",
+//        cliente.tel[0], cliente.tel[1],    // DDD
+//        cliente.tel[2], cliente.tel[3], cliente.tel[4], cliente.tel[5], cliente.tel[6], // primeiros 5
+//        cliente.tel[7], cliente.tel[8], cliente.tel[9], cliente.tel[10]); // últimos 4
+// );
     printf("+--------------------------+\n");
 }
 
@@ -41,14 +47,25 @@ int exibir_menu() {
 
 Cliente ler_dados_cliente() {
     Cliente c;
-    printf("ID: "); scanf("%d", &c.id);
-    printf("Nome: "); scanf(" %[^\n]", c.nome);
-    printf("Idade: "); scanf("%d", &c.idade);
-    printf("Endereço completo: "); scanf("%s",c.endereco_completo);
-    printf("CPF/CNPJ: "); scanf("%s",c.cpf_cnpj);
-    printf("Telefone: "); scanf("%s",c.tel);
-    printf("E-mail: "); scanf("%s",c.email);
-    printf("Nome do contato: "); scanf("%s",c.nome_contato);
+
+    printf("ID: ");
+    scanf("%d", &c.id);
+    printf("Nome: ");
+    scanf(" %[^\n]", c.nome);
+    printf("Idade: ");
+    scanf("%d", &c.idade);
+    printf("Endereço completo: ");
+    scanf(" %[^\n]", c.endereco_completo);
+    printf("CPF/CNPJ: ");
+    scanf(" %[^\n]", c.cpf_cnpj);
+    limpar_digitos(c.cpf_cnpj);  // mantém só números no CPF/CNPJ
+    printf("Telefone: ");
+    scanf(" %[^\n]", c.tel);
+    limpar_digitos(c.tel);  // mantém só números no telefone
+    printf("E-mail: ");
+    scanf(" %[^\n]", c.email);
+    printf("Nome do contato: ");
+    scanf(" %[^\n]", c.nome_contato);
     return c;  // retorna a struct preenchida
 }
 

@@ -8,7 +8,7 @@ typedef enum {
     BINARIO
 } TipoArmazenamento;
 
-// Seta qual tipo de armazenamento o sistema usa
+// Seta qual taipo de armazenamento o sistema usa
 void set_armazenamento(TipoArmazenamento tipo);
 
 // Retorna qual tipo de armazenamento o sistema usa
