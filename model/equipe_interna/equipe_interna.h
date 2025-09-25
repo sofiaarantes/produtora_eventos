@@ -1,6 +1,8 @@
 #ifndef EQUIPE_INTERNA_H
 #define EQUIPE_INTERNA_H
 
+#include "config_armazenamento/config_armazenamento.h"
+
 // =============================
 // Model de Equipe Interna
 // =============================
@@ -15,8 +17,11 @@ typedef struct {
 } EquipeInterna;
 
 // Funções do modelo (CRUD)
-EquipeInterna* adicionar_funcionario_eqIn(int id, const char* nome, int cpf, const char* funcao, float valor_diaria);
-void atualizar_funcionario_eqIn(EquipeInterna* equipeInterna, const char* nome, int cpf, const char* funcao, float valor_diaria);
-void deletar_funcionario_eqIn(EquipeInterna* equipeInterna);
+
+// Recebe o tipo de armazenamento e a struct EquipeInterna a ser adicionada
+EquipeInterna* adicionar_funcionario_eqIn(EquipeInterna* equipeInterna, TipoArmazenamento tipo);
+// Atualiza os dados do funcionário existente, recebe a struct a ser atualizada e os novos dados
+void atualizar_funcionario_eqIn(EquipeInterna* equipeInterna, const char* nome, int cpf, const char* funcao, float valor_diaria, TipoArmazenamento tipo);
+void deletar_funcionario_eqIn(EquipeInterna* equipeInterna, TipoArmazenamento tipo);
 
 #endif

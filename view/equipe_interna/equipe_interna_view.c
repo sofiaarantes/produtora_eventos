@@ -28,6 +28,7 @@ int exibir_menu_equipe_interna() {
     printf("0 - Sair\n");
     printf("Escolha: ");
     scanf("%d", &opcao);
+    while (getchar() != '\n'); // limpa o buffer do teclado
     return opcao;
 }
 

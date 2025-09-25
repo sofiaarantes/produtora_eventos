@@ -8,20 +8,16 @@
 void gerenciar_funcionario() {
     EquipeInterna* equipeInterna = NULL;
     int opcao;
+    TipoArmazenamento tipo = get_armazenamento(); // Obtém o tipo de armazenamento configurado
 
     do {
         opcao = exibir_menu_equipe_interna();
         switch (opcao) {
             case 1: {
                 // Agora usamos a função com retorno
-                EquipeInterna temp = ler_dados_funcionario();
-
-                if (equipeInterna) {
-                    exibir_mensagem("Já existe um funcionário. Delete-o antes de criar outro.");
-                } else {
-                    equipeInterna = adicionar_funcionario_eqIn(temp.id, temp.nome, temp.cpf, temp.funcao, temp.valor_diaria);
-                    exibir_mensagem("Funcionário criado com sucesso!");
-                }
+                EquipeInterna add = ler_dados_funcionario();
+                equipeInterna = adicionar_funcionario_eqIn(add, tipo);
+                exibir_mensagem("Funcionário criado com sucesso!");
                 break;
             }
             case 2: {
@@ -58,5 +54,5 @@ void gerenciar_funcionario() {
         }
     } while (opcao != 0);
 
-    if (equipeInterna) deletar_funcionario_eqIn(equipeInterna);
+    if (equipeInterna) deletar_funcionario_eqIn(equipeInterna, tipo);
 }

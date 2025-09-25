@@ -28,7 +28,7 @@ void exibir_mensagem(const char* msg) {
 int mostrar_menu_configuracao() {
     int opcao = 0;
     printf("\n=== Configuração de Armazenamento ===\n");
-    printf("\nEm qual formato gostaria de salvar as informações inseridas no sistema?n");
+    printf("\nEm qual formato gostaria de salvar as informações inseridas no sistema?\n");
     printf("1 - Memória (dados temporários)\n");
     printf("2 - Arquivo Texto\n");
     printf("3 - Arquivo Binário\n");
