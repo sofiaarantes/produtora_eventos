@@ -17,7 +17,6 @@ void ler_dados_atualizados_cliente(
     char* nome,              
     int* idade,              
     char* endereco_completo, 
-    char* cpf_cnpj,          
     char* tel,               
     char* email,             
     char* nome_contato      

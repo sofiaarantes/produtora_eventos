@@ -1,4 +1,5 @@
 #include <stdlib.h>   
+#include <stdio.h>
 #include "../../model/cliente/cliente.h"
 #include "../../view/cliente/cliente_view.h"
 #include "../../view/main/main_view.h"
@@ -43,6 +44,7 @@ void gerenciar_cliente() {
 
                     // Aqui eu chamo a função que lê os novos dados do cliente
                     // IMPORTANTE: não vou atualizar o CPF/CNPJ, ele serve apenas para buscar o cliente
+                    
                     ler_dados_atualizados_cliente(nome, &idade, endereco_completo, tel, email, nome_contato);
 
                     // ================================

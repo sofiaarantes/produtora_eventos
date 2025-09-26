@@ -56,7 +56,8 @@ Cliente ler_dados_cliente() {
     scanf("%d", &c.idade);
     printf("Endereço completo: ");
     scanf(" %[^\n]", c.endereco_completo);
-    printf("CPF/CNPJ: ");
+    printf("CPF/CNPJ: \n");
+    printf("atencao ao inserir esse dado,ele nao podera ser alterado depois\n");
     scanf(" %[^\n]", c.cpf_cnpj);
     limpar_digitos(c.cpf_cnpj);  // mantém só números no CPF/CNPJ
     printf("Telefone: ");
@@ -72,8 +73,7 @@ Cliente ler_dados_cliente() {
 void ler_dados_atualizados_cliente(
     char* nome,              
     int* idade,              
-    char* endereco_completo, 
-    char* cpf_cnpj,          
+    char* endereco_completo,          
     char* tel,               
     char* email,             
     char* nome_contato      
@@ -85,8 +85,6 @@ void ler_dados_atualizados_cliente(
     scanf("%d", idade);
     printf("Novo endereco completo: ");
     scanf(" %[^\n]", endereco_completo);
-    printf("Novo CPF/CNPJ: ");
-    scanf(" %[^\n]", cpf_cnpj);
     printf("Novo telefone: ");
     scanf(" %[^\n]", tel);
     printf("Novo email: ");
