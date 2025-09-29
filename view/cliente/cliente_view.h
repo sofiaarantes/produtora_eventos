@@ -13,6 +13,14 @@ int exibir_menu();
 Cliente ler_dados_cliente();
 
 // Pega dados atualizados de cliente (mantemos por referência para comparar)
-void ler_dados_atualizacao(char* nome, int* idade);
+void ler_dados_atualizados_cliente(
+    char* nome,              
+    int* idade,              
+    char* endereco_completo, 
+    char* tel,               
+    char* email,             
+    char* nome_contato      
+);
+
 
 #endif

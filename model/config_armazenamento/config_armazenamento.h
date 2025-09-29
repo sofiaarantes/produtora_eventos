@@ -1,5 +1,5 @@
-#ifndef CONFIG_ARMAZENAMENTO_H
-#define CONFIG_ARMAZENAMENTO_H
+#ifndef CONFIG_ARMAZENAMENTO_CONTROLLER_H
+#define CONFIG_ARMAZENAMENTO_CONTROLLER_H
 
 // Qual tipo de armazenamento o usuário escolheu
 typedef enum {
@@ -8,7 +8,7 @@ typedef enum {
     BINARIO
 } TipoArmazenamento;
 
-// Seta qual tipo de armazenamento o sistema usa
+// Seta qual taipo de armazenamento o sistema usa
 void set_armazenamento(TipoArmazenamento tipo);
 
 // Retorna qual tipo de armazenamento o sistema usa

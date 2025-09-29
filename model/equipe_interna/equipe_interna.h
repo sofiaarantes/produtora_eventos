@@ -18,5 +18,4 @@ typedef struct {
 EquipeInterna* adicionar_funcionario_eqIn(int id, const char* nome, int cpf, const char* funcao, float valor_diaria);
 void atualizar_funcionario_eqIn(EquipeInterna* equipeInterna, const char* nome, int cpf, const char* funcao, float valor_diaria);
 void deletar_funcionario_eqIn(EquipeInterna* equipeInterna);
-
 #endif

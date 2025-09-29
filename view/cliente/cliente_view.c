@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "cliente/cliente_view.h"
+#include "../../util/util.h"
 
 // void exibir_cliente(const Cliente* cliente) {
 //     if (!cliente) {
@@ -22,6 +23,11 @@ void exibir_cliente(const Cliente* cliente) {
     printf("| ID   : %d\n", cliente->id);
     printf("| Nome : %s\n", cliente->nome);
     printf("| Idade: %d\n", cliente->idade);
+    //printf("Telefone: (%c%c) %c%c%c%c%c-%c%c%c%c\n",
+//        cliente.tel[0], cliente.tel[1],    // DDD
+//        cliente.tel[2], cliente.tel[3], cliente.tel[4], cliente.tel[5], cliente.tel[6], // primeiros 5
+//        cliente.tel[7], cliente.tel[8], cliente.tel[9], cliente.tel[10]); // últimos 4
+// );
     printf("+--------------------------+\n");
 }
 
@@ -41,13 +47,49 @@ int exibir_menu() {
 
 Cliente ler_dados_cliente() {
     Cliente c;
-    printf("ID: "); scanf("%d", &c.id);
-    printf("Nome: "); scanf(" %[^\n]", c.nome);
-    printf("Idade: "); scanf("%d", &c.idade);
+
+    printf("ID: ");
+    scanf("%d", &c.id);
+    printf("Nome: ");
+    scanf(" %[^\n]", c.nome);
+    printf("Idade: ");
+    scanf("%d", &c.idade);
+    printf("Endereço completo: ");
+    scanf(" %[^\n]", c.endereco_completo);
+    printf("CPF/CNPJ: \n");
+    printf("atencao ao inserir esse dado,ele nao podera ser alterado depois\n");
+    scanf(" %[^\n]", c.cpf_cnpj);
+    limpar_digitos(c.cpf_cnpj);  // mantém só números no CPF/CNPJ
+    printf("Telefone: ");
+    scanf(" %[^\n]", c.tel);
+    limpar_digitos(c.tel);  // mantém só números no telefone
+    printf("E-mail: ");
+    scanf(" %[^\n]", c.email);
+    printf("Nome do contato: ");
+    scanf(" %[^\n]", c.nome_contato);
     return c;  // retorna a struct preenchida
 }
 
-void ler_dados_atualizacao(char* nome, int* idade) {
-    printf("Novo nome: "); scanf(" %[^\n]", nome);
-    printf("Nova idade: "); scanf("%d", idade);
+void ler_dados_atualizados_cliente(
+    char* nome,              
+    int* idade,              
+    char* endereco_completo,          
+    char* tel,               
+    char* email,             
+    char* nome_contato      
+) {
+
+    printf("Novo nome: ");
+    scanf(" %[^\n]", nome);
+    printf("Nova idade: ");
+    scanf("%d", idade);
+    printf("Novo endereco completo: ");
+    scanf(" %[^\n]", endereco_completo);
+    printf("Novo telefone: ");
+    scanf(" %[^\n]", tel);
+    printf("Novo email: ");
+    scanf(" %[^\n]", email);
+    printf("Novo nome do contato: ");
+    scanf(" %[^\n]", nome_contato);
 }
+//O espaço antes do % → ignora quebras de linha e espaços anteriores (evita problemas com entradas seguidas).
