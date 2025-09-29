@@ -1,2 +1,11 @@
-#.o
-#.exe
+# Arquivos de compilação
+*.o
+*.exe
+
+# Arquivos temporários do sistema
+*.log
+*.tmp
+
+# Outros arquivos que podem ser gerados pelo compilador
+*.obj
+*.out

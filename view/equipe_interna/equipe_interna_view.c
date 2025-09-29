@@ -20,7 +20,7 @@ void exibir_funcionario(const EquipeInterna* equipeInterna) {
 int exibir_menu_equipe_interna() {
     int opcao;
     printf("\n==== MENU EQUIPE INTERNA ====\n");
-    printf("1 - Adicionar funcionário\n");
+    printf("1 - Adicionar 1funcionario\n");
     printf("2 - Atualizar funcionário\n");
     printf("3 - Exibir funcionário\n");
     printf("4 - Deletar funcionário\n");
