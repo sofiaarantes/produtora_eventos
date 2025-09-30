@@ -18,10 +18,33 @@ typedef struct {
 
 // Funções do modelo (CRUD)
 
-// Recebe o tipo de armazenamento e a struct EquipeInterna a ser adicionada
-EquipeInterna* adicionar_funcionario_eqIn(EquipeInterna* equipeInterna, TipoArmazenamento tipo);
+// Cria um novo funcionário e retorna um ponteiro para ele, recebe o tipo armazenamento e a struct a ser adicionada
+EquipeInterna* adicionar_funcionario_eqIn(EquipeInterna* funcionario, TipoArmazenamento tipo);
+
 // Atualiza os dados do funcionário existente, recebe a struct a ser atualizada e os novos dados
-void atualizar_funcionario_eqIn(EquipeInterna* equipeInterna, const char* nome, int cpf, const char* funcao, float valor_diaria, TipoArmazenamento tipo);
-void deletar_funcionario_eqIn(EquipeInterna* equipeInterna, TipoArmazenamento tipo);
+
+// Atualizar funcionário em memória
+void atualizar_funcionario_memoria(EquipeInterna* funcionario_mem, const char* nome, const char* funcao, float valor_diaria);
+
+// Atualizar funcionário em binário
+int atualizar_funcionario_binario(EquipeInterna* funcionario_bin, const char* nome, const char* funcao, float valor_diaria);
+
+// Atualizar funcionário em texto
+int atualizar_funcionario_texto(EquipeInterna* funcionario_txt, const char* nome, const char* funcao, float valor_diaria);
+
+// Remove funcionário da memória
+void deletar_funcionario(EquipeInterna* funcionario);
+
+// Retorna a quantidade de funcionários na memória
+int get_qtd_funcionarios();
+
+// Busca funcionário por CPF na memória (retorna ponteiro para o funcionário ou NULL se não achar)
+EquipeInterna* buscar_funcionario_por_cpf_memoria(const char* cpf_busca);
+
+// Busca funcionário por CPF em arquivo texto (retorna ponteiro para o funcionário ou NULL se não achar)
+EquipeInterna* buscar_funcionario_por_cpf_texto(const char* cpf_busca);
+
+// Busca funcionário por CPF em arquivo binário (retorna ponteiro para o funcionário ou NULL se não achar)
+EquipeInterna* buscar_funcionario_por_cpf_binario(const char* cpf_busca);
 
 #endif

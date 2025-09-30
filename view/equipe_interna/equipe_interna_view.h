@@ -13,6 +13,6 @@ int exibir_menu_equipe_interna();
 EquipeInterna ler_dados_funcionario();
 
 // Pega dados atualizados de funcionario (mantemos por referência para comparar)
-void ler_dados_atualizacao_funcionario(char* nome, int* cpf, char* funcao, float* valor_diaria);
+void ler_dados_atualizados_funcionario(char* nome, char* funcao, float* valor_diaria);
 
 #endif

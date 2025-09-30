@@ -25,7 +25,7 @@ void iniciar_sistema(){
         }
         // Menu Equipe Interna
         case 3:{
-            exibir_menu_equipe_interna();
+            gerenciar_funcionario();
             break;
         }
         // Menu Recursos e Equipamentos
