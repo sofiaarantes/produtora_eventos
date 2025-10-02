@@ -112,7 +112,6 @@ void gerenciar_funcionario() {
                 char cpf_busca[20];
                 printf("Digite o CPF do funcionário que deseja exibir: ");
                 scanf(" %19s", cpf_busca);   // lê até 19 caracteres
-                //limpar_digitos(cpf_busca);   // deixa só os números
 
                 EquipeInterna* func = NULL;
 
