@@ -72,7 +72,6 @@ void gerenciar_funcionario() {
                 char cpf_busca[20];
                 printf("Digite o CPF do funcionário que deseja atualizar: ");
                 scanf(" %19s", cpf_busca);   // lê até 19 caracteres
-                limpar_digitos(cpf_busca);   // deixa só os números
 
                 // Variáveis que vão receber os novos dados
                 char nome[50];
@@ -90,13 +89,11 @@ void gerenciar_funcionario() {
                         break;
                     }
                     case TEXTO: {
-                        EquipeInterna* func = buscar_funcionario_por_cpf_texto(cpf_busca);
-                        if (func) atualizar_funcionario_texto(func, nome, funcao, valor_diaria);
+                        atualizar_funcionario_texto(cpf_busca, nome, funcao, valor_diaria);
                         break;
                     }
                     case BINARIO: {
-                        EquipeInterna* func = buscar_funcionario_por_cpf_binario(cpf_busca);
-                        if (func) atualizar_funcionario_binario(func, nome, funcao, valor_diaria);
+                        atualizar_funcionario_binario(cpf_busca, nome, funcao, valor_diaria);
                         break;
                     }
                     default:
@@ -138,12 +135,32 @@ void gerenciar_funcionario() {
             }
             // Deletar funcionário
             case 4: {
-                if (!equipeInterna) {
-                    exibir_mensagem("Nenhum funcionário para deletar!");
+                char cpf_busca[20];
+                printf("Digite o CPF do funcionário que deseja deletar: ");
+                scanf(" %19s", cpf_busca); // lê até 19 caracteres
+
+                TipoArmazenamento tipo = get_armazenamento();
+                int removido = 0;
+
+                switch (tipo) {
+                    case MEMORIA:
+                        removido = deletar_funcionario_memoria(cpf_busca);
+                        break;
+                    case TEXTO:
+                        removido = deletar_funcionario_texto(cpf_busca);
+                        break;
+                    case BINARIO:
+                        removido = deletar_funcionario_binario(cpf_busca);
+                        break;
+                    default:
+                        exibir_mensagem("Tipo de armazenamento inválido!");
+                        break;
+                }
+
+                if (removido) {
+                    exibir_mensagem("Funcionário deletado com sucesso!");
                 } else {
-                    deletar_funcionario(equipeInterna);
-                    equipeInterna = NULL;
-                    exibir_mensagem("Funcionário deletado!");
+                    exibir_mensagem("Funcionário não encontrado!");
                 }
                 break;
             }

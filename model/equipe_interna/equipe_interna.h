@@ -26,14 +26,20 @@ EquipeInterna* adicionar_funcionario_eqIn(EquipeInterna* funcionario, TipoArmaze
 // Atualizar funcionário em memória
 void atualizar_funcionario_memoria(EquipeInterna* funcionario_mem, const char* nome, const char* funcao, float valor_diaria);
 
-// Atualizar funcionário em binário
-int atualizar_funcionario_binario(EquipeInterna* funcionario_bin, const char* nome, const char* funcao, float valor_diaria);
-
 // Atualizar funcionário em texto
-int atualizar_funcionario_texto(EquipeInterna* funcionario_txt, const char* nome, const char* funcao, float valor_diaria);
+int atualizar_funcionario_texto(const char* cpf, const char* nome, const char* funcao, float valor_diaria);
 
-// Remove funcionário da memória
-void deletar_funcionario(EquipeInterna* funcionario);
+// Atualizar funcionário em binário
+int atualizar_funcionario_binario(const char* cpf, const char* nome, const char* funcao, float valor_diaria);
+
+// Deletar funcionário em memória
+int deletar_funcionario_memoria(const char* cpf);
+
+// Deletar funcionário em arquivo texto
+int deletar_funcionario_texto(const char* cpf);
+
+// Deletar funcionário em arquivo binário
+int deletar_funcionario_binario(const char* cpf);
 
 // Retorna a quantidade de funcionários na memória
 int get_qtd_funcionarios();

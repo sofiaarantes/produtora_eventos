@@ -101,9 +101,7 @@ void atualizar_funcionario_memoria(EquipeInterna* funcionario_memoria, const cha
 // ==============================
 // Atualizar Funcionário - TEXTO
 // ==============================
-int atualizar_funcionario_texto(EquipeInterna* funcionario_txt, const char* nome, const char* funcao, float valor_diaria) {
-    // Verifica se o ponteiro não é nulo
-    if (!funcionario_txt) return 0;
+int atualizar_funcionario_texto(const char* cpf, const char* nome, const char* funcao, float valor_diaria) {
 
     // Abre o arquivo original na função de ler(read)
     FILE* fp = fopen("funcionarios.txt", "r");
@@ -121,10 +119,10 @@ int atualizar_funcionario_texto(EquipeInterna* funcionario_txt, const char* nome
     EquipeInterna f;
     int atualizado = 0;
     while (fscanf(fp, "%d;%49[^;];%19[^;];%99[^;];%f;\n",
-                  &f.id, f.nome, f.cpf, f.funcao, f.valor_diaria) != EOF) {
+                  &f.id, f.nome, f.cpf, f.funcao, &f.valor_diaria) != EOF) {
 
         // Busca no arquivo o funcionário que quero atualizar pelo CPF
-        if (strcmp(f.cpf, funcionario_txt->cpf) == 0) {
+        if (strcmp(f.cpf, cpf) == 0) {
             // Atualiza os campos permitidos
             strncpy(f.nome, nome, sizeof(f.nome) - 1);
             f.nome[sizeof(f.nome) - 1] = '\0';
@@ -154,10 +152,7 @@ int atualizar_funcionario_texto(EquipeInterna* funcionario_txt, const char* nome
 // ==============================
 // Atualizar Funcionário - BINÁRIO
 // ==============================
-int atualizar_funcionario_binario(EquipeInterna* funcionario_bin, const char* nome, const char* funcao, float valor_diaria) {
-    // Verifica se o ponteiro não é nulo
-    if (!funcionario_bin) return 0;
-
+int atualizar_funcionario_binario(const char* cpf, const char* nome, const char* funcao, float valor_diaria) {
     // Abre o arquivo binário para leitura e escrita
     FILE* fp = fopen("funcionarios.bin", "r+b");
     if (!fp) {
@@ -170,7 +165,7 @@ int atualizar_funcionario_binario(EquipeInterna* funcionario_bin, const char* no
     // Lê cada funcionário do arquivo binário
     while (fread(&f, sizeof(EquipeInterna), 1, fp) == 1) {
         // Busca no arquivo o funcionário que quero atualizar pelo CPF
-        if (strcmp(f.cpf, funcionario_bin->cpf) == 0) {
+        if (strcmp(f.cpf, cpf) == 0) {
             // Atualiza os campos permitidos
             strncpy(f.nome, nome, sizeof(f.nome) - 1);
             f.nome[sizeof(f.nome) - 1] = '\0';
@@ -192,13 +187,93 @@ int atualizar_funcionario_binario(EquipeInterna* funcionario_bin, const char* no
 }
 
 
-// ====================
-// Remover funcionário
-// ====================
-void deletar_funcionario(EquipeInterna* funcionario) {
-    if (funcionario) free(funcionario);
+// ==============================
+// Deletar Funcionário - MEMORIA
+// ==============================
+int deletar_funcionario_memoria(const char* cpf) {
+    // Procura o funcionário na memória
+    for (int i = 0; i < qtd; i++) {
+        if (strcmp(funcionarios_memoria[i].cpf, cpf) == 0) {
+            // Move todos os funcionários após ele uma posição para trás
+            for (int j = i; j < qtd - 1; j++) {
+                funcionarios_memoria[j] = funcionarios_memoria[j + 1];
+            }
+            qtd--; // Diminui a quantidade
+            return 1; // Sucesso
+        }
+    }
+    return 0; // Não encontrou
 }
 
+
+// ============================
+// Deletar Funcionário - TEXTO
+// ============================
+int deletar_funcionario_texto(const char* cpf) {
+    FILE* fp = fopen("funcionarios.txt", "r");
+    FILE* temp = fopen("funcionarios_temp.txt", "w");
+    if (!fp || !temp) {
+        perror("Erro ao abrir arquivo");
+        if (fp) fclose(fp);
+        if (temp) fclose(temp);
+        return 0;
+    }
+
+    EquipeInterna f;
+    int removido = 0;
+    // Lê linha por linha do arquivo original
+    while (fscanf(fp, "%d;%49[^;];%19[^;];%99[^;];%f;\n",
+                  &f.id, f.nome, f.cpf, f.funcao, &f.valor_diaria) != EOF) {
+        // Se não for o CPF que quero remover, regravo no temp
+        if (strcmp(f.cpf, cpf) != 0) {
+            fprintf(temp, "%d;%s;%s;%s;%f;\n",
+                f.id, f.nome, f.cpf, f.funcao, f.valor_diaria);
+        } else {
+            removido = 1;
+        }
+    }
+
+    fclose(fp);
+    fclose(temp);
+    remove("funcionarios.txt");
+    rename("funcionarios_temp.txt", "funcionarios.txt");
+
+    return removido;
+}
+
+
+// =============================
+// Deletar Funcionário - BINÁRIO
+// =============================
+int deletar_funcionario_binario(const char* cpf) {
+    FILE* fp = fopen("funcionarios.bin", "rb");
+    FILE* temp = fopen("funcionarios_temp.bin", "wb");
+    if (!fp || !temp) {
+        perror("Erro ao abrir arquivo");
+        if (fp) fclose(fp);
+        if (temp) fclose(temp);
+        return 0;
+    }
+
+    EquipeInterna f;
+    int removido = 0;
+    // Lê cada struct do arquivo original
+    while (fread(&f, sizeof(EquipeInterna), 1, fp) == 1) {
+        // Copia todos MENOS o que quero remover
+        if (strcmp(f.cpf, cpf) != 0) {
+            fwrite(&f, sizeof(EquipeInterna), 1, temp);
+        } else {
+            removido = 1;
+        }
+    }
+
+    fclose(fp);
+    fclose(temp);
+    remove("funcionarios.bin");
+    rename("funcionarios_temp.bin", "funcionarios.bin");
+
+    return removido;
+}
 
 // ================================================
 // Retorna a quantidade de funcionários na memória
@@ -214,7 +289,7 @@ int get_qtd_funcionarios() {
 EquipeInterna* buscar_funcionario_por_cpf_memoria(const char* cpf_busca) {
     // Uso um loop for para percorrer o array de funcionários na memória
     int i;
-    for ( i = 0; i < get_qtd_funcionarios; i++) {
+    for ( i = 0; i < get_qtd_funcionarios(); i++) {
         // Compara o CPF do funcionário na memória com o que foi passado para busca
         if (strcmp(funcionarios_memoria[i].cpf, cpf_busca) == 0) {
             // Retorna o endereço do funcionário encontrado
