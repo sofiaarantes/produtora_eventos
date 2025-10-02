@@ -11,7 +11,7 @@
 typedef struct {
     int id;
     char nome[50];
-    int cpf;
+    char cpf[20];
     char funcao[100];
     float valor_diaria;
 } EquipeInterna;

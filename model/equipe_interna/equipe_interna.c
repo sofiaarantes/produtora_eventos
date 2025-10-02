@@ -42,7 +42,7 @@ EquipeInterna* adicionar_funcionario_eqIn(EquipeInterna* funcionario, TipoArmaze
             }
 
             // Escreve os dados do funcion no arquivo separados por ponto e vírgula
-            fprintf(fp, "%d;%s;%d;%s;%f;\n",
+            fprintf(fp, "%d;%s;%s;%s;%f;\n",
                 funcionario->id,
                 funcionario->nome,
                 funcionario->cpf,
@@ -120,8 +120,8 @@ int atualizar_funcionario_texto(EquipeInterna* funcionario_txt, const char* nome
     // Lê cada funcion do arquivo original
     EquipeInterna f;
     int atualizado = 0;
-    while (fscanf(fp, "%d;%49[^;];%d;%99[^;];%f\n",
-                  &f.id, f.nome, &f.cpf, f.funcao, f.valor_diaria) != EOF) {
+    while (fscanf(fp, "%d;%49[^;];%19[^;];%99[^;];%f;\n",
+                  &f.id, f.nome, f.cpf, f.funcao, f.valor_diaria) != EOF) {
 
         // Busca no arquivo o funcionário que quero atualizar pelo CPF
         if (strcmp(f.cpf, funcionario_txt->cpf) == 0) {
@@ -135,7 +135,7 @@ int atualizar_funcionario_texto(EquipeInterna* funcionario_txt, const char* nome
         }
 
         // Escreve o funcion (atualizado ou não) no arquivo temporário
-        fprintf(temp, "%d;%s;%d;%s;%s;%s;%s;%s\n",
+        fprintf(temp, "%d;%s;%s;%s;%f\n",
                 f.id, f.nome, f.cpf, f.funcao, f.valor_diaria);
     }
 
@@ -240,10 +240,10 @@ EquipeInterna* buscar_funcionario_por_cpf_texto(const char* cpf_busca) {
     static EquipeInterna funcionario_tmp;
 
     // Lê cada funcionário do arquivo e se for igual ao CPF buscado, retorna o ponteiro para ele
-    while (fscanf(fp, "%d;%49[^;];%d;%99[^;];%f[^\n]\n",
+    while (fscanf(fp, "%d;%49[^;];%19[^;];%99[^;];%f;\n",
                   &funcionario_tmp.id,
                   funcionario_tmp.nome,
-                  &funcionario_tmp.cpf,
+                  funcionario_tmp.cpf,
                   funcionario_tmp.funcao,
                   &funcionario_tmp.valor_diaria) == 5) {
 

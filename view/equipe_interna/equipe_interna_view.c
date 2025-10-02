@@ -5,17 +5,17 @@
 void exibir_funcionario(const EquipeInterna* equipeInterna) {
     if (!equipeInterna) {
         printf("+--------------------------+\n");
-        printf("| Funcionário inexistente!     |\n");
+        printf("| Funcionário inexistente! |\n");
         printf("+--------------------------+\n");
         return;
     }
-    printf("+--------------------------+\n");
+    printf("+-------------------------------+\n");
     printf("| ID    : %d\n", equipeInterna->id);
     printf("| Nome  : %s\n", equipeInterna->nome);
-    printf("| CPF   : %d\n", equipeInterna->cpf);
+    printf("| CPF   : %s\n", equipeInterna->cpf);
     printf("| Funcao: %s\n", equipeInterna->funcao);
     printf("| Valor da Diária/Hora: %f\n", equipeInterna->valor_diaria);
-    printf("+--------------------------+\n");
+    printf("+-------------------------------+\n");
 }
 
 int exibir_menu_equipe_interna() {
@@ -36,8 +36,8 @@ EquipeInterna ler_dados_funcionario() {
     EquipeInterna f;
     printf("ID: "); scanf("%d", &f.id);
     printf("Nome: "); scanf(" %[^\n]", f.nome);
-    printf("CPF: (Cuidado ao inserir esse dado, ele nao podera ser alterado depois\n)"); 
-    scanf(" %d", &f.cpf); 
+    printf("CPF: (Cuidado ao inserir esse dado, ele nao podera ser alterado depois)\n"); 
+    scanf(" %[^\n]", f.cpf); 
     printf("Função: "); scanf(" %[^\n]", f.funcao);
     printf("Valor da Diária/hora: "); scanf("%f", &f.valor_diaria);
     return f;  // Retorna a struct preenchida

@@ -18,112 +18,123 @@ void gerenciar_funcionario() {
             // Adicionar funcionário
             case 1: {
                 EquipeInterna add = ler_dados_funcionario();
-                EquipeInterna* funcionario_salvo = adicionar_funcionario_eqIn(&add, get_armazenamento());
+                equipeInterna = adicionar_funcionario_eqIn(&add, get_armazenamento());
                 break;
-            }// ================================
-// Atualizar funcionário
-// ================================
-case 2: {
-    int tem_funcionarios = 0;
-    TipoArmazenamento tipo = get_armazenamento();
-
-    // Verifica se existem funcionários no armazenamento atual
-    switch (tipo) {
-        case MEMORIA:
-            if (get_qtd_funcionarios() > 0) {
-                tem_funcionarios = 1;
             }
-            break;
+            // Atualizar funcionário
+            case 2: {
+                int tem_funcionarios = 0;
+                TipoArmazenamento tipo = get_armazenamento();
 
-        case TEXTO: {
-            FILE* ft = fopen("funcionarios.txt", "r");
-            if (ft) {
-                char linha[300];
-                if (fgets(linha, sizeof(linha), ft)) {
-                    tem_funcionarios = 1;
+                // Verifica se existem funcionários no armazenamento atual
+                switch (tipo) {
+                    case MEMORIA:
+                        if (get_qtd_funcionarios() > 0) {
+                            tem_funcionarios = 1;
+                        }
+                        break;
+
+                    case TEXTO: {
+                        FILE* ft = fopen("funcionarios.txt", "r");
+                        if (ft) {
+                            char linha[300];
+                            if (fgets(linha, sizeof(linha), ft)) {
+                                tem_funcionarios = 1;
+                            }
+                            fclose(ft);
+                        }
+                        break;
+                    }
+
+                    case BINARIO: {
+                        FILE* fb = fopen("funcionarios.bin", "rb");
+                        if (fb) {
+                            EquipeInterna tmp;
+                            if (fread(&tmp, sizeof(EquipeInterna), 1, fb)) {
+                                tem_funcionarios = 1;
+                            }
+                            fclose(fb);
+                        }
+                        break;
+                    }
+
+                    default:
+                        exibir_mensagem("Tipo de armazenamento inválido!");
+                        break;
                 }
-                fclose(ft);
-            }
-            break;
-        }
 
-        case BINARIO: {
-            FILE* fb = fopen("funcionarios.bin", "rb");
-            if (fb) {
-                EquipeInterna tmp;
-                if (fread(&tmp, sizeof(EquipeInterna), 1, fb)) {
-                    tem_funcionarios = 1;
-                }
-                fclose(fb);
-            }
-            break;
-        }
-
-        default:
-            exibir_mensagem("Tipo de armazenamento inválido!");
-            break;
-    }
-
-    if (!tem_funcionarios) {
-        exibir_mensagem("Nenhum funcionário cadastrado!");
-        break;
-    }
-
-    // Peço para o usuário digitar o CPF do funcionário que ele quer atualizar
-    int cpf_busca;
-    printf("Digite o CPF do funcionário que deseja atualizar: ");
-    scanf("%d", &cpf_busca);
-
-    // Variáveis que vão receber os novos dados
-    char nome[50];
-    char funcao[100];
-    float valor_diaria;
-
-    // Lê os novos dados
-    ler_dados_atualizados_funcionario(nome, funcao, &valor_diaria);
-
-    // Tenta atualizar no tipo de armazenamento configurado
-    switch (tipo) {
-        case MEMORIA: {
-            EquipeInterna* funcionario_mem = buscar_funcionario_por_cpf_memoria(cpf_busca);
-            if (funcionario_mem) {
-                atualizar_funcionario_memoria(funcionario_mem, nome, funcao, valor_diaria);
-                exibir_mensagem("Funcionário atualizado na MEMÓRIA!");
-            } else {
-                exibir_mensagem("Funcionário não encontrado na memória!");
-            }
-            break;
-        }
-
-        case TEXTO:
-            if (atualizar_funcionario_texto(cpf_busca, nome, funcao, valor_diaria)) {
-                exibir_mensagem("Funcionário atualizado no ARQUIVO TEXTO!");
-            } else {
-                exibir_mensagem("Funcionário não encontrado no arquivo texto!");
-            }
-            break;
-
-        case BINARIO:
-            if (atualizar_funcionario_binario(cpf_busca, nome, funcao, valor_diaria)) {
-                exibir_mensagem("Funcionário atualizado no ARQUIVO BINÁRIO!");
-            } else {
-                exibir_mensagem("Funcionário não encontrado no arquivo binário!");
-            }
-            break;
-
-        default:
-            exibir_mensagem("Erro ao atualizar funcionário: tipo de armazenamento inválido!");
-            break;
-    }
-    break;
-}
-
-            // Exibir funcionário
-            case 3: {
-                if (!equipeInterna) { 
-                    exibir_funcionario(equipeInterna);
+                if (!tem_funcionarios) {
+                    exibir_mensagem("Nenhum funcionário cadastrado!");
                     break;
                 }
+
+                // Peço para o usuário digitar o CPF do funcionário que ele quer atualizar
+                char cpf_busca[20];
+                printf("Digite o CPF do funcionário que deseja atualizar: ");
+                scanf(" %19s", cpf_busca);   // lê até 19 caracteres
+                limpar_digitos(cpf_busca);   // deixa só os números
+
+                // Variáveis que vão receber os novos dados
+                char nome[50];
+                char funcao[100];
+                float valor_diaria;
+
+                // Lê os novos dados
+                ler_dados_atualizados_funcionario(nome, funcao, &valor_diaria);
+
+                // Tenta atualizar no tipo de armazenamento configurado
+                switch (tipo) {
+                    case MEMORIA: {
+                        EquipeInterna* func = buscar_funcionario_por_cpf_memoria(cpf_busca);
+                        if (func) atualizar_funcionario_memoria(func, nome, funcao, valor_diaria);
+                        break;
+                    }
+                    case TEXTO: {
+                        EquipeInterna* func = buscar_funcionario_por_cpf_texto(cpf_busca);
+                        if (func) atualizar_funcionario_texto(func, nome, funcao, valor_diaria);
+                        break;
+                    }
+                    case BINARIO: {
+                        EquipeInterna* func = buscar_funcionario_por_cpf_binario(cpf_busca);
+                        if (func) atualizar_funcionario_binario(func, nome, funcao, valor_diaria);
+                        break;
+                    }
+                    default:
+                        exibir_mensagem("Erro ao atualizar funcionário: tipo de armazenamento inválido!");
+                        break;
+                }
+                break;
+            }
+            // Exibir funcionário
+            case 3: {
+                TipoArmazenamento tipo = get_armazenamento();
+
+                char cpf_busca[20];
+                printf("Digite o CPF do funcionário que deseja exibir: ");
+                scanf(" %19s", cpf_busca);   // lê até 19 caracteres
+                //limpar_digitos(cpf_busca);   // deixa só os números
+
+                EquipeInterna* func = NULL;
+
+                switch (tipo) {
+                    case MEMORIA:
+                        func = buscar_funcionario_por_cpf_memoria(cpf_busca);
+                        break;
+
+                    case TEXTO:
+                        func = buscar_funcionario_por_cpf_texto(cpf_busca);
+                        break;
+
+                    case BINARIO:
+                        func = buscar_funcionario_por_cpf_binario(cpf_busca);
+                        break;
+
+                    default:
+                        exibir_mensagem("Tipo de armazenamento inválido!");
+                        break;
+                }
+
+                exibir_funcionario(func);
                 break;
             }
             // Deletar funcionário
