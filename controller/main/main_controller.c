@@ -1,12 +1,15 @@
-#include <stdlib.h>                         
-#include "../controller/main/main_controller.h" 
-#include "../view/cliente/cliente_view.h"               
-#include "../view/main/main_view.h" 
-#include "../model/config_armazenamento/config_armazenamento.h" 
-#include "../view/equipe_interna/equipe_interna_view.h" 
-#include "../controller/cliente/cliente_controller.h" 
-#include "../controller/equipe_interna/equipe_interna_controller.h" 
-#include "../controller/config_armazenamento/config_armazenamento_controller.h" 
+#include <stdlib.h>
+#include "../controller/main/main_controller.h"
+#include "../view/cliente/cliente_view.h"
+#include "../view/main/main_view.h"
+#include "../model/config_armazenamento/config_armazenamento.h"
+#include "../view/equipe_interna/equipe_interna_view.h"
+#include "../controller/cliente/cliente_controller.h"
+#include "../controller/equipe_interna/equipe_interna_controller.h"
+#include "../controller/config_armazenamento/config_armazenamento_controller.h"
+
+// Declaração manual para evitar "implicit declaration"
+void inicializar_armazenamento();
 
 //essa funçao é responsavel por controlar o primeiro menu do sistema e chamar cada menu correspondente
 void iniciar_sistema(){ 
@@ -42,7 +45,7 @@ void iniciar_sistema(){
         }
         // Menu Configuração de Armazenamento
         case 7:{ 
-            inicializar_armazenamento();
+           inicializar_armazenamento();
             break;
         }
         

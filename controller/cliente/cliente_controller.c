@@ -4,6 +4,7 @@
 #include "../../view/cliente/cliente_view.h"
 #include "../../view/main/main_view.h"
 #include "../../model/config_armazenamento/config_armazenamento.h"
+#include "../../util/util.h"
 #include "cliente_controller.h"
 
 void gerenciar_cliente() {
@@ -25,64 +26,35 @@ void gerenciar_cliente() {
                 break;
             }
             case 2: { // Atualizar cliente
-                // Primeiro verifico se existe algum cliente cadastrado
-                if (get_qtd_clientes == 0) {
-                    exibir_mensagem("Nenhum cliente cadastrado!");
-                } else {
-                    // Peço para o usuário digitar o CPF/CNPJ do cliente que ele quer atualizar
-                    char cpf_cnpj_busca[20];
-                    printf("Digite o CPF/CNPJ do cliente que deseja atualizar: ");
-                    scanf(" %19s", cpf_cnpj_busca); // uso %19s para não estourar o buffer
+                    char cpf_cnpj_busca[12];
+                    ler_string("Digite o CPF/CNPJ do cliente a ser atualizado: ", cpf_cnpj_busca, sizeof(cpf_cnpj_busca));
 
-                    // Declaro as variáveis que vão receber os novos dados do cliente
-                    char nome[50];
-                    int idade;
-                    char endereco_completo[100];
-                    char tel[15];
-                    char email[50];
-                    char nome_contato[50];
 
-                    // Aqui eu chamo a função que lê os novos dados do cliente
-                    // IMPORTANTE: não vou atualizar o CPF/CNPJ, ele serve apenas para buscar o cliente
-                    
-                    ler_dados_atualizados_cliente(nome, &idade, endereco_completo, tel, email, nome_contato);
+                    // Crio uma struct temporária para armazenar os novos dados
+                    Cliente novos_dados;
 
-                    // ================================
-                    // BUSCO O CLIENTE NA MEMÓRIA
-                    // ================================
-                    Cliente* cliente_mem = buscar_cliente_por_cpf_memoria(cpf_cnpj_busca);
-                    if (cliente_mem) {
-                        // Achei o cliente na memória, atualizo apenas os campos que podem mudar
-                        atualizar_cliente_memoria(cliente_mem, nome, idade, endereco_completo, tel, email,nome_contato);
-                        exibir_mensagem("Cliente atualizado na MEMÓRIA!");
-                        break; // já atualizei, não preciso verificar os outros tipos
+                    // Preencho com os novos dados (menos o CPF que não muda)
+                    ler_dados_atualizados_cliente(
+                        novos_dados.nome, sizeof(novos_dados.nome),
+                        &novos_dados.idade,
+                        novos_dados.endereco_completo, sizeof(novos_dados.endereco_completo),
+                        novos_dados.tel, sizeof(novos_dados.tel),
+                        novos_dados.email, sizeof(novos_dados.email),
+                        novos_dados.nome_contato, sizeof(novos_dados.nome_contato)
+                    );
+                    //passar tambm o tamanho dos arrays para a funçao ler_string para saber ate onde pode ler
+
+
+                    // Chamo a função genérica de atualizar
+                    Cliente* atualizado = atualizar_cliente(cpf_cnpj_busca, &novos_dados, get_armazenamento());
+
+                    if (!atualizado) {
+                        exibir_mensagem("Cliente não encontrado para atualização!");
                     }
 
-                    // ================================
-                    // BUSCO O CLIENTE NO ARQUIVO TEXTO
-                    // ================================
-                    Cliente* cliente_txt = buscar_cliente_por_cpf_texto(cpf_cnpj_busca);
-                    if (cliente_txt) {
-                        atualizar_cliente_texto(cliente_txt, nome, idade, endereco_completo, tel, email, nome_contato);
-                        exibir_mensagem("Cliente atualizado no ARQUIVO TEXTO!");
-                        break;
-                    }
-
-                    // ================================
-                    // BUSCO O CLIENTE NO ARQUIVO BINÁRIO
-                    // ================================
-                    Cliente* cliente_bin = buscar_cliente_por_cpf_binario(cpf_cnpj_busca);
-                    if (cliente_bin) {
-                        atualizar_cliente_binario(cliente_bin, nome, idade, endereco_completo, tel, email, nome_contato);
-                        exibir_mensagem("Cliente atualizado no ARQUIVO BINÁRIO!");
-                        break;
-                    }
-
-                    // Se não encontrar em nenhum lugar, exibo mensagem
-                    exibir_mensagem("Cliente não encontrado!");
+                    break;
                 }
-                break;
-            }
+
 
             case 3:{ //exibir cliente
                 if (!cliente) { 

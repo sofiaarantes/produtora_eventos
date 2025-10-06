@@ -12,8 +12,8 @@ typedef struct {
     char nome[50];
     int idade;
     char endereco_completo[100];
-    char cpf_cnpj[20];
-    char tel[11];
+    char cpf_cnpj[12];
+    char tel[12];
     char email[50];
     char nome_contato[50];
    
@@ -22,8 +22,7 @@ typedef struct {
 // Funções do modelo (CRUD)
 // Cria um novo cliente e retorna um ponteiro para ele,recebe o tipo armazenamento e a struct cliente a ser adicionada
 Cliente* criar_cliente(Cliente* cliente,TipoArmazenamento tipo);
-void atualizar_cliente(Cliente* cliente, const char* nome, int idade,const char* endereco_completo,const char*
-     cpf_cnpj,const char* tel,const char* email,const char*nome_contato,TipoArmazenamento);
+
 void deletar_cliente(Cliente* cliente);
 void consultar_cliente(Cliente* cliente);
 
@@ -39,27 +38,7 @@ Cliente* buscar_cliente_por_cpf_texto(const char* cpf_cnpj_busca);
 // Busca cliente por CPF/CNPJ em arquivo binário (retorna ponteiro para o cliente ou NULL se não achar)
 Cliente* buscar_cliente_por_cpf_binario(const char* cpf_cnpj_busca);
 
-//Função para atualizar cliente em binario
-void atualizar_cliente_binario(Cliente* cliente_bin, 
-                               const char* nome, int idade,
-                               const char* endereco_completo, 
-                               const char* tel,
-                               const char* email, 
-                               const char* nome_contato);
-
-//Função para atualizar cliente em texto
-void atualizar_cliente_texto(Cliente* cliente_txt, 
-                             const char* nome, int idade,
-                             const char* endereco_completo, 
-                             const char* tel,
-                             const char* email, 
-                             const char* nome_contato);
-
-//Função para atualizar cliente em memória
-void atualizar_cliente_memoria(Cliente* cliente_mem, 
-                               const char* nome, int idade,
-                               const char* endereco_completo, 
-                               const char* tel,
-                               const char* email, 
-                               const char* nome_contato);
+// Função que atualiza um cliente de acordo com o tipo escolhido
+// recebe o CPF/CNPJ do cliente que quero atualizar e o tipo de armazenamento
+Cliente* atualizar_cliente(const char* cpf_cnpj_busca, Cliente* novos_dados, TipoArmazenamento tipo);
 #endif

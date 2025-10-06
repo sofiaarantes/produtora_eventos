@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "../view/main/main_view.h"
+#include "../../util/util.h"
 
 int menu_main() {
     int escolher = 0;
@@ -15,8 +16,7 @@ int menu_main() {
     printf("6 - Acessar Menu Operadores do Sistema\n");
     printf("7 - Alterar método de armazenamento\n");
     printf("0 - Sair\n");
-    printf("Escolha: ");
-    scanf("%d", &escolher);
+    ler_int("Escolha uma opcao: ", &escolher);
     return escolher;
 }
 
@@ -33,7 +33,6 @@ int mostrar_menu_configuracao() {
     printf("2 - Arquivo Texto\n");
     printf("3 - Arquivo Binário\n");
     printf("0 - Sair\n");
-    printf("Escolha: ");
-    scanf("%d", &opcao);
+    ler_int("Escolha uma opcao: ", &opcao);
     return opcao;
 }
