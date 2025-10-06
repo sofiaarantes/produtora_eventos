@@ -65,14 +65,10 @@ void gerenciar_cliente() {
 
             }
             case 4:{ //deletar cliente
-                // if (!cliente) {
-                //     exibir_mensagem("Nenhum cliente para deletar!");
-                // } else {
-                   
-                //     cliente = NULL;
-                //     exibir_mensagem("Cliente deletado!");
-                // }
-                // break;
+                char cpf_cnpj_busca[12];
+                    ler_string("Digite o CPF/CNPJ do cliente a ser atualizado: ", cpf_cnpj_busca, sizeof(cpf_cnpj_busca));
+                    deletar_cliente(cpf_cnpj_busca, get_armazenamento());
+                break;
             }
             case 0:
                 exibir_mensagem("Saindo...");
@@ -82,5 +78,5 @@ void gerenciar_cliente() {
         }
     } while (opcao != 0);
 
-    // if (cliente) deletar_cliente(cliente);
+   
 }

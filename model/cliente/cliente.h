@@ -30,8 +30,10 @@ void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo)
 int get_qtd_clientes();
 
 
-
 // Função que atualiza um cliente de acordo com o tipo escolhido
 // recebe o CPF/CNPJ do cliente que quero atualizar e o tipo de armazenamento
 Cliente* atualizar_cliente(const char* cpf_cnpj_busca, Cliente* novos_dados, TipoArmazenamento tipo);
+
+// Remove o cliente (libera memória) de acordo com o cpf/cnpj e tipo de armazenamento
+void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo);
 #endif

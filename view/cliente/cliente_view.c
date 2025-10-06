@@ -39,7 +39,6 @@ int exibir_menu() {
     printf("2 - Atualizar cliente\n");
     printf("3 - Exibir cliente\n");
     printf("4 - Deletar cliente\n");
-    printf("5 - Voltar ao menu anterior\n");
     printf("0 - Sair\n");
     ler_int("Escolha uma opcao: ", &opcao);
     return opcao;
