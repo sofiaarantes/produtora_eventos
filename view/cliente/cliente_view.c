@@ -1,18 +1,11 @@
 #include <stdio.h>
 #include "cliente/cliente_view.h"
 #include "../../util/util.h"
-
-// void exibir_cliente(const Cliente* cliente) {
-//     if (!cliente) {
-//         printf("Cliente inexistente!\n");
-//         return;
-//     }
-//     printf("ID: %d | Nome: %s | Idade: %d\n",
-//            cliente->id, cliente->nome, cliente->idade);
-// }
+#include "../../view/main/main_view.h"
 
 
-void exibir_cliente(const Cliente* cliente) {
+
+void ver_cliente(const Cliente* cliente) {
     if (!cliente) {
         printf("+--------------------------+\n");
         printf("| Cliente inexistente!     |\n");
@@ -23,11 +16,19 @@ void exibir_cliente(const Cliente* cliente) {
     printf("| ID   : %d\n", cliente->id);
     printf("| Nome : %s\n", cliente->nome);
     printf("| Idade: %d\n", cliente->idade);
-    //printf("Telefone: (%c%c) %c%c%c%c%c-%c%c%c%c\n",
-//        cliente.tel[0], cliente.tel[1],    // DDD
-//        cliente.tel[2], cliente.tel[3], cliente.tel[4], cliente.tel[5], cliente.tel[6], // primeiros 5
-//        cliente.tel[7], cliente.tel[8], cliente.tel[9], cliente.tel[10]); // últimos 4
-// );
+    printf("| Telefone: (%c%c) %c%c%c%c%c-%c%c%c%c\n",
+       cliente->tel[0], cliente->tel[1],    // DDD
+       cliente->tel[2], cliente->tel[3], cliente->tel[4], cliente->tel[5], cliente->tel[6], // primeiros 5
+       cliente->tel[7], cliente->tel[8], cliente->tel[9], cliente->tel[10]); // últimos 4   
+    printf("| Endereco : %s\n", cliente->endereco_completo);
+    printf("| CPF/CNPJ: %c%c%c.%c%c%c.%c%c%c-%c%c\n",
+       cliente->cpf_cnpj[0], cliente->cpf_cnpj[1], cliente->cpf_cnpj[2],
+       cliente->cpf_cnpj[3], cliente->cpf_cnpj[4], cliente->cpf_cnpj[5],
+       cliente->cpf_cnpj[6], cliente->cpf_cnpj[7], cliente->cpf_cnpj[8],
+       cliente->cpf_cnpj[9], cliente->cpf_cnpj[10]);
+
+    printf("| Email : %s\n", cliente->email);
+    printf("| Nome do contato: %s\n", cliente->nome_contato);
     printf("+--------------------------+\n");
 }
 

@@ -57,20 +57,22 @@ void gerenciar_cliente() {
 
 
             case 3:{ //exibir cliente
-                if (!cliente) { 
-                exibir_cliente(cliente);
+                char cpf_cnpj_busca[12];
+                    ler_string("Digite o CPF/CNPJ do cliente a ser exibido: ", cpf_cnpj_busca, sizeof(cpf_cnpj_busca));
+
+                    buscar_e_exibir_cliente(cpf_cnpj_busca, get_armazenamento());
                 break;
-                }
+
             }
             case 4:{ //deletar cliente
-                if (!cliente) {
-                    exibir_mensagem("Nenhum cliente para deletar!");
-                } else {
-                    deletar_cliente(cliente);
-                    cliente = NULL;
-                    exibir_mensagem("Cliente deletado!");
-                }
-                break;
+                // if (!cliente) {
+                //     exibir_mensagem("Nenhum cliente para deletar!");
+                // } else {
+                   
+                //     cliente = NULL;
+                //     exibir_mensagem("Cliente deletado!");
+                // }
+                // break;
             }
             case 0:
                 exibir_mensagem("Saindo...");
@@ -80,5 +82,5 @@ void gerenciar_cliente() {
         }
     } while (opcao != 0);
 
-    if (cliente) deletar_cliente(cliente);
+    // if (cliente) deletar_cliente(cliente);
 }

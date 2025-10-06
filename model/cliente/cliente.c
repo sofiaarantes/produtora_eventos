@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include "cliente.h"
+#include "../../view/cliente/cliente_view.h"
+#include "../../view/main/main_view.h"
+
 
 #define MAX_CLIENTES 100
 static Cliente clientes_memoria[MAX_CLIENTES]; // cada posição guarda um cliente
@@ -254,90 +257,134 @@ void deletar_cliente(Cliente* cliente) {
 int get_qtd_clientes() { 
     return qtd; // retorno o valor do contador, que tá sendo incrementado toda vez que salvo um cliente
 } 
+//-----------------------------
+// Função para buscar e exibir diretamente um cliente pelo CPF/CNPJ
+void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
+    // Verifico se o CPF/CNPJ passado é nulo (inválido)
+    if (!cpf_cnpj_busca) {
+        exibir_mensagem("+--------------------------+\n");
+        exibir_mensagem("| CPF/CNPJ inválido!       |\n");
+        exibir_mensagem("+--------------------------+\n");
+        return; // se for inválido, saio da função
+    }
 
-// ==============================
-// BUSCA CLIENTE NA MEMÓRIA
-// ==============================
-Cliente* buscar_cliente_por_cpf_memoria(const char* cpf_cnpj_busca) {
-    // Aqui eu quero achar o cliente que está salvo na memória RAM
-    // Percorro o array de clientes na memória
-    int i;
-    for ( i = 0; i < get_qtd_clientes(); i++) {
-        // comparo o CPF/CNPJ do cliente atual com o que o usuário digitou
-        if (strcmp(clientes_memoria[i].cpf_cnpj, cpf_cnpj_busca) == 0) {
-            // Achei o cliente que bate com o CPF/CNPJ
-            // Vou retornar o ponteiro para ele para poder atualizar depois
-            return &clientes_memoria[i];
+    Cliente* cliente = NULL; // Ponteiro que vai armazenar o cliente encontrado, se existir
+
+    // Escolho o tipo de armazenamento usado
+    switch (tipo) {
+
+        // =========================
+        // Caso 1: busca em memória
+        // =========================
+        case MEMORIA: {
+            // Percorro o array de clientes em memória
+            for (int i = 0; i < qtd; i++) {
+                // Comparo o CPF/CNPJ de cada cliente com o CPF/CNPJ digitado
+                if (strncmp(clientes_memoria[i].cpf_cnpj, cpf_cnpj_busca, sizeof(clientes_memoria[i].cpf_cnpj)) == 0) {
+                    // Se encontrar, guardo o endereço do cliente encontrado
+                    cliente = &clientes_memoria[i];
+                    // Exibo as informações desse cliente
+                    ver_cliente(cliente);
+                    break; // paro o loop, pois já encontrei o cliente
+                }
+            }
+            break;
         }
-    }
-    // Se percorrer todo o array e não achar o cliente, retorno NULL
-    return NULL;
-}
 
-// ==============================
-// BUSCA CLIENTE EM ARQUIVO TEXTO
-// ==============================
-Cliente* buscar_cliente_por_cpf_texto(const char* cpf_cnpj_busca) {
-    // Preciso abrir o arquivo de texto que contém todos os clientes
-    FILE* fp = fopen("clientes.txt", "r");
-    if (!fp) {
-        // Se não conseguir abrir, mostro o erro e retorno NULL
-        perror("Erro ao abrir clientes.txt");
-        return NULL;
-    }
+        // ==============================
+        // Caso 2: busca em arquivo texto
+        // ==============================
+        case TEXTO: {
+            // Abro o arquivo texto para leitura
+            FILE* fp = fopen("clientes.txt", "r");
+            if (!fp) {
+                // Se não conseguir abrir, mostro o erro e saio
+                perror("Erro ao abrir clientes.txt");
+                return;
+            }
 
-    // Vou ler os clientes um por um do arquivo
-    // Uso static Cliente cliente_tmp para que o ponteiro continue válido
-    static Cliente cliente_tmp;
+            // Aloco memória para armazenar temporariamente um cliente
+            cliente = malloc(sizeof(Cliente));
+            char linha[512]; // buffer para armazenar cada linha do arquivo
 
-    // Leio linha por linha do arquivo e separo os campos pelo ';'
-    while (fscanf(fp, "%d;%49[^;];%d;%99[^;];%19[^;];%14[^;];%49[^;];%49[^\n]\n",
-                  &cliente_tmp.id,
-                  cliente_tmp.nome,
-                  &cliente_tmp.idade,
-                  cliente_tmp.endereco_completo,
-                  cliente_tmp.cpf_cnpj,
-                  cliente_tmp.tel,
-                  cliente_tmp.email,
-                  cliente_tmp.nome_contato) == 8) {
+            // Leio o arquivo linha por linha
+            while (fgets(linha, sizeof(linha), fp)) {
+                // Extraio os campos separados por ponto e vírgula
+                sscanf(linha, "%d;%49[^;];%d;%99[^;];%11[^;];%11[^;];%49[^;];%49[^\n]",
+                    &cliente->id,
+                    cliente->nome,
+                    &cliente->idade,
+                    cliente->endereco_completo,
+                    cliente->cpf_cnpj,
+                    cliente->tel,
+                    cliente->email,
+                    cliente->nome_contato
+                );
 
-        // Comparo o CPF/CNPJ lido com o que o usuário digitou
-        if (strcmp(cliente_tmp.cpf_cnpj, cpf_cnpj_busca) == 0) {
-            // Achei o cliente! Fecho o arquivo e retorno o ponteiro para ele
+                // Comparo o CPF lido com o CPF buscado
+                if (strncmp(cliente->cpf_cnpj, cpf_cnpj_busca, sizeof(cliente->cpf_cnpj)) == 0) {
+                    // Se encontrar, fecho o arquivo e exibo o cliente
+                    fclose(fp);
+                    ver_cliente(cliente);
+                    free(cliente); // libero a memória alocada
+                    return; // retorno, pois já encontrei o cliente
+                }
+            }
+
+            // Se chegar aqui, o cliente não foi encontrado
+            fclose(fp);   // fecho o arquivo
+            free(cliente); // libero a memória usada
+            cliente = NULL; // deixo o ponteiro nulo
+            break;
+        }
+
+        // =================================
+        // Caso 3: busca em arquivo binário
+        // =================================
+        case BINARIO: {
+            // Abro o arquivo binário para leitura
+            FILE* fp = fopen("clientes.bin", "rb");
+            if (!fp) {
+                // Se não conseguir abrir, mostro o erro e saio
+                perror("Erro ao abrir clientes.bin");
+                return;
+            }
+
+            // Aloco memória para armazenar temporariamente um cliente
+            cliente = malloc(sizeof(Cliente));
+
+            // Leio o arquivo binário cliente por cliente
+            while (fread(cliente, sizeof(Cliente), 1, fp) == 1) {
+                // Garante que a string do CPF termina em '\0'
+                cliente->cpf_cnpj[sizeof(cliente->cpf_cnpj)-1] = '\0';
+
+                // Comparo o CPF lido com o CPF buscado
+                if (strncmp(cliente->cpf_cnpj, cpf_cnpj_busca, sizeof(cliente->cpf_cnpj)) == 0) {
+                    // Se encontrar, fecho o arquivo e exibo as informações
+                    fclose(fp);
+                    ver_cliente(cliente);
+                    free(cliente); // libero a memória alocada
+                    return; // retorno, pois já encontrei o cliente
+                }
+            }
+
+            // Se terminar o arquivo e não encontrar, libero tudo
             fclose(fp);
-            return &cliente_tmp;
+            free(cliente);
+            cliente = NULL;
+            break;
         }
+
+        // Caso o tipo de armazenamento não seja reconhecido
+        default:
+            exibir_mensagem("Tipo de armazenamento inválido!\n");
+            return;
     }
 
-    // Se percorrer tudo e não achar, fecho o arquivo e retorno NULL
-    fclose(fp);
-    return NULL;
-}
-
-// ==============================
-// BUSCA CLIENTE EM ARQUIVO BINÁRIO
-// ==============================
-Cliente* buscar_cliente_por_cpf_binario(const char* cpf_cnpj_busca) {
-    // Abrindo o arquivo binário que contém os clientes
-    FILE* fp = fopen("clientes.bin", "rb");
-    if (!fp) {
-        // Se não abrir, mostro erro e retorno NULL
-        perror("Erro ao abrir clientes.bin");
-        return NULL;
+    // Se nenhum cliente foi encontrado nos casos acima, mostro mensagem padrão
+    if (!cliente) {
+        printf("+--------------------------+\n");
+        printf("| Cliente não encontrado!  |\n");
+        printf("+--------------------------+\n");
     }
-
-    // Leio um registro de cada vez
-    static Cliente cliente_tmp; // static para manter o ponteiro válido fora da função
-    while (fread(&cliente_tmp, sizeof(Cliente), 1, fp) == 1) {
-        // Comparo o CPF/CNPJ do cliente lido com o informado
-        if (strcmp(cliente_tmp.cpf_cnpj, cpf_cnpj_busca) == 0) {
-            // Achei o cliente! Fecho o arquivo e retorno o ponteiro
-            fclose(fp);
-            return &cliente_tmp;
-        }
-    }
-
-    // Se não encontrar, fecho o arquivo e retorno NULL
-    fclose(fp);
-    return NULL;
 }

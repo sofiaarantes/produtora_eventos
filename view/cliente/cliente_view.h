@@ -4,7 +4,7 @@
 #include "../model/cliente/cliente.h"
 
 // Mostra dados de um cliente
-void exibir_cliente(const Cliente* cliente);
+void ver_cliente(const Cliente* cliente);
 
 // Exibe o menu principal e retorna a opção escolhida
 int exibir_menu();

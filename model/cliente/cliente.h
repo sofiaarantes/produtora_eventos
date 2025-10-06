@@ -23,20 +23,13 @@ typedef struct {
 // Cria um novo cliente e retorna um ponteiro para ele,recebe o tipo armazenamento e a struct cliente a ser adicionada
 Cliente* criar_cliente(Cliente* cliente,TipoArmazenamento tipo);
 
-void deletar_cliente(Cliente* cliente);
-void consultar_cliente(Cliente* cliente);
+// Função para exibir os dados de um cliente buscados pelo cpf/cnpj
+void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo);
 
 // Retorna o número de clientes na memória
 int get_qtd_clientes();
 
-// Busca cliente por CPF/CNPJ na memória (retorna ponteiro para o cliente ou NULL se não achar)
-Cliente* buscar_cliente_por_cpf_memoria(const char* cpf_cnpj_busca);
 
-// Busca cliente por CPF/CNPJ em arquivo texto (retorna ponteiro para o cliente ou NULL se não achar)
-Cliente* buscar_cliente_por_cpf_texto(const char* cpf_cnpj_busca);
-
-// Busca cliente por CPF/CNPJ em arquivo binário (retorna ponteiro para o cliente ou NULL se não achar)
-Cliente* buscar_cliente_por_cpf_binario(const char* cpf_cnpj_busca);
 
 // Função que atualiza um cliente de acordo com o tipo escolhido
 // recebe o CPF/CNPJ do cliente que quero atualizar e o tipo de armazenamento
