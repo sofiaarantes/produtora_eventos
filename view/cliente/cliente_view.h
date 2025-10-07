@@ -7,7 +7,7 @@
 void ver_cliente(const Cliente* cliente);
 
 // Exibe o menu principal e retorna a opção escolhida
-int exibir_menu();
+int menu_cliente();
 
 // Lê os dados de um cliente e RETORNA um Cliente preenchido
 Cliente ler_dados_cliente();

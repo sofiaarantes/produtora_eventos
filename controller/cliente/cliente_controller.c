@@ -13,7 +13,7 @@ void gerenciar_cliente() {
 
     do {
         
-        opcao = exibir_menu();
+        opcao = menu_cliente();
         switch (opcao) {
             case 1: {//criar cliente
                 Cliente temp = ler_dados_cliente();

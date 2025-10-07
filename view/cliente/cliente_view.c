@@ -32,7 +32,7 @@ void ver_cliente(const Cliente* cliente) {
     printf("+--------------------------+\n");
 }
 
-int exibir_menu() {
+int menu_cliente() {
     int opcao;
     printf("\n==== MENU CLIENTE ====\n");
     printf("1 - Criar cliente\n");

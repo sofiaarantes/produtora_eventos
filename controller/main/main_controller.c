@@ -7,6 +7,7 @@
 #include "../controller/cliente/cliente_controller.h"
 #include "../controller/equipe_interna/equipe_interna_controller.h"
 #include "../controller/config_armazenamento/config_armazenamento_controller.h"
+#include "../controller/fornecedor/fornecedor_parceiro_controller.h"
 
 // Declaração manual para evitar "implicit declaration"
 void inicializar_armazenamento();
@@ -37,6 +38,7 @@ void iniciar_sistema(){
         }
         // Menu Fornecedores e Parceiros
         case 5:{
+            gerenciar_fornecedor_parceiro();
             break;
         }
         // Menu Operadores do Sistema
