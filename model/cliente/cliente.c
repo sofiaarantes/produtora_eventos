@@ -36,57 +36,57 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
         }
 
         // Caso 2: salvar em arquivo texto
-case TEXTO: {
-    // Abro o arquivo em modo append para não sobrescrever os clientes anteriores
-    FILE* fp = fopen("clientes.txt", "a");
-    if (!fp) {
-        perror("Erro ao abrir clientes.txt");
-        return NULL;
-    }
+            case TEXTO: {
+                // Abro o arquivo em modo append para não sobrescrever os clientes anteriores
+                FILE* fp = fopen("clientes.txt", "a");
+                if (!fp) {
+                    perror("Erro ao abrir clientes.txt");
+                    return NULL;
+                }
 
-    // Escrevo os dados do cliente no arquivo separados por ponto e vírgula
-    // Uso o limite máximo de caracteres baseado no tamanho do array da struct
-    // Isso garante que o campo não ultrapasse o espaço definido
-    fprintf(fp, "%d;%.49s;%d;%.99s;%.11s;%.11s;%.49s;%.49s\n",
-        cliente->id,                
-        cliente->nome,              
-        cliente->idade,             
-        cliente->endereco_completo, 
-        cliente->cpf_cnpj,          
-        cliente->tel,               
-        cliente->email,             
-        cliente->nome_contato       
-    );
+                // Escrevo os dados do cliente no arquivo separados por ponto e vírgula
+                // Uso o limite máximo de caracteres baseado no tamanho do array da struct
+                // Isso garante que o campo não ultrapasse o espaço definido
+                fprintf(fp, "%d;%.49s;%d;%.99s;%.11s;%.11s;%.49s;%.49s\n",
+                    cliente->id,                
+                    cliente->nome,              
+                    cliente->idade,             
+                    cliente->endereco_completo, 
+                    cliente->cpf_cnpj,          
+                    cliente->tel,               
+                    cliente->email,             
+                    cliente->nome_contato       
+                );
 
-    fclose(fp); // Fecho o arquivo
-    printf("Cliente %s salvo em TEXTO!\n", cliente->nome);
-    return cliente; // Retorno o cliente que foi salvo
-}
+                fclose(fp); // Fecho o arquivo
+                printf("Cliente %s salvo em TEXTO!\n", cliente->nome);
+                return cliente; // Retorno o cliente que foi salvo
+            }
         // Caso 3: salvar cliente em arquivo binário
-case BINARIO: {
-    // garante que CPF e telefone terminam com '\0'
-    cliente->cpf_cnpj[sizeof(cliente->cpf_cnpj) - 1] = '\0';
-    cliente->tel[sizeof(cliente->tel) - 1] = '\0';
+            case BINARIO: {
+                // garante que CPF e telefone terminam com '\0'
+                cliente->cpf_cnpj[sizeof(cliente->cpf_cnpj) - 1] = '\0';
+                cliente->tel[sizeof(cliente->tel) - 1] = '\0';
 
-    // abre o arquivo em modo append binário
-    FILE* fp = fopen("clientes.bin", "ab");
-    if (!fp) {
-        perror("Erro ao abrir clientes.bin");
-        return NULL;
-    }
+                // abre o arquivo em modo append binário
+                FILE* fp = fopen("clientes.bin", "ab");
+                if (!fp) {
+                    perror("Erro ao abrir clientes.bin");
+                    return NULL;
+                }
 
-    // grava a struct inteira no arquivo
-    if (fwrite(cliente, sizeof(Cliente), 1, fp) != 1) {
-        perror("Erro ao gravar cliente em clientes.bin");
-        fclose(fp);
-        return NULL;
-    }
+                // grava a struct inteira no arquivo
+                if (fwrite(cliente, sizeof(Cliente), 1, fp) != 1) {
+                    perror("Erro ao gravar cliente em clientes.bin");
+                    fclose(fp);
+                    return NULL;
+                }
 
-    fclose(fp);
+                fclose(fp);
 
-    printf("Cliente %s salvo em BINÁRIO!\n", cliente->nome);
-    return cliente;
-}
+                printf("Cliente %s salvo em BINÁRIO!\n", cliente->nome);
+                return cliente;
+                    }
 
 
      
@@ -110,18 +110,18 @@ case BINARIO: {
                                 // garantia de não mudar o CPF
 
                                 printf("Cliente com CPF %c%c%c.%c%c%c.%c%c%c-%c%c atualizado em MEMÓRIA!\n", cpf_cnpj_busca[0], cpf_cnpj_busca[1], cpf_cnpj_busca[2],
-       cpf_cnpj_busca[3], cpf_cnpj_busca[4], cpf_cnpj_busca[5],
-       cpf_cnpj_busca[6], cpf_cnpj_busca[7], cpf_cnpj_busca[8],
-       cpf_cnpj_busca[9], cpf_cnpj_busca[10]);
+                                cpf_cnpj_busca[3], cpf_cnpj_busca[4], cpf_cnpj_busca[5],
+                                cpf_cnpj_busca[6], cpf_cnpj_busca[7], cpf_cnpj_busca[8],
+                                cpf_cnpj_busca[9], cpf_cnpj_busca[10]);
                                 return &clientes_memoria[i];
                             }
                            
                         }
                         printf("Cliente com CPF %c%c%c.%c%c%c.%c%c%c-%c%c não encontrado em MEMÓRIA!\n", cpf_cnpj_busca[0], cpf_cnpj_busca[1], cpf_cnpj_busca[2],
-       cpf_cnpj_busca[3], cpf_cnpj_busca[4], cpf_cnpj_busca[5],
-       cpf_cnpj_busca[6], cpf_cnpj_busca[7], cpf_cnpj_busca[8],
-       cpf_cnpj_busca[9], cpf_cnpj_busca[10]);
-                        return NULL;
+                        cpf_cnpj_busca[3], cpf_cnpj_busca[4], cpf_cnpj_busca[5],
+                        cpf_cnpj_busca[6], cpf_cnpj_busca[7], cpf_cnpj_busca[8],
+                        cpf_cnpj_busca[9], cpf_cnpj_busca[10]);
+                                            return NULL;
                     }
 
                     // Caso 2: atualizar cliente em arquivo texto
@@ -186,78 +186,78 @@ case BINARIO: {
                                 // Mensagem de sucesso ou falha
                                 if (atualizado) {
                                    printf("Cliente com CPF %c%c%c.%c%c%c.%c%c%c-%c%c atualizado em TEXTO!\n", cpf_cnpj_busca[0], cpf_cnpj_busca[1], cpf_cnpj_busca[2],
-       cpf_cnpj_busca[3], cpf_cnpj_busca[4], cpf_cnpj_busca[5],
-       cpf_cnpj_busca[6], cpf_cnpj_busca[7], cpf_cnpj_busca[8],
-       cpf_cnpj_busca[9], cpf_cnpj_busca[10]);
+                                    cpf_cnpj_busca[3], cpf_cnpj_busca[4], cpf_cnpj_busca[5],
+                                    cpf_cnpj_busca[6], cpf_cnpj_busca[7], cpf_cnpj_busca[8],
+                                    cpf_cnpj_busca[9], cpf_cnpj_busca[10]);
                                     return novos_dados; // retorna os novos dados do cliente
                                 } else {
                                     printf("Cliente com CPF %c%c%c.%c%c%c.%c%c%c-%c%c não encontrado em TEXTO!\n", cpf_cnpj_busca[0], cpf_cnpj_busca[1], cpf_cnpj_busca[2],
-       cpf_cnpj_busca[3], cpf_cnpj_busca[4], cpf_cnpj_busca[5],
-       cpf_cnpj_busca[6], cpf_cnpj_busca[7], cpf_cnpj_busca[8],
-       cpf_cnpj_busca[9], cpf_cnpj_busca[10]);
+                                    cpf_cnpj_busca[3], cpf_cnpj_busca[4], cpf_cnpj_busca[5],
+                                    cpf_cnpj_busca[6], cpf_cnpj_busca[7], cpf_cnpj_busca[8],
+                                    cpf_cnpj_busca[9], cpf_cnpj_busca[10]);
                                     return NULL; // cliente não encontrado
                                 }
                             }
   
-            case BINARIO: {
-                // Abro o arquivo 'clientes.bin' em modo leitura + escrita binária
-                FILE *fp = fopen("clientes.bin", "rb+");
-                if (!fp) {
-                    // Se não conseguir abrir, mostro o erro do sistema e retorno NULL
-                    perror("Erro ao abrir clientes.bin");
-                    return NULL;
-                }
+                            case BINARIO: {
+                                // Abro o arquivo 'clientes.bin' em modo leitura + escrita binária
+                                FILE *fp = fopen("clientes.bin", "rb+");
+                                if (!fp) {
+                                    // Se não conseguir abrir, mostro o erro do sistema e retorno NULL
+                                    perror("Erro ao abrir clientes.bin");
+                                    return NULL;
+                                }
 
-                Cliente c; // Estrutura temporária para ler os clientes do arquivo
+                                Cliente c; // Estrutura temporária para ler os clientes do arquivo
 
-                // Percorro todo o arquivo cliente por cliente
-                while (fread(&c, sizeof(Cliente), 1, fp) == 1) {
-                    // Garante que o CPF lido do arquivo termina com '\0', evitando lixo
-                    c.cpf_cnpj[sizeof(c.cpf_cnpj)-1] = '\0';
+                                // Percorro todo o arquivo cliente por cliente
+                                while (fread(&c, sizeof(Cliente), 1, fp) == 1) {
+                                    // Garante que o CPF lido do arquivo termina com '\0', evitando lixo
+                                    c.cpf_cnpj[sizeof(c.cpf_cnpj)-1] = '\0';
 
-                    // Comparo o CPF lido com o CPF que queremos atualizar
-                    // Uso strncmp com o tamanho total do campo (12) para incluir o '\0'
-                    if (strncmp(c.cpf_cnpj, cpf_cnpj_busca, sizeof(c.cpf_cnpj)) == 0) {
+                                    // Comparo o CPF lido com o CPF que queremos atualizar
+                                    // Uso strncmp com o tamanho total do campo (12) para incluir o '\0'
+                                    if (strncmp(c.cpf_cnpj, cpf_cnpj_busca, sizeof(c.cpf_cnpj)) == 0) {
 
-                        // Volto o ponteiro do arquivo para o início deste registro
-                        // para sobrescrever com os novos dados
-                        if (fseek(fp, -sizeof(Cliente), SEEK_CUR) != 0) {
-                            perror("Erro no fseek durante atualização");
-                            fclose(fp);
-                            return NULL;
-                        }
+                                        // Volto o ponteiro do arquivo para o início deste registro
+                                        // para sobrescrever com os novos dados
+                                        if (fseek(fp, -sizeof(Cliente), SEEK_CUR) != 0) {
+                                            perror("Erro no fseek durante atualização");
+                                            fclose(fp);
+                                            return NULL;
+                                        }
 
-                        // Mantém o CPF original do cliente, pois não pode ser alterado
-                        strncpy(novos_dados->cpf_cnpj, c.cpf_cnpj, sizeof(novos_dados->cpf_cnpj));
-                        novos_dados->cpf_cnpj[sizeof(novos_dados->cpf_cnpj)-1] = '\0';
+                                        // Mantém o CPF original do cliente, pois não pode ser alterado
+                                        strncpy(novos_dados->cpf_cnpj, c.cpf_cnpj, sizeof(novos_dados->cpf_cnpj));
+                                        novos_dados->cpf_cnpj[sizeof(novos_dados->cpf_cnpj)-1] = '\0';
 
-                        // Gravo a struct atualizada no arquivo no lugar do antigo registro
-                        if (fwrite(novos_dados, sizeof(Cliente), 1, fp) != 1) {
-                            perror("Erro ao sobrescrever cliente em clientes.bin");
-                            fclose(fp);
-                            return NULL;
-                        }
+                                        // Gravo a struct atualizada no arquivo no lugar do antigo registro
+                                        if (fwrite(novos_dados, sizeof(Cliente), 1, fp) != 1) {
+                                            perror("Erro ao sobrescrever cliente em clientes.bin");
+                                            fclose(fp);
+                                            return NULL;
+                                        }
 
-                        // Fecho o arquivo e informo que a atualização deu certo
-                        fclose(fp);
-                        printf("Cliente com CPF %c%c%c.%c%c%c.%c%c%c-%c%c atualizado em BINÁRIO!\n", cpf_cnpj_busca[0], cpf_cnpj_busca[1], cpf_cnpj_busca[2],
-       cpf_cnpj_busca[3], cpf_cnpj_busca[4], cpf_cnpj_busca[5],
-       cpf_cnpj_busca[6], cpf_cnpj_busca[7], cpf_cnpj_busca[8],
-       cpf_cnpj_busca[9], cpf_cnpj_busca[10]);
+                                        // Fecho o arquivo e informo que a atualização deu certo
+                                        fclose(fp);
+                                        printf("Cliente com CPF %c%c%c.%c%c%c.%c%c%c-%c%c atualizado em BINÁRIO!\n", cpf_cnpj_busca[0], cpf_cnpj_busca[1], cpf_cnpj_busca[2],
+                                        cpf_cnpj_busca[3], cpf_cnpj_busca[4], cpf_cnpj_busca[5],
+                                        cpf_cnpj_busca[6], cpf_cnpj_busca[7], cpf_cnpj_busca[8],
+                                        cpf_cnpj_busca[9], cpf_cnpj_busca[10]);
 
-                        // Retorno o ponteiro para os novos dados
-                        return novos_dados;
-                    }
-                }
+                                        // Retorno o ponteiro para os novos dados
+                                        return novos_dados;
+                                    }
+                                }
 
-                // Se chegar aqui, significa que não encontrei o CPF no arquivo
-                fclose(fp);
-                printf("Cliente com CPF %c%c%c.%c%c%c.%c%c%c-%c%c não encontrado em BINÁRIO!\n", cpf_cnpj_busca[0], cpf_cnpj_busca[1], cpf_cnpj_busca[2],
-                       cpf_cnpj_busca[3], cpf_cnpj_busca[4], cpf_cnpj_busca[5],
-                       cpf_cnpj_busca[6], cpf_cnpj_busca[7], cpf_cnpj_busca[8],
-                       cpf_cnpj_busca[9], cpf_cnpj_busca[10]);
-                return NULL;
-            }
+                                // Se chegar aqui, significa que não encontrei o CPF no arquivo
+                                fclose(fp);
+                                printf("Cliente com CPF %c%c%c.%c%c%c.%c%c%c-%c%c não encontrado em BINÁRIO!\n", cpf_cnpj_busca[0], cpf_cnpj_busca[1], cpf_cnpj_busca[2],
+                                    cpf_cnpj_busca[3], cpf_cnpj_busca[4], cpf_cnpj_busca[5],
+                                    cpf_cnpj_busca[6], cpf_cnpj_busca[7], cpf_cnpj_busca[8],
+                                    cpf_cnpj_busca[9], cpf_cnpj_busca[10]);
+                                return NULL;
+                            }
 
         }
     }

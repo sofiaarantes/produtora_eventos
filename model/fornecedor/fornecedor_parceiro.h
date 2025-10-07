@@ -15,4 +15,7 @@ typedef struct{
 
 // Função que cria e salva um fornecedor/parceiro de acordo com o tipo escolhido
 Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor_parceiro, TipoArmazenamento tipo);
+
+// Função que atualiza um fornecedor/parceiro de acordo com o tipo escolhido e o CNPJ passado pelo parametro
+Fornecedor_parceiro* atualizar_fornecedor_parceiro(const char* cnpj_busca, Fornecedor_parceiro* novos_dados, TipoArmazenamento tipo);
 #endif

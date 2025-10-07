@@ -26,32 +26,32 @@ void gerenciar_fornecedor_parceiro() {
                 break;
             }
             case 2: { // Atualizar fornecedor/parceiro
-                    // char cnpj_busca[15];
-                    // ler_string("Digite o CNPJ do fornecedor/parceiro a ser atualizado: ", cnpj_busca, sizeof(cnpj_busca));
+                    char cnpj_busca[15];
+                    ler_string("Digite o CNPJ do fornecedor/parceiro a ser atualizado: ", cnpj_busca, sizeof(cnpj_busca));
 
 
-                    // // Crio uma struct temporária para armazenar os novos dados
-                    // Fornecedor_parceiro novos_dados;
+                    // Crio uma struct temporária para armazenar os novos dados
+                    Fornecedor_parceiro novos_dados;
 
-                    // // Preencho com os novos dados (menos o CPF que não muda)
-                    // ler_dados_atualizados_fornecedor_parceiro(
-                    //     novos_dados.nome_fantasia, sizeof(novos_dados.nome_fantasia),
-                    //     novos_dados.razao_social, sizeof(novos_dados.razao_social),
-                    //     novos_dados.endereco_completo, sizeof(novos_dados.endereco_completo),
-                    //     novos_dados.tel, sizeof(novos_dados.tel),
-                    //     novos_dados.tipo_servico, sizeof(novos_dados.tipo_servico)
-                    // );
-                    // //passar tambm o tamanho dos arrays para a funçao ler_string para saber ate onde pode ler
+                    // Preencho com os novos dados (menos o CPF que não muda)
+                    ler_dados_atualizados_fornecedor_parceiro(
+                        novos_dados.nome_fantasia, sizeof(novos_dados.nome_fantasia),
+                        novos_dados.razao_social, sizeof(novos_dados.razao_social),
+                        novos_dados.endereco_completo, sizeof(novos_dados.endereco_completo),
+                        novos_dados.tel, sizeof(novos_dados.tel),
+                        novos_dados.tipo_servico, sizeof(novos_dados.tipo_servico)
+                    );
+                    //passar tambem o tamanho dos arrays para a funçao ler_string para saber ate onde pode ler
 
 
-                    // // Chamo a função genérica de atualizar
-                    // Fornecedor_parceiro* atualizado = atualizar_fornecedor_parceiro(cnpj_busca, &novos_dados, get_armazenamento());
+                    // Chamo a função genérica de atualizar
+                    Fornecedor_parceiro* atualizado = atualizar_fornecedor_parceiro(cnpj_busca, &novos_dados, get_armazenamento());
 
-                    // if (!atualizado) {
-                    //     exibir_mensagem("Fornecedor/Parceiro não encontrado para atualização!");
-                    // }
+                    if (!atualizado) {
+                        exibir_mensagem("Fornecedor/Parceiro não encontrado para atualização!");
+                    }
 
-                    // break;
+                    break;
                 }
 
 
@@ -74,11 +74,10 @@ void gerenciar_fornecedor_parceiro() {
                 break;
             }
             default:{
-
-              exibir_mensagem("Opção inválida!");  
+            exibir_mensagem("Opção inválida!");  
             } 
-    }
-} while (opcao != 0);
+        }
+    } while (opcao != 0);
 }
 
 
