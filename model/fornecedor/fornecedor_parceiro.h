@@ -24,4 +24,7 @@ void buscar_e_exibir_fornecedor_parceiro(const char* cnpj_busca, TipoArmazenamen
 
 //função que retorna a quantidade de fornecedores/parceiros cadastrados na memória
 int get_qtd_fornecedores();
+
+// Função para deletar um fornecedor/parceiro a partir do CNPJ e do tipo de armazenamento
+void deletar_fornecedor_parceiro(const char* cnpj_busca, TipoArmazenamento tipo);
 #endif
