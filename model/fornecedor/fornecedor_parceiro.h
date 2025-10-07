@@ -18,4 +18,10 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor_p
 
 // Função que atualiza um fornecedor/parceiro de acordo com o tipo escolhido e o CNPJ passado pelo parametro
 Fornecedor_parceiro* atualizar_fornecedor_parceiro(const char* cnpj_busca, Fornecedor_parceiro* novos_dados, TipoArmazenamento tipo);
+
+// Função para buscar e exibir diretamente um fornecedor/parceiro pelo CNPJ e tipo de armazenamento
+void buscar_e_exibir_fornecedor_parceiro(const char* cnpj_busca, TipoArmazenamento tipo);
+
+//função que retorna a quantidade de fornecedores/parceiros cadastrados na memória
+int get_qtd_fornecedores();
 #endif

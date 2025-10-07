@@ -234,7 +234,8 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor_p
                                             printf("Fornecedor/Parceiro com CNPJ %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c atualizado em BINÁRIO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                                             cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                                             cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
-                                            cnpj_busca[9], cnpj_busca[10]);
+                                            cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
+                                            cnpj_busca[13], cnpj_busca[14]);
 
                                             // Retorno o ponteiro para os novos dados
                                             return novos_dados;
@@ -246,9 +247,147 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor_p
                                     printf("Fornecedor/Parceiro com CNPJ %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c não encontrado em BINÁRIO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                                         cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                                         cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
-                                        cnpj_busca[9], cnpj_busca[10]);
+                                        cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
+                                        cnpj_busca[13], cnpj_busca[14]);
                                     return NULL;
                                  }
 
                 }
              }
+
+             // Retorna quantos fornecedores/parceiros já estão salvos em memória
+            // Aqui eu só quero saber a quantidade de fornecedores/parceiros que já cadastrei na memória
+            int get_qtd_fornecedores() { 
+                return qtd; // retorno o valor do contador, que tá sendo incrementado toda vez que salvo um fornecedor/parceiro
+            }
+
+            // Função para buscar e exibir diretamente um fornecedor/parceiro pelo CNPJ
+            void buscar_e_exibir_fornecedor_parceiro(const char* cnpj_busca, TipoArmazenamento tipo) {
+                // Verifico se o CNPJ passado é nulo (inválido)
+                if (!cnpj_busca) {
+                    printf("+--------------------------+\n");
+                    printf("| CNPJ inválido!          |\n");
+                    printf("+--------------------------+\n");
+                    return; // se for inválido, saio da função
+                }
+
+                Fornecedor_parceiro* fornecedor_parceiro = NULL; // Ponteiro que vai armazenar o fornecedor/parceiro encontrado, se existir
+
+                // Escolho o tipo de armazenamento usado
+                switch (tipo) {
+
+                    // =========================
+                    // Caso 1: busca em memória
+                    // =========================
+                    case MEMORIA: {
+                        // Percorro o array de fornecedores/parceiros em memória
+                        for (int i = 0; i < qtd; i++) {
+                            // Comparo o CNPJ de cada fornecedor/parceiro com o CNPJ digitado
+                            if (strncmp(fornecedores_memoria[i].cnpj, cnpj_busca, sizeof(fornecedores_memoria[i].cnpj)) == 0) {
+                                // Se encontrar, guardo o endereço do fornecedor/parceiro encontrado
+                                fornecedor_parceiro = &fornecedores_memoria[i];
+                                // Exibo as informações desse fornecedor/parceiro
+                                ver_fornecedor_parceiro(fornecedor_parceiro);
+                                break; // paro o loop, pois já encontrei o fornecedor/parceiro
+                            }
+                        }
+                        break;
+                    }
+
+                    // ==============================
+                    // Caso 2: busca em arquivo texto
+                    // ==============================
+                    case TEXTO: {
+                        // Abro o arquivo texto para leitura
+                        FILE* fp = fopen("fornecedores.txt", "r");
+                        if (!fp) {
+                            // Se não conseguir abrir, mostro o erro e saio
+                            perror("Erro ao abrir fornecedores.txt");
+                            return;
+                        }
+
+                        // Aloco memória para armazenar temporariamente um fornecedor/parceiro
+                        fornecedor_parceiro = malloc(sizeof(Fornecedor_parceiro));
+                        char linha[512]; // buffer para armazenar cada linha do arquivo
+
+                        // Leio o arquivo linha por linha
+                        while (fgets(linha, sizeof(linha), fp)) {
+                            // Extraio os campos separados por ponto e vírgula
+                            sscanf(linha, "%d;%49[^;];%49[^;];%99[^;];%14[^;];%11[^;];%49[^\n]",
+                                &fornecedor_parceiro->id,
+                                fornecedor_parceiro->nome_fantasia,
+                                fornecedor_parceiro->razao_social,
+                                fornecedor_parceiro->endereco_completo,
+                                fornecedor_parceiro->cnpj,
+                                fornecedor_parceiro->tel,
+                                fornecedor_parceiro->tipo_servico
+                            );
+                            
+
+                            // Comparo o CNPJ lido com o CNPJ buscado
+                            if (strncmp(fornecedor_parceiro->cnpj, cnpj_busca, sizeof(fornecedor_parceiro->cnpj)) == 0) {
+                                // Se encontrar, fecho o arquivo e exibo o fornecedor/parceiro
+                                fclose(fp);
+                                ver_fornecedor_parceiro(fornecedor_parceiro);
+                                free(fornecedor_parceiro); // libero a memória alocada
+                                return; // retorno, pois já encontrei o fornecedor/parceiro
+                            }
+                        }
+
+                        // Se chegar aqui, o fornecedor/parceiro não foi encontrado
+                        fclose(fp);   // fecho o arquivo
+                        free(fornecedor_parceiro); // libero a memória usada
+                        fornecedor_parceiro = NULL; // deixo o ponteiro nulo
+                        break;
+                    }
+
+                    // =================================
+                    // Caso 3: busca em arquivo binário
+                    // =================================
+                    case BINARIO: {
+                        // Abro o arquivo binário para leitura
+                        FILE* fp = fopen("fornecedores.bin", "rb");
+                        if (!fp) {
+                            // Se não conseguir abrir, mostro o erro e saio
+                            perror("Erro ao abrir fornecedores.bin");
+                            return;
+                        }
+
+                        // Aloco memória para armazenar temporariamente um fornecedor/parceiro
+                        fornecedor_parceiro = malloc(sizeof(Fornecedor_parceiro));
+
+                        // Leio o arquivo binário fornecedor/parceiro por fornecedor/parceiro
+                        while (fread(fornecedor_parceiro, sizeof(Fornecedor_parceiro), 1, fp) == 1) {
+                            // Garante que a string do CNPJ termina em '\0'
+                            fornecedor_parceiro->cnpj[sizeof(fornecedor_parceiro->cnpj)-1] = '\0';
+
+                            // Comparo o CNPJ lido com o CNPJ buscado
+                            if (strncmp(fornecedor_parceiro->cnpj, cnpj_busca, sizeof(fornecedor_parceiro->cnpj)) == 0) {
+                                // Se encontrar, fecho o arquivo e exibo as informações
+                                fclose(fp);
+                                ver_fornecedor_parceiro(fornecedor_parceiro);
+                                free(fornecedor_parceiro); // libero a memória alocada
+                                return; // retorno, pois já encontrei o fornecedor/parceiro
+                            }
+                        }
+
+                        // Se terminar o arquivo e não encontrar, libero tudo
+                        fclose(fp);
+                        free(fornecedor_parceiro);
+                        fornecedor_parceiro = NULL;
+                        break;
+                    }
+
+                    // Caso o tipo de armazenamento não seja reconhecido
+                    default:
+                        exibir_mensagem("Tipo de armazenamento inválido!\n");
+                        return;
+                }
+
+                // Se nenhum fornecedor/parceiro foi encontrado nos casos acima, mostro mensagem padrão
+                if (!fornecedor_parceiro) {
+                    printf("+--------------------------+\n");
+                    printf("| Fornecedor não encontrado!  |\n");
+                    printf("+--------------------------+\n");
+                }
+            }

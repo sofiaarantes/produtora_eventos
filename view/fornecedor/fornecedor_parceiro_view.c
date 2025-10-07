@@ -31,11 +31,11 @@ void ver_fornecedor_parceiro(const Fornecedor_parceiro* fornecedor_parceiro) {
        fornecedor_parceiro->tel[2], fornecedor_parceiro->tel[3], fornecedor_parceiro->tel[4], fornecedor_parceiro->tel[5], fornecedor_parceiro->tel[6], // primeiros 5
        fornecedor_parceiro->tel[7], fornecedor_parceiro->tel[8], fornecedor_parceiro->tel[9], fornecedor_parceiro->tel[10]); // últimos 4
     printf("| Endereco : %s\n", fornecedor_parceiro->endereco_completo);
-    printf("| CNPJ: %c%c%c.%c%c%c.%c%c%c-%c%c\n",
-       fornecedor_parceiro->cnpj[0], fornecedor_parceiro->cnpj[1], fornecedor_parceiro->cnpj[2],
-       fornecedor_parceiro->cnpj[3], fornecedor_parceiro->cnpj[4], fornecedor_parceiro->cnpj[5],
-       fornecedor_parceiro->cnpj[6], fornecedor_parceiro->cnpj[7], fornecedor_parceiro->cnpj[8],
-       fornecedor_parceiro->cnpj[9], fornecedor_parceiro->cnpj[10]);
+    printf("| CNPJ %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c\n", fornecedor_parceiro->cnpj[0], fornecedor_parceiro->cnpj[1], fornecedor_parceiro->cnpj[2],
+                                        fornecedor_parceiro->cnpj[3], fornecedor_parceiro->cnpj[4], fornecedor_parceiro->cnpj[5],
+                                        fornecedor_parceiro->cnpj[6], fornecedor_parceiro->cnpj[7], fornecedor_parceiro->cnpj[8],
+                                        fornecedor_parceiro->cnpj[9], fornecedor_parceiro->cnpj[10], fornecedor_parceiro->cnpj[11], fornecedor_parceiro->cnpj[12],
+                                        fornecedor_parceiro->cnpj[13], fornecedor_parceiro->cnpj[14]);
 
     printf("| Tipo de servico : %s\n", fornecedor_parceiro->tipo_servico);
     
@@ -65,7 +65,7 @@ void ler_dados_atualizados_fornecedor_parceiro(
 ) {
     ler_string("Novo nome fantasia: ", nome_fantasia, tam_nome_fantasia);
     ler_string("Nova razao social: ", razao_social, tam_razao_social);
-    ler_string("Novo endereço completo: ", endereco_completo, tam_endereco);
+    ler_string("Novo endereco completo: ", endereco_completo, tam_endereco);
     ler_string("Novo telefone: ", tel, tam_tel);
     ler_string("Novo tipo de servico: ", tipo_servico, tam_tipo_servico);
 }

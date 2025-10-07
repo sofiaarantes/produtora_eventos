@@ -70,7 +70,7 @@ void ler_dados_atualizados_cliente(
 ) {
     ler_string("Novo nome: ", nome, tam_nome);
     ler_int("Nova idade: ", idade);
-    ler_string("Novo endereço completo: ", endereco_completo, tam_endereco);
+    ler_string("Novo endereco completo: ", endereco_completo, tam_endereco);
     ler_string("Novo telefone: ", tel, tam_tel);
     ler_string("Novo email: ", email, tam_email);
     ler_string("Novo nome do contato: ", nome_contato, tam_nome_contato);
