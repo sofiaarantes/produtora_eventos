@@ -10,7 +10,10 @@
         "stdlib.h": "c",
         "equipe_interna.h": "c",
         "config_armazenamento.h": "c",
-        "main_controller.h": "c"
+        "main_controller.h": "c",
+        "config_armazenamento_controller.h": "c",
+        "operadores_sistema_view.h": "c",
+        "util.h": "c"
     },
     "C_Cpp.dimInactiveRegions": false
 }

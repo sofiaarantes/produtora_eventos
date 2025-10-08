@@ -12,12 +12,18 @@ static int qtd = 0; // Contador de quantos funcionários já estão salvos na me
 // Adicionar funcionário
 // ========================
 
-EquipeInterna* adicionar_funcionario_eqIn(EquipeInterna* funcionario, TipoArmazenamento tipo) {
+EquipeInterna* adicionar_funcionario(EquipeInterna* funcionario, TipoArmazenamento tipo) {
     if (!funcionario) return NULL; // Se o ponteiro recebido for nulo, quebra o programa
+
+    int novo_id = 1; // Id começa em 1 por padrão
 
     switch (tipo) {
         case MEMORIA: {
             if (qtd < MAX_FUNCIONARIOS) {
+                // Se houver dados na memória, ele continua com o novo_id = 1, caso contrário, resgatará o
+                // último id e somará mais 1
+                if (qtd > 0) 
+                    novo_id = funcionarios_memoria[qtd - 1].id + 1;
                 // Copia os dados do funcionário passado para o array de memória na posição qtd que ele representa
                 funcionarios_memoria[qtd] = *funcionario;
                 // Ponteiro para o funcionário que acabou de ser salvo
@@ -34,8 +40,21 @@ EquipeInterna* adicionar_funcionario_eqIn(EquipeInterna* funcionario, TipoArmaze
         }
         
         case TEXTO: {
-            // Abre o arquivo em modo append para não sobrescrever os funcionarios anteriores
-            FILE* fp = fopen("funcionarios.txt", "a");
+            // Descobre o último id no arquivo
+            FILE* fp = fopen("funcionarios.txt", "r");
+            if (fp) {
+                EquipeInterna tmp;
+                while (fscanf(fp, "%d;%49[^;];%19[^;];%99[^;];%f;\n",
+                              &tmp.id, tmp.nome, tmp.cpf, tmp.funcao, &tmp.valor_diaria) != EOF) {
+                    novo_id = tmp.id + 1; // sempre fica com o último id lido +1
+                }
+                fclose(fp);
+            }
+            funcionario->id = novo_id;
+
+            // Reabre o arquivo em modo append(Abre no final do arquivo) para não sobrescrever os 
+            // funcionarios anteriores
+            fp = fopen("funcionarios.txt", "a");
             if (!fp) {
                 perror("Erro ao abrir funcionarios.txt");
                 return NULL;
@@ -56,8 +75,19 @@ EquipeInterna* adicionar_funcionario_eqIn(EquipeInterna* funcionario, TipoArmaze
         }
 
         case BINARIO: {
-            // Abre o arquivo em modo append binário
-            FILE* fp = fopen("funcionarios.bin", "ab");
+            // Descobre último id no arquivo
+            FILE* fp = fopen("funcionarios.bin", "rb");
+            if (fp) {
+                EquipeInterna tmp;
+                while (fread(&tmp, sizeof(EquipeInterna), 1, fp) == 1) {
+                    novo_id = tmp.id + 1;
+                }
+                fclose(fp);
+            }
+            funcionario->id = novo_id;
+
+            // Abre o arquivo em modo append(final do arquivo) binário
+            fp = fopen("funcionarios.bin", "ab");
             if (!fp) {
                 perror("Erro ao abrir funcionarios.bin");
                 return NULL;

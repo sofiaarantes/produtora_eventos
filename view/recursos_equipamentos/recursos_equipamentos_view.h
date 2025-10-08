@@ -1,18 +1,18 @@
-#ifndef EQUIPE_INTERNA_VIEW_H
-#define EQUIPE_INTERNA_VIEW_H
+#ifndef RECURSOS_EQUIPAMENTOS_VIEW_H
+#define RECURSOS_EQUIPAMENTOS_VIEW_H
 
-#include "../model/equipe_interna/equipe_interna.h"
+#include "../model/recursos_equipamentos/recursos_equipamentos.h"
 
 // Mostra dados de uma equipe
-void exibir_funcionario(const EquipeInterna* equipeInterna);
+void exibir_equipamento(const RecursosEquipamentos* equipamentos);
 
 // Exibe o menu de Equipe e retorna a opção escolhida
-int exibir_menu_equipe_interna();
+int exibir_menu_equipamentos();
 
-// Lê os dados de um funcionario e RETORNA um funcionario preenchido
-EquipeInterna ler_dados_funcionario();
+// Lê os dados de um equipamento e RETORNA um equipamento preenchido
+RecursosEquipamentos ler_dados_equipamento();
 
-// Pega dados atualizados de funcionario (mantemos por referência para comparar)
-void ler_dados_atualizados_funcionario(char* nome, char* funcao, float* valor_diaria);
+// Pega dados atualizados de equipamento (mantemos por referência para comparar)
+void ler_dados_atualizados_equipamento(char* descricao, char* categoria, int* qtd_estoque, float* preco_custo, float* valor_diaria);
 
 #endif

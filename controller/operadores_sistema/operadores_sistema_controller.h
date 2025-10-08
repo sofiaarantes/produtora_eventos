@@ -5,6 +5,9 @@
 // CONTROLLER: conecta MODEL e VIEW
 // =============================
 
-void gerenciar_funcionario();
+// Criptografa a função segundo a criptografia de Cesar
+void criptografar_senha(char* senha);
+
+void gerenciar_login();
 
 #endif

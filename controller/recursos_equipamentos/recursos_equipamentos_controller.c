@@ -1,45 +1,45 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../model/equipe_interna/equipe_interna.h"
-#include "../view/equipe_interna/equipe_interna_view.h"
+#include "../model/recursos_equipamentos/recursos_equipamentos.h"
+#include "../view/recursos_equipamentos/recursos_equipamentos_view.h"
 #include "../view/main/main_view.h"
 #include "../model/config_armazenamento/config_armazenamento.h"
-#include "equipe_interna_controller.h"
+#include "recursos_equipamentos_controller.h"
 
 
-void gerenciar_funcionario() {
-    EquipeInterna* equipeInterna = NULL;
+void gerenciar_equipamento() {
+    RecursosEquipamentos* equipamentos = NULL;
     int opcao;
 
     do {
-        opcao = exibir_menu_equipe_interna();
+        opcao = exibir_menu_equipamentos();
         switch (opcao) {
-            // Adicionar funcionário
+            // Adicionar equipamento
             case 1: {
-                EquipeInterna add = ler_dados_funcionario();
-                equipeInterna = adicionar_funcionario_eqIn(&add, get_armazenamento());
+                RecursosEquipamentos add = ler_dados_equipamento();
+                equipamentos = adicionar_equipamento(&add, get_armazenamento());
                 break;
             }
-            // Atualizar funcionário
+            // Atualizar equipamento
             case 2: {
-                int tem_funcionarios = 0;
+                int tem_equipamentos = 0;
                 TipoArmazenamento tipo = get_armazenamento();
 
-                // Verifica se existem funcionários no armazenamento atual
+                // Verifica se existem equipamentos no armazenamento atual
                 switch (tipo) {
                     case MEMORIA:
-                        if (get_qtd_funcionarios() > 0) {
-                            tem_funcionarios = 1;
+                        if (get_qtd_equipamentos() > 0) {
+                            tem_equipamentos = 1;
                         }
                         break;
 
                     case TEXTO: {
-                        FILE* ft = fopen("funcionarios.txt", "r");
+                        FILE* ft = fopen("equipamentos.txt", "r");
                         if (ft) {
                             char linha[300];
                             if (fgets(linha, sizeof(linha), ft)) {
-                                tem_funcionarios = 1;
+                                tem_equipamentos = 1;
                             }
                             fclose(ft);
                         }
@@ -47,11 +47,11 @@ void gerenciar_funcionario() {
                     }
 
                     case BINARIO: {
-                        FILE* fb = fopen("funcionarios.bin", "rb");
+                        FILE* fb = fopen("equipamentos.bin", "rb");
                         if (fb) {
-                            EquipeInterna tmp;
-                            if (fread(&tmp, sizeof(EquipeInterna), 1, fb)) {
-                                tem_funcionarios = 1;
+                            RecursosEquipamentos tmp;
+                            if (fread(&tmp, sizeof(RecursosEquipamentos), 1, fb)) {
+                                tem_equipamentos = 1;
                             }
                             fclose(fb);
                         }
@@ -63,66 +63,68 @@ void gerenciar_funcionario() {
                         break;
                 }
 
-                if (!tem_funcionarios) {
-                    exibir_mensagem("Nenhum funcionário cadastrado!");
+                if (!tem_equipamentos) {
+                    exibir_mensagem("Nenhum equipamento cadastrado!");
                     break;
                 }
 
-                // Peço para o usuário digitar o CPF do funcionário que ele quer atualizar
-                char cpf_busca[20];
-                printf("Digite o CPF do funcionário que deseja atualizar: ");
-                scanf(" %19s", cpf_busca);   // lê até 19 caracteres
+                // Peço para o usuário digitar o id do equipamento que ele quer atualizar
+                int id_busca;
+                printf("Digite o id do equipamento que deseja atualizar: ");
+                scanf(" %d", &id_busca);   
 
                 // Variáveis que vão receber os novos dados
-                char nome[50];
-                char funcao[100];
+                char descricao[100];
+                char categoria[50];
+                int qtd_estoque;
+                float preco_custo;
                 float valor_diaria;
 
                 // Lê os novos dados
-                ler_dados_atualizados_funcionario(nome, funcao, &valor_diaria);
+                ler_dados_atualizados_equipamento(descricao, categoria, &qtd_estoque, &preco_custo, &valor_diaria);
 
                 // Tenta atualizar no tipo de armazenamento configurado
                 switch (tipo) {
                     case MEMORIA: {
-                        EquipeInterna* func = buscar_funcionario_por_cpf_memoria(cpf_busca);
-                        if (func) atualizar_funcionario_memoria(func, nome, funcao, valor_diaria);
+                        RecursosEquipamentos* eq = buscar_equipamento_por_id_memoria(id_busca);
+                        if (eq) atualizar_equipamento_memoria(eq, descricao, categoria, qtd_estoque, preco_custo, valor_diaria);
                         break;
                     }
                     case TEXTO: {
-                        atualizar_funcionario_texto(cpf_busca, nome, funcao, valor_diaria);
+                        atualizar_equipamento_texto(id_busca, descricao, categoria, qtd_estoque, preco_custo, valor_diaria);
                         break;
                     }
                     case BINARIO: {
-                        atualizar_funcionario_binario(cpf_busca, nome, funcao, valor_diaria);
+                        atualizar_equipamento_binario(id_busca, descricao, categoria, qtd_estoque, preco_custo, valor_diaria);
                         break;
                     }
                     default:
-                        exibir_mensagem("Erro ao atualizar funcionário: tipo de armazenamento inválido!");
+                        exibir_mensagem("Erro ao atualizar equipamento: tipo de armazenamento inválido!");
                         break;
                 }
                 break;
             }
-            // Exibir funcionário
+            // Exibir equipamento
             case 3: {
                 TipoArmazenamento tipo = get_armazenamento();
 
-                char cpf_busca[20];
-                printf("Digite o CPF do funcionário que deseja exibir: ");
-                scanf(" %19s", cpf_busca);   // lê até 19 caracteres
+                int id_busca;
+                printf("Digite o id do equipamento que deseja exibir: ");
+                scanf(" %d", &id_busca);   
 
-                EquipeInterna* func = NULL;
+                RecursosEquipamentos* eq = NULL;
 
                 switch (tipo) {
                     case MEMORIA:
-                        func = buscar_funcionario_por_cpf_memoria(cpf_busca);
+                        eq = buscar_equipamento_por_id_memoria(id_busca);
                         break;
 
                     case TEXTO:
-                        func = buscar_funcionario_por_cpf_texto(cpf_busca);
+                        eq = buscar_equipamento_por_id_texto(id_busca);
                         break;
 
                     case BINARIO:
-                        func = buscar_funcionario_por_cpf_binario(cpf_busca);
+                        eq = buscar_equipamento_por_id_binario(id_busca);
                         break;
 
                     default:
@@ -130,27 +132,27 @@ void gerenciar_funcionario() {
                         break;
                 }
 
-                exibir_funcionario(func);
+                exibir_equipamento(eq);
                 break;
             }
-            // Deletar funcionário
+            // Deletar equipamento
             case 4: {
-                char cpf_busca[20];
-                printf("Digite o CPF do funcionário que deseja deletar: ");
-                scanf(" %19s", cpf_busca); // lê até 19 caracteres
+                int id_busca;
+                printf("Digite o id do equipamento que deseja deletar: ");
+                scanf(" %d", &id_busca); 
 
                 TipoArmazenamento tipo = get_armazenamento();
                 int removido = 0;
 
                 switch (tipo) {
                     case MEMORIA:
-                        removido = deletar_funcionario_memoria(cpf_busca);
+                        removido = deletar_equipamento_memoria(id_busca);
                         break;
                     case TEXTO:
-                        removido = deletar_funcionario_texto(cpf_busca);
+                        removido = deletar_equipamento_texto(id_busca);
                         break;
                     case BINARIO:
-                        removido = deletar_funcionario_binario(cpf_busca);
+                        removido = deletar_equipamento_binario(id_busca);
                         break;
                     default:
                         exibir_mensagem("Tipo de armazenamento inválido!");
@@ -158,9 +160,9 @@ void gerenciar_funcionario() {
                 }
 
                 if (removido) {
-                    exibir_mensagem("Funcionário deletado com sucesso!");
+                    exibir_mensagem("Equipamento deletado com sucesso!");
                 } else {
-                    exibir_mensagem("Funcionário não encontrado!");
+                    exibir_mensagem("Equipamento não encontrado!");
                 }
                 break;
             }

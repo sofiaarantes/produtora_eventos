@@ -5,6 +5,6 @@
 // CONTROLLER CONFIG_ARMAZENAMENTO_H
 // =================================
 
-void inicializar_armazenamento();
+int inicializar_armazenamento();
 
 #endif

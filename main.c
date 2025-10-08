@@ -5,6 +5,6 @@
 // =============================
 
 int main() {
-    inicializar_armazenamento();
+    gerenciar_login();
     return 0;
 }

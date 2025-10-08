@@ -1,74 +1,110 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "equipe_interna.h"
+#include "recursos_equipamentos.h"
 
 // --- Variáveis para armazenamento em memória ---
-#define MAX_FUNCIONARIOS 100 // Máximo de funcionários para memória
-static EquipeInterna funcionarios_memoria[MAX_FUNCIONARIOS];
-static int qtd = 0; // Contador de quantos funcionários já estão salvos na memória
+#define MAX_EQUIPAMENTOS 100 // Máximo de equipamentos para memória
+static RecursosEquipamentos equipamentos_memoria[MAX_EQUIPAMENTOS];
+static int qtd = 0; // Contador de quantos equipamentos já estão salvos na memória
 
-// ========================
-// Adicionar funcionário
-// ========================
+// =============================
+// Adicionar equipamento/recurso
+// =============================
+RecursosEquipamentos* adicionar_equipamento(RecursosEquipamentos* equipamento, TipoArmazenamento tipo) {
+    if (!equipamento) return NULL; // Se o ponteiro recebido for nulo, quebra o programa
 
-EquipeInterna* adicionar_funcionario_eqIn(EquipeInterna* funcionario, TipoArmazenamento tipo) {
-    if (!funcionario) return NULL; // Se o ponteiro recebido for nulo, quebra o programa
+    int novo_id = 1; // Id começa em 1 por padrão
 
     switch (tipo) {
         case MEMORIA: {
-            if (qtd < MAX_FUNCIONARIOS) {
-                // Copia os dados do funcionário passado para o array de memória na posição qtd que ele representa
-                funcionarios_memoria[qtd] = *funcionario;
-                // Ponteiro para o funcionário que acabou de ser salvo
-                EquipeInterna* salvo = &funcionarios_memoria[qtd];
+            if (qtd < MAX_EQUIPAMENTOS) {
+                // Se houver dados na memória, ele continua com o novo_id = 1, caso contrário, resgatará o
+                // último id e somará mais 1
+                if (qtd > 0) 
+                    novo_id = equipamentos_memoria[qtd - 1].id + 1;
 
-                qtd++; // Incrementa o contador de funcionários na memória
+                equipamento->id = novo_id;
+                // Copia os dados do equipamento passado para o array de memória na posição qtd que ele representa
+                equipamentos_memoria[qtd] = *equipamento;
+                // Ponteiro para o equipamento que acabou de ser salvo
+                RecursosEquipamentos* salvo = &equipamentos_memoria[qtd];
 
-                printf("Funcionário %s salvo em Memória!\n", salvo->nome);
+                qtd++; // Incrementa o contador de equipamentos na memória
+
+                printf("Equipamento %s salvo em Memória! O id do equipamento é %d\n", 
+                salvo->descricao, equipamento->id);
                 return salvo; // Retorna o endereço do funcion salvo
             } else {
-                printf("Erro: limite de funcionarios na memória atingido!\n");
+                printf("Erro: limite de equipamentos na memória atingido!\n");
                 return NULL;
             }
         }
         
         case TEXTO: {
-            // Abre o arquivo em modo append para não sobrescrever os funcionarios anteriores
-            FILE* fp = fopen("funcionarios.txt", "a");
+            // Descobre o último id no arquivo
+            FILE* fp = fopen("equipamentos.txt", "r");
+            if (fp) {
+                RecursosEquipamentos tmp;
+                while (fscanf(fp, "%d;%49[^;];%49[^;];%d;%f;%f;\n",
+                              &tmp.id, tmp.descricao, tmp.categoria,
+                              &tmp.qtd_estoque, &tmp.preco_custo, &tmp.valor_diaria) != EOF) {
+                    novo_id = tmp.id + 1; // sempre fica com o último id lido +1
+                }
+                fclose(fp);
+            }
+            equipamento->id = novo_id;
+
+            // Reabre o arquivo em modo append(abre no fim do arquivo) para não sobrescrever os
+            // equipamentos anteriores
+            fp = fopen("equipamentos.txt", "a");
             if (!fp) {
-                perror("Erro ao abrir funcionarios.txt");
+                perror("Erro ao abrir equipamentos.txt");
                 return NULL;
             }
 
             // Escreve os dados do funcion no arquivo separados por ponto e vírgula
-            fprintf(fp, "%d;%s;%s;%s;%f;\n",
-                funcionario->id,
-                funcionario->nome,
-                funcionario->cpf,
-                funcionario->funcao,
-                funcionario->valor_diaria
+            fprintf(fp, "%d;%s;%s;%d;%f;%f;\n",
+                equipamento->id,
+                equipamento->descricao,
+                equipamento->categoria,
+                equipamento->qtd_estoque,
+                equipamento->preco_custo,
+                equipamento->valor_diaria
             );
 
             fclose(fp); // Fecha o arquivo
-            printf("Funcionario %s salvo em arquivo Texto!\n", funcionario->nome);
-            return funcionario; // Retorna o funcion que foi salvo
+            printf("Equipamento %s salvo em arquivo Texto! O id do equipamento é %d\n", 
+                equipamento->descricao, equipamento->id);
+            return equipamento; // Retorna o equipamento que foi salvo
         }
 
         case BINARIO: {
-            // Abre o arquivo em modo append binário
-            FILE* fp = fopen("funcionarios.bin", "ab");
+            // Descobre último id no arquivo
+            FILE* fp = fopen("equipamentos.bin", "rb");
+            if (fp) {
+                RecursosEquipamentos tmp;
+                while (fread(&tmp, sizeof(RecursosEquipamentos), 1, fp) == 1) {
+                    novo_id = tmp.id + 1;
+                }
+                fclose(fp);
+            }
+            equipamento->id = novo_id;
+
+            // Abre o arquivo em modo append(final do arquivo) binário
+            fp = fopen("equipamentos.bin", "ab");
             if (!fp) {
-                perror("Erro ao abrir funcionarios.bin");
+                perror("Erro ao abrir equipamentos.bin");
                 return NULL;
             }
 
             // Grava a struct recebida no arquivo binário
-            fwrite(funcionario, sizeof(EquipeInterna), 1, fp);
+            fwrite(equipamento, sizeof(RecursosEquipamentos), 1, fp);
 
             fclose(fp); // Fecha o arquivo
-            printf("Funcionario %s salvo em Binário!\n", funcionario->nome);
-            return funcionario; // retorno o funcion que foi salvo
+            printf("Equipamento %s salvo em Binário! O id do equipamento é %d\n", 
+                equipamento->descricao, equipamento->id);
+            return equipamento; // Retorna o equipamento que foi salvo
         }
 
         // Caso inválido
@@ -79,62 +115,69 @@ EquipeInterna* adicionar_funcionario_eqIn(EquipeInterna* funcionario, TipoArmaze
 }
 
 // ================================
-// Atualizar funcionário - MEMÓRIA
+// Atualizar equipamento - MEMÓRIA
 // ================================
-void atualizar_funcionario_memoria(EquipeInterna* funcionario_memoria, const char* nome, const char* funcao, float valor_diaria) {
+void atualizar_equipamento_memoria(RecursosEquipamentos* equipamento_memoria, const char* descricao, const char* categoria, 
+                    int qtd_estoque, float preco_custo, float valor_diaria) {
     // Verifica se o ponteiro não é nulo
-    if (!funcionario_memoria) return;
+    if (!equipamento_memoria) return;
 
-    // Atualiza os dados do funcionario
+    // Atualiza os dados do equipamento
     // Usar strncpy para evitar que o nome ultrapasse o tamanho do campo, -1 por causa do '\0'
-    strncpy(funcionario_memoria->nome, nome, sizeof(funcionario_memoria->nome) - 1);
-    funcionario_memoria->nome[sizeof(funcionario_memoria->nome) - 1] = '\0'; 
+    strncpy(equipamento_memoria->descricao, descricao, sizeof(equipamento_memoria->descricao) - 1);
+    equipamento_memoria->descricao[sizeof(equipamento_memoria->descricao) - 1] = '\0'; 
 
-    strncpy(funcionario_memoria->funcao, funcao, sizeof(funcionario_memoria->funcao) - 1);
-    funcionario_memoria->funcao[sizeof(funcionario_memoria->funcao) - 1] = '\0'; 
+    strncpy(equipamento_memoria->categoria, categoria, sizeof(equipamento_memoria->categoria) - 1);
+    equipamento_memoria->categoria[sizeof(equipamento_memoria->categoria) - 1] = '\0'; 
 
-    funcionario_memoria->valor_diaria = valor_diaria;
+    equipamento_memoria->qtd_estoque = qtd_estoque;
+    equipamento_memoria->preco_custo = preco_custo;
+    equipamento_memoria->valor_diaria = valor_diaria;
 
-    printf("Funcionário %s atualizado na Memória!\n", funcionario_memoria->nome);
+    printf("Equipamento atualizado na Memória!\n");
 }
 
 // ==============================
-// Atualizar Funcionário - TEXTO
+// Atualizar equipamento - TEXTO
 // ==============================
-int atualizar_funcionario_texto(const char* cpf, const char* nome, const char* funcao, float valor_diaria) {
+int atualizar_equipamento_texto(int id, const char* descricao, const char* categoria, 
+                    int qtd_estoque, float preco_custo, float valor_diaria) {
 
     // Abre o arquivo original na função de ler(read)
-    FILE* fp = fopen("funcionarios.txt", "r");
-    // Cria um arquivo temporário para escrever os funcionários atualizados (write)
-    FILE* temp = fopen("funcionarios_temp.txt", "w");
+    FILE* fp = fopen("equipamentos.txt", "r");
+    // Cria um arquivo temporário para escrever os equipamentos atualizados (write)
+    FILE* temp = fopen("equipamentos_temp.txt", "w");
     // Se não conseguir abrir algum dos arquivos, mostra erro e sai
     if (!fp || !temp) {
-        perror("Erro ao abrir arquivo de funcionarios");
+        perror("Erro ao abrir arquivo de equipamentos");
         if (fp) fclose(fp);
         if (temp) fclose(temp);
         return 0; 
     }
 
-    // Lê cada funcion do arquivo original
-    EquipeInterna f;
+    // Lê cada equipamento do arquivo original
+    RecursosEquipamentos e;
     int atualizado = 0;
-    while (fscanf(fp, "%d;%49[^;];%19[^;];%99[^;];%f;\n",
-                  &f.id, f.nome, f.cpf, f.funcao, &f.valor_diaria) != EOF) {
+    while (fscanf(fp, "%d;%99[^;];%49[^;];%d;%f;%f;\n",
+                  &e.id, e.descricao, e.categoria, &e.qtd_estoque, &e.preco_custo
+                  , &e.valor_diaria) != EOF) {
 
-        // Busca no arquivo o funcionário que quero atualizar pelo CPF
-        if (strcmp(f.cpf, cpf) == 0) {
+        // Busca no arquivo o equipamento que quero atualizar pelo CPF
+        if (e.id == id) {
             // Atualiza os campos permitidos
-            strncpy(f.nome, nome, sizeof(f.nome) - 1);
-            f.nome[sizeof(f.nome) - 1] = '\0';
-            strncpy(f.funcao, funcao, sizeof(f.funcao) - 1);
-            f.funcao[sizeof(f.funcao) - 1] = '\0';
-            f.valor_diaria = valor_diaria;
+            strncpy(e.descricao, descricao, sizeof(e.descricao) - 1);
+            e.descricao[sizeof(e.descricao) - 1] = '\0';
+            strncpy(e.categoria, categoria, sizeof(e.categoria) - 1);
+            e.categoria[sizeof(e.categoria) - 1] = '\0';
+            e.qtd_estoque = qtd_estoque;
+            e.preco_custo = preco_custo;
+            e.valor_diaria = valor_diaria;
             atualizado = 1;
         }
 
         // Escreve o funcion (atualizado ou não) no arquivo temporário
-        fprintf(temp, "%d;%s;%s;%s;%f\n",
-                f.id, f.nome, f.cpf, f.funcao, f.valor_diaria);
+        fprintf(temp, "%d;%s;%s;%d;%f;%f\n",
+                e.id, e.descricao, e.categoria, e.qtd_estoque, e.preco_custo, e.valor_diaria);
     }
 
     // Fecha os arquivos abertos
@@ -142,42 +185,45 @@ int atualizar_funcionario_texto(const char* cpf, const char* nome, const char* f
     fclose(temp);
 
     // Apaga o arquivo original e renomeia o temporário para o nome original
-    remove("funcionarios.txt");
-    rename("funcionarios_temp.txt", "funcionarios.txt");
+    remove("equipamentos.txt");
+    rename("equipamentos_temp.txt", "equipamentos.txt");
 
-    printf("Funcionário %s atualizado em arquivo Texto!\n", nome);
+    printf("Equipamento atualizado em arquivo Texto!\n");
     return atualizado;
 }
 
 // ==============================
-// Atualizar Funcionário - BINÁRIO
+// Atualizar equipamento - BINÁRIO
 // ==============================
-int atualizar_funcionario_binario(const char* cpf, const char* nome, const char* funcao, float valor_diaria) {
+int atualizar_equipamento_binario(int id, const char* descricao, const char* categoria, 
+                    int qtd_estoque, float preco_custo, float valor_diaria) {
     // Abre o arquivo binário para leitura e escrita
-    FILE* fp = fopen("funcionarios.bin", "r+b");
+    FILE* fp = fopen("equipamentos.bin", "r+b");
     if (!fp) {
-        perror("Erro ao abrir funcionarios.bin");
+        perror("Erro ao abrir equipamentos.bin");
         return 0;
     }
 
-    EquipeInterna f;
+    RecursosEquipamentos e;
     int atualizado = 0;
-    // Lê cada funcionário do arquivo binário
-    while (fread(&f, sizeof(EquipeInterna), 1, fp) == 1) {
-        // Busca no arquivo o funcionário que quero atualizar pelo CPF
-        if (strcmp(f.cpf, cpf) == 0) {
+    // Lê cada equipamento do arquivo binário
+    while (fread(&e, sizeof(RecursosEquipamentos), 1, fp) == 1) {
+        // Busca no arquivo o equipamento que quero atualizar pelo id
+        if (e.id == id) {
             // Atualiza os campos permitidos
-            strncpy(f.nome, nome, sizeof(f.nome) - 1);
-            f.nome[sizeof(f.nome) - 1] = '\0';
-            strncpy(f.funcao, funcao, sizeof(f.funcao) - 1);
-            f.funcao[sizeof(f.funcao) - 1] = '\0';
-            f.valor_diaria = valor_diaria;
+            strncpy(e.descricao, descricao, sizeof(e.descricao) - 1);
+            e.descricao[sizeof(e.descricao) - 1] = '\0';
+            strncpy(e.categoria, categoria, sizeof(e.categoria) - 1);
+            e.categoria[sizeof(e.categoria) - 1] = '\0';
+            e.qtd_estoque = qtd_estoque;
+            e.preco_custo = preco_custo;
+            e.valor_diaria = valor_diaria;
 
             // Move o ponteiro do arquivo de volta para o início do registro que acabou de ler
-            fseek(fp, -sizeof(EquipeInterna), SEEK_CUR);
-            fwrite(&f, sizeof(EquipeInterna), 1, fp);
+            fseek(fp, -sizeof(RecursosEquipamentos), SEEK_CUR);
+            fwrite(&e, sizeof(RecursosEquipamentos), 1, fp);
 
-            printf("funcion %s atualizado no arquivo Binário!\n", nome);
+            printf("Equipamento atualizado no arquivo Binário!\n");
             atualizado = 1;
         }
     }
@@ -188,15 +234,15 @@ int atualizar_funcionario_binario(const char* cpf, const char* nome, const char*
 
 
 // ==============================
-// Deletar Funcionário - MEMORIA
+// Deletar equipamento - MEMORIA
 // ==============================
-int deletar_funcionario_memoria(const char* cpf) {
-    // Procura o funcionário na memória
+int deletar_equipamento_memoria(int id) {
+    // Procura o equipamento na memória
     for (int i = 0; i < qtd; i++) {
-        if (strcmp(funcionarios_memoria[i].cpf, cpf) == 0) {
-            // Move todos os funcionários após ele uma posição para trás
+        if (equipamentos_memoria[i].id == id) {
+            // Move todos os equipamentos após ele uma posição para trás
             for (int j = i; j < qtd - 1; j++) {
-                funcionarios_memoria[j] = funcionarios_memoria[j + 1];
+                equipamentos_memoria[j] = equipamentos_memoria[j + 1];
             }
             qtd--; // Diminui a quantidade
             return 1; // Sucesso
@@ -207,11 +253,11 @@ int deletar_funcionario_memoria(const char* cpf) {
 
 
 // ============================
-// Deletar Funcionário - TEXTO
+// Deletar equipamento - TEXTO
 // ============================
-int deletar_funcionario_texto(const char* cpf) {
-    FILE* fp = fopen("funcionarios.txt", "r");
-    FILE* temp = fopen("funcionarios_temp.txt", "w");
+int deletar_equipamento_texto(int id) {
+    FILE* fp = fopen("equipamentos.txt", "r");
+    FILE* temp = fopen("equipamentos_temp.txt", "w");
     if (!fp || !temp) {
         perror("Erro ao abrir arquivo");
         if (fp) fclose(fp);
@@ -219,15 +265,15 @@ int deletar_funcionario_texto(const char* cpf) {
         return 0;
     }
 
-    EquipeInterna f;
+    RecursosEquipamentos e;
     int removido = 0;
     // Lê linha por linha do arquivo original
-    while (fscanf(fp, "%d;%49[^;];%19[^;];%99[^;];%f;\n",
-                  &f.id, f.nome, f.cpf, f.funcao, &f.valor_diaria) != EOF) {
-        // Se não for o CPF que quero remover, regravo no temp
-        if (strcmp(f.cpf, cpf) != 0) {
-            fprintf(temp, "%d;%s;%s;%s;%f;\n",
-                f.id, f.nome, f.cpf, f.funcao, f.valor_diaria);
+    while (fscanf(fp, "%d;%99[^;];%49[^;];%d;%f;%f;\n",
+                  &e.id, e.descricao, e.categoria, &e.qtd_estoque, &e.preco_custo, &e.valor_diaria) != EOF) {
+        // Se não for o id que quero remover, regravo no temp
+        if (e.id != id) {
+            fprintf(temp, "%d;%s;%s;%d;%f;%f;\n",
+                e.id, e.descricao, e.categoria, e.qtd_estoque, e.preco_custo, e.valor_diaria);
         } else {
             removido = 1;
         }
@@ -235,19 +281,19 @@ int deletar_funcionario_texto(const char* cpf) {
 
     fclose(fp);
     fclose(temp);
-    remove("funcionarios.txt");
-    rename("funcionarios_temp.txt", "funcionarios.txt");
+    remove("equipamentos.txt");
+    rename("equipamentos_temp.txt", "equipamentos.txt");
 
     return removido;
 }
 
 
 // =============================
-// Deletar Funcionário - BINÁRIO
+// Deletar equipamento - BINÁRIO
 // =============================
-int deletar_funcionario_binario(const char* cpf) {
-    FILE* fp = fopen("funcionarios.bin", "rb");
-    FILE* temp = fopen("funcionarios_temp.bin", "wb");
+int deletar_equipamento_binario(int id) {
+    FILE* fp = fopen("equipamentos.bin", "rb");
+    FILE* temp = fopen("equipamentos_temp.bin", "wb");
     if (!fp || !temp) {
         perror("Erro ao abrir arquivo");
         if (fp) fclose(fp);
@@ -255,13 +301,13 @@ int deletar_funcionario_binario(const char* cpf) {
         return 0;
     }
 
-    EquipeInterna f;
+    RecursosEquipamentos e;
     int removido = 0;
     // Lê cada struct do arquivo original
-    while (fread(&f, sizeof(EquipeInterna), 1, fp) == 1) {
+    while (fread(&e, sizeof(RecursosEquipamentos), 1, fp) == 1) {
         // Copia todos MENOS o que quero remover
-        if (strcmp(f.cpf, cpf) != 0) {
-            fwrite(&f, sizeof(EquipeInterna), 1, temp);
+        if (e.id != id) {
+            fwrite(&e, sizeof(RecursosEquipamentos), 1, temp);
         } else {
             removido = 1;
         }
@@ -269,31 +315,31 @@ int deletar_funcionario_binario(const char* cpf) {
 
     fclose(fp);
     fclose(temp);
-    remove("funcionarios.bin");
-    rename("funcionarios_temp.bin", "funcionarios.bin");
+    remove("equipamentos.bin");
+    rename("equipamentos_temp.bin", "equipamentos.bin");
 
     return removido;
 }
 
 // ================================================
-// Retorna a quantidade de funcionários na memória
+// Retorna a quantidade de equipamentos na memória
 // ================================================
-int get_qtd_funcionarios() { 
+int get_qtd_equipamentos() { 
     return qtd; 
 } 
 
 
 // ==============================
-// Buscar Funcionário - MEMÓRIA
+// Buscar equipamento - MEMÓRIA
 // ==============================
-EquipeInterna* buscar_funcionario_por_cpf_memoria(const char* cpf_busca) {
-    // Uso um loop for para percorrer o array de funcionários na memória
+RecursosEquipamentos* buscar_equipamento_por_id_memoria(int id_busca) {
+    // Uso um loop for para percorrer o array de equipamentos na memória
     int i;
-    for ( i = 0; i < get_qtd_funcionarios(); i++) {
-        // Compara o CPF do funcionário na memória com o que foi passado para busca
-        if (strcmp(funcionarios_memoria[i].cpf, cpf_busca) == 0) {
-            // Retorna o endereço do funcionário encontrado
-            return &funcionarios_memoria[i];
+    for ( i = 0; i < get_qtd_equipamentos(); i++) {
+        // Compara o CPF do equipamento na memória com o que foi passado para busca
+        if (equipamentos_memoria[i].id == id_busca) {
+            // Retorna o endereço do equipamento encontrado
+            return &equipamentos_memoria[i];
         }
     }
     // Se não encontrar, retorna NULL
@@ -301,31 +347,32 @@ EquipeInterna* buscar_funcionario_por_cpf_memoria(const char* cpf_busca) {
 }
 
 // ==============================
-// Buscar Funcionário - TEXTO
+// Buscar equipamento - TEXTO
 // ==============================
-EquipeInterna* buscar_funcionario_por_cpf_texto(const char* cpf_busca) {
-    // Abre o arquivo de texto que contém os funcionários
-    FILE* fp = fopen("funcionarios.txt", "r");
+RecursosEquipamentos* buscar_equipamento_por_id_texto(int id_busca) {
+    // Abre o arquivo de texto que contém os equipamentos
+    FILE* fp = fopen("equipamentos.txt", "r");
     if (!fp) {
-        perror("Erro ao abrir funcionarios.txt");
+        perror("Erro ao abrir equipamentos.txt");
         return NULL;
     }
 
     // Uso static para que o ponteiro continue válido fora da função
-    static EquipeInterna funcionario_tmp;
+    static RecursosEquipamentos equipamento_tmp;
 
-    // Lê cada funcionário do arquivo e se for igual ao CPF buscado, retorna o ponteiro para ele
-    while (fscanf(fp, "%d;%49[^;];%19[^;];%99[^;];%f;\n",
-                  &funcionario_tmp.id,
-                  funcionario_tmp.nome,
-                  funcionario_tmp.cpf,
-                  funcionario_tmp.funcao,
-                  &funcionario_tmp.valor_diaria) == 5) {
+    // Lê cada equipamento do arquivo e se for igual ao CPF buscado, retorna o ponteiro para ele
+    while (fscanf(fp, "%d;%99[^;];%49[^;];%d;%f;%f;\n",
+                  &equipamento_tmp.id,
+                  equipamento_tmp.descricao,
+                  equipamento_tmp.categoria,
+                  &equipamento_tmp.qtd_estoque,
+                  &equipamento_tmp.preco_custo,
+                  &equipamento_tmp.valor_diaria) == 6) {
 
-        if (strcmp(funcionario_tmp.cpf, cpf_busca) == 0) {
-            // Achou o funcionário! Fecha o arquivo e retorna o ponteiro
+        if (equipamento_tmp.id == id_busca) {
+            // Achou o equipamento! Fecha o arquivo e retorna o ponteiro
             fclose(fp);
-            return &funcionario_tmp;
+            return &equipamento_tmp;
         }
     }
 
@@ -335,24 +382,24 @@ EquipeInterna* buscar_funcionario_por_cpf_texto(const char* cpf_busca) {
 }
 
 // ==============================
-// Buscar Funcionário - BINÁRIO
+// Buscar equipamento - BINÁRIO
 // ==============================
-EquipeInterna* buscar_funcionario_por_cpf_binario(const char* cpf_busca) {
-    // Abre o arquivo binário que contém os funcionários
-    FILE* fp = fopen("funcionarios.bin", "rb");
+RecursosEquipamentos* buscar_equipamento_por_id_binario(int id_busca) {
+    // Abre o arquivo binário que contém os equipamentos
+    FILE* fp = fopen("equipamentos.bin", "rb");
     if (!fp) {
-        perror("Erro ao abrir funcionarios.bin");
+        perror("Erro ao abrir equipamentos.bin");
         return NULL;
     }
 
-    // Lê cada funcionário do arquivo binário
-    static EquipeInterna funcionario_tmp; // static para manter o ponteiro válido
-    while (fread(&funcionario_tmp, sizeof(EquipeInterna), 1, fp) == 1) {
-        // Compara o CPF do funcionário lido com o CPF buscado
-        if (strcmp(funcionario_tmp.cpf, cpf_busca) == 0) {
-            // Se encontrar, fecha o arquivo e retorna o ponteiro para o funcionário
+    // Lê cada equipamento do arquivo binário
+    static RecursosEquipamentos equipamento_tmp; // static para manter o ponteiro válido
+    while (fread(&equipamento_tmp, sizeof(RecursosEquipamentos), 1, fp) == 1) {
+        // Compara o ID do equipamento lido com o ID buscado
+        if (equipamento_tmp.id == id_busca) {
+            // Se encontrar, fecha o arquivo e retorna o ponteiro para o equipamento
             fclose(fp);
-            return &funcionario_tmp;
+            return &equipamento_tmp;
         }
     }
 

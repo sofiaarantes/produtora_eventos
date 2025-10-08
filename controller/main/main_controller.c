@@ -1,12 +1,10 @@
 #include <stdlib.h>                         
 #include "../controller/main/main_controller.h" 
-#include "../view/cliente/cliente_view.h"               
 #include "../view/main/main_view.h" 
-#include "../model/config_armazenamento/config_armazenamento.h" 
-#include "../view/equipe_interna/equipe_interna_view.h" 
 #include "../controller/cliente/cliente_controller.h" 
 #include "../controller/equipe_interna/equipe_interna_controller.h" 
 #include "../controller/config_armazenamento/config_armazenamento_controller.h" 
+#include "../controller/recursos_equipamentos/recursos_equipamentos_controller.h" 
 
 //essa funçao é responsavel por controlar o primeiro menu do sistema e chamar cada menu correspondente
 void iniciar_sistema(){ 
@@ -30,6 +28,7 @@ void iniciar_sistema(){
         }
         // Menu Recursos e Equipamentos
         case 4:{
+            gerenciar_equipamento();
             break;
         }
         // Menu Fornecedores e Parceiros

@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "equipe_interna/equipe_interna_view.h"
-#include "../../util/util.h"
 
 void exibir_funcionario(const EquipeInterna* equipeInterna) {
     if (!equipeInterna) {

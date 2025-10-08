@@ -1,5 +1,5 @@
-#ifndef CONFIG_ARMAZENAMENTO_CONTROLLER_H
-#define CONFIG_ARMAZENAMENTO_CONTROLLER_H
+#ifndef CONFIG_ARMAZENAMENTO_H
+#define CONFIG_ARMAZENAMENTO_H
 
 // Qual tipo de armazenamento o usuário escolheu
 typedef enum {
