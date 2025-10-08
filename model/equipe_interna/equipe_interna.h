@@ -19,7 +19,7 @@ typedef struct {
 // Funções do modelo (CRUD)
 
 // Cria um novo funcionário e retorna um ponteiro para ele, recebe o tipo armazenamento e a struct a ser adicionada
-EquipeInterna* adicionar_funcionario_eqIn(EquipeInterna* funcionario, TipoArmazenamento tipo);
+EquipeInterna* adicionar_funcionario(EquipeInterna* funcionario, TipoArmazenamento tipo);
 
 // Atualiza os dados do funcionário existente, recebe a struct a ser atualizada e os novos dados
 

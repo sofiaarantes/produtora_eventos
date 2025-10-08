@@ -13,7 +13,9 @@
         "main_controller.h": "c",
         "config_armazenamento_controller.h": "c",
         "operadores_sistema_view.h": "c",
-        "util.h": "c"
+        "util.h": "c",
+        "operadores_sistema.h": "c",
+        "operadores_sistema_controller.h": "c"
     },
     "C_Cpp.dimInactiveRegions": false
 }

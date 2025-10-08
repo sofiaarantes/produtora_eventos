@@ -14,6 +14,7 @@ int menu_main() {
     printf("5 - Acessar Menu Fornecedores e Parceiros\n");
     printf("6 - Acessar Menu Operadores do Sistema\n");
     printf("7 - Alterar método de armazenamento\n");
+    printf("8 - Editar conta\n");
     printf("0 - Sair\n");
     printf("Escolha: ");
     scanf("%d", &escolher);

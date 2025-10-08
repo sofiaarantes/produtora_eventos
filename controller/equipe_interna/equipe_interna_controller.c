@@ -7,7 +7,6 @@
 #include "../model/config_armazenamento/config_armazenamento.h"
 #include "equipe_interna_controller.h"
 
-
 void gerenciar_funcionario() {
     EquipeInterna* equipeInterna = NULL;
     int opcao;

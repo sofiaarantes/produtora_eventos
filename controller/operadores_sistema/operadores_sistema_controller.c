@@ -41,7 +41,7 @@ void gerenciar_login() {
 
             if (encontrado) {
                 printf("\nLogin realizado com sucesso! Bem-vindo, %s.\n", tmp.nome);
-                menu_main();
+                iniciar_sistema();
             } else {
                 printf("\nCredenciais inválidas! Tente novamente.\n");
             }
@@ -51,7 +51,7 @@ void gerenciar_login() {
             criptografar_senha(novo.senha);
             adicionar_operador(&novo);
             printf("\nCadastro realizado com sucesso! Bem-vindo(a), %s.\n", novo.usuario);
-            menu_main();
+            iniciar_sistema();
         } else if (opcao == 3) {
             printf("\nSaindo do sistema... Até logo!\n");
         } else {
