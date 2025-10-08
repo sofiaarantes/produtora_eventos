@@ -22,7 +22,7 @@ void ver_produtora(const Produtora* produtora) {
         printf("+--------------------------+\n");
         return;
     }
-    printf("+--------------------------+\n");
+    printf("+---------------------------------------------------------------------+\n");
     printf("| Nome Fantasia : %s\n", produtora->nome_fantasia);
     printf("| Razao Social : %s\n", produtora->razao_social);
     printf("| Inscricao Estadual : %s\n", produtora->inscricao_estadual);
@@ -43,8 +43,8 @@ void ver_produtora(const Produtora* produtora) {
        produtora->tel_resp[0], produtora->tel_resp[1],    // DDD
        produtora->tel_resp[2], produtora->tel_resp[3], produtora->tel_resp[4], produtora->tel_resp[5], produtora->tel_resp[6], // primeiros 5
        produtora->tel_resp[7], produtora->tel_resp[8], produtora->tel_resp[9], produtora->tel_resp[10]); 
-    printf("| Margem de lucro padrao : %s\n", produtora->nome_resp);
-    printf("+--------------------------+\n");
+    printf("| Margem de lucro padrao : %.2f\n", produtora->lucro);
+   printf("+---------------------------------------------------------------------+\n");
 }
 
 Produtora ler_dados_produtora() {

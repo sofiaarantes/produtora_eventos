@@ -12,7 +12,7 @@ void ver_cliente(const Cliente* cliente) {
         printf("+--------------------------+\n");
         return;
     }
-    printf("+--------------------------+\n");
+    printf("+---------------------------------------------------------------------+\n");
     printf("| ID   : %d\n", cliente->id);
     printf("| Nome : %s\n", cliente->nome);
     printf("| Idade: %d\n", cliente->idade);
@@ -29,7 +29,7 @@ void ver_cliente(const Cliente* cliente) {
 
     printf("| Email : %s\n", cliente->email);
     printf("| Nome do contato: %s\n", cliente->nome_contato);
-    printf("+--------------------------+\n");
+    printf("+---------------------------------------------------------------------+\n");
 }
 
 int menu_cliente() {

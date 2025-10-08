@@ -22,7 +22,7 @@ void ver_fornecedor_parceiro(const Fornecedor_parceiro* fornecedor_parceiro) {
         printf("+--------------------------+\n");
         return;
     }
-    printf("+--------------------------+\n");
+    printf("+---------------------------------------------------------------------+\n");
     printf("| ID   : %d\n", fornecedor_parceiro->id);
     printf("| Nome Fantasia : %s\n", fornecedor_parceiro->nome_fantasia);
     printf("| Razao Social : %s\n", fornecedor_parceiro->razao_social);
@@ -38,8 +38,7 @@ void ver_fornecedor_parceiro(const Fornecedor_parceiro* fornecedor_parceiro) {
                                         fornecedor_parceiro->cnpj[13], fornecedor_parceiro->cnpj[14]);
 
     printf("| Tipo de servico : %s\n", fornecedor_parceiro->tipo_servico);
-    
-    printf("+--------------------------+\n");
+    printf("+---------------------------------------------------------------------+\n");
 }
 
 Fornecedor_parceiro ler_dados_fornecedor_parceiro() {

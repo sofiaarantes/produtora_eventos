@@ -273,3 +273,135 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
         }
     }
 }
+//funçao para buscar e exibir diretamente uma produtora pelo CNPJ e tipo de armazenamento
+void buscar_e_exibir_produtora(const char* cnpj_busca, TipoArmazenamento tipo) {
+    // Verifico se o CNPJ passado é nulo (inválido)
+    if (!cnpj_busca) {
+        exibir_mensagem("+--------------------------+\n");
+        exibir_mensagem("| CNPJ inválido!       |\n");
+        exibir_mensagem("+--------------------------+\n");
+        return; // se for inválido, saio da função
+    }
+
+    Produtora* produtora = NULL; // Ponteiro que vai armazenar a produtora encontrada, se existir
+
+    // Escolho o tipo de armazenamento usado
+    switch (tipo) {
+
+        // =========================
+        // Caso 1: busca em memória
+        // =========================
+        case MEMORIA: {
+            // Percorro o array de produtoras em memória
+            for (int i = 0; i < qtd; i++) {
+                // Comparo o CNPJ de cada produtora com o CNPJ digitado
+                if (strncmp(produtoras_memoria[i].cnpj, cnpj_busca, sizeof(produtoras_memoria[i].cnpj)) == 0) {
+                    // Se encontrar, guardo o endereço da produtora encontrada
+                    produtora = &produtoras_memoria[i];
+                    // Exibo as informações dessa produtora
+                    ver_produtora(produtora);
+                    break; // paro o loop, pois já encontrei a produtora
+                }
+            }
+            break;
+        }
+
+        // ==============================
+        // Caso 2: busca em arquivo texto
+        // ==============================
+        case TEXTO: {
+            // Abro o arquivo texto para leitura
+            FILE* fp = fopen("produtoras.txt", "r");
+            if (!fp) {
+                // Se não conseguir abrir, mostro o erro e saio
+                perror("Erro ao abrir produtoras.txt");
+                return;
+            }
+
+            // Aloco memória para armazenar temporariamente uma produtora
+            produtora = malloc(sizeof(Produtora));
+            char linha[512]; // buffer para armazenar cada linha do arquivo
+
+            // Leio o arquivo linha por linha
+            while (fgets(linha, sizeof(linha), fp)) {
+                // Extraio os campos separados por ponto e vírgula
+                sscanf(linha, "%49[^;];%99[^;];%13[^;];%14[^;];%99[^;];%11[^;];%49[^;];%49[^;];%11[^;];%f",
+                    produtora->nome_fantasia,
+                    produtora->razao_social,
+                    produtora->inscricao_estadual,
+                    produtora->cnpj,
+                    produtora->endereco_completo,
+                    produtora->tel,
+                    produtora->email,
+                    produtora->nome_resp,
+                    produtora->tel_resp,
+                    &produtora->lucro
+                );
+
+                // Comparo o CNPJ lido com o CNPJ buscado
+                if (strncmp(produtora->cnpj, cnpj_busca, sizeof(produtora->cnpj)) == 0) {
+                    // Se encontrar, fecho o arquivo e exibo a produtora
+                    fclose(fp);
+                    ver_produtora(produtora);
+                    free(produtora); // libero a memória alocada
+                    return; // retorno, pois já encontrei a produtora
+                }
+            }
+
+            // Se chegar aqui, a produtora não foi encontrada
+            fclose(fp);   // fecho o arquivo
+            free(produtora); // libero a memória usada
+            produtora = NULL; // deixo o ponteiro nulo
+            break;
+        }
+
+        // =================================
+        // Caso 3: busca em arquivo binário
+        // =================================
+        case BINARIO: {
+            // Abro o arquivo binário para leitura
+            FILE* fp = fopen("produtoras.bin", "rb");
+            if (!fp) {
+                // Se não conseguir abrir, mostro o erro e saio
+                perror("Erro ao abrir produtoras.bin");
+                return;
+            }
+
+            // Aloco memória para armazenar temporariamente uma produtora
+            produtora = malloc(sizeof(Produtora));
+
+            // Leio o arquivo binário produtora por produtora
+            while (fread(produtora, sizeof(Produtora), 1, fp) == 1) {
+                // Garante que a string do CNPJ termina em '\0'
+                produtora->cnpj[sizeof(produtora->cnpj)-1] = '\0';
+
+                // Comparo o CNPJ lido com o CNPJ buscado
+                if (strncmp(produtora->cnpj, cnpj_busca, sizeof(produtora->cnpj)) == 0) {
+                    // Se encontrar, fecho o arquivo e exibo as informações
+                    fclose(fp);
+                    ver_produtora(produtora);
+                    free(produtora); // libero a memória alocada
+                    return; // retorno, pois já encontrei a produtora
+                }
+            }
+
+            // Se terminar o arquivo e não encontrar, libero tudo
+            fclose(fp);
+            free(produtora);
+            produtora = NULL;
+            break;
+        }
+
+        // Caso o tipo de armazenamento não seja reconhecido
+        default:
+            exibir_mensagem("Tipo de armazenamento inválido!\n");
+            return;
+    }
+
+    // Se nenhum produtora foi encontrado nos casos acima, mostro mensagem padrão
+    if (!produtora) {
+        printf("+--------------------------+\n");
+        printf("| Produtora não encontrada!  |\n");
+        printf("+--------------------------+\n");
+    }
+}

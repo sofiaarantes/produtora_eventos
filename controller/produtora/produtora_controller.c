@@ -60,11 +60,11 @@ void gerenciar_produtora() {
 
 
             case 3:{ //exibir produtora
-                // char cnpj_busca[12];
-                //     ler_string("Digite o CNPJ da produtora a ser exibida: ", cnpj_busca, sizeof(cnpj_busca));
+                char cnpj_busca[15];
+                    ler_string("Digite o CNPJ da produtora a ser exibida: ", cnpj_busca, sizeof(cnpj_busca));
 
-                //     buscar_e_exibir_produtora(cnpj_busca, get_armazenamento());
-                // break;
+                    buscar_e_exibir_produtora(cnpj_busca, get_armazenamento());
+                break;
 
             }
             case 4:{ //deletar produtora
