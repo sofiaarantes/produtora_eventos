@@ -94,3 +94,182 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
         
     }
 }    
+            // Função que atualiza um produtora de acordo com o tipo escolhido
+            // recebe o CPF/CNPJ do produtora que quero atualizar e o tipo de armazenamento
+            Produtora* atualizar_produtora(const char* cnpj_busca, Produtora* novos_dados, TipoArmazenamento tipo) {
+                if (!cnpj_busca || !novos_dados) return NULL;
+
+                switch (tipo) {
+
+                    // Caso 1: atualizar na memória
+                    case MEMORIA: {
+                        int i;
+                        for ( i = 0; i < qtd; i++) {
+                            if (strcmp(produtoras_memoria[i].cnpj, cnpj_busca) == 0) {
+                                produtoras_memoria[i] = *novos_dados; // sobrescreve os dados
+                                strcpy(produtoras_memoria[i].cnpj, cnpj_busca);
+                                // garantia de não mudar o CNPJ
+
+                                printf("Produtora com CNPJ %c%c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c atualizado em MEMÓRIA!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
+                                cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
+                                cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
+                                cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
+                                cnpj_busca[13], cnpj_busca[14]);
+                                return &produtoras_memoria[i];
+                            }
+                           
+                        }
+                        printf("Produtora com CNPJ %c%c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c não encontrada em MEMÓRIA!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
+                        cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
+                        cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
+                        cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
+                        cnpj_busca[13], cnpj_busca[14]);
+                                            return NULL;
+                    }
+
+                    // Caso 2: atualizar produtora em arquivo texto
+                            case TEXTO: {
+                                // Abro o arquivo original em modo leitura
+                                FILE* fp = fopen("produtoras.txt", "r");
+                                if (!fp) {
+                                    perror("Erro ao abrir produtoras.txt");
+                                    return NULL; // não conseguimos abrir, retorna NULL
+                                }
+
+                                // Crio um arquivo temporário onde vamos salvar os dados atualizados
+                                FILE* temp = fopen("produtoras_tmp.txt", "w");
+                                if (!temp) {
+                                    perror("Erro ao criar produtoras_tmp.txt");
+                                    fclose(fp);
+                                    return NULL; // falha ao criar temporário
+                                }
+
+                                char linha[300];         // buffer para ler cada linha do arquivo original
+                                int atualizado = 0;      // flag que indica se encontramos o produtora e atualizamos
+
+                                // Percorro cada linha do arquivo original
+                                while (fgets(linha, sizeof(linha), fp)) {
+                                    Produtora p = {0}; // zera todos os campos antes de ler
+                                    // Leitura dos campos da linha, separados por ';'
+                                    sscanf(linha, "%49[^;];%49[^;];%13[^;];%14[^;];%99[^;];%11[^\n];%49[^\n];%49[^\n];%11[^\n];%f",
+                                         p.nome_fantasia, p.razao_social, p.inscricao_estadual,
+                                        p.cnpj, p.endereco_completo,p.tel, p.email, p.nome_resp,p.tel_resp,p.lucro);
+
+                                    // Removo possíveis '\n' ou '\r' de todos os campos lidos
+                                    
+
+                                    // Se o CNPJ lido for igual ao CNPJ que queremos atualizar
+                                    if (strcmp(p.cnpj, cnpj_busca) == 0) {
+                                        // Gravo os novos dados no arquivo temporário, mantendo o mesmo CNPJ
+                                        fprintf(temp, "%s;%s;%s;%s;%s;%s;%s;%s;%s;%f\n",
+                                            novos_dados->nome_fantasia,
+                                            novos_dados->razao_social,
+                                            novos_dados->inscricao_estadual,
+                                            p.cnpj,
+                                            novos_dados->endereco_completo,
+                                            novos_dados->tel,
+                                            novos_dados->email,
+                                            novos_dados->nome_resp,
+                                            novos_dados->tel_resp,
+                                            novos_dados->lucro
+                                        );
+                                        atualizado = 1; // marca que o produtora foi atualizado
+                                    } else {
+                                        // Se não for o produtora que queremos atualizar, apenas regravo a linha original
+                                             fputs(linha, temp);
+                                        
+                                    
+                                }
+
+                                // Fecho os arquivos
+                                fclose(fp);
+                                fclose(temp);
+
+                                // Substituo o arquivo original pelo temporário
+                                remove("produtoras.txt");
+                                rename("produtoras_tmp.txt", "produtoras.txt");
+
+                                // Mensagem de sucesso ou falha
+                                if (atualizado) {
+                                   printf("Produtora com %c%c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c atualizado em TEXTO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
+                                    cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
+                                    cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
+                                    cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
+                                    cnpj_busca[13], cnpj_busca[14]);
+                                    return novos_dados; // retorna os novos dados do produtora
+                                } else {
+                                    printf("Produtora com %c%c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c não encontrado em TEXTO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
+                                    cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
+                                    cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
+                                    cnpj_busca[9], cnpj_busca[10],cnpj_busca[11], cnpj_busca[12],
+                                    cnpj_busca[13], cnpj_busca[14]);
+                                    return NULL; // produtora não encontrada
+                                }
+                            }
+  
+                            case BINARIO: {
+                                // Abro o arquivo 'produtoras.bin' em modo leitura + escrita binária
+                                FILE *fp = fopen("produtoras.bin", "rb+");
+                                if (!fp) {
+                                    // Se não conseguir abrir, mostro o erro do sistema e retorno NULL
+                                    perror("Erro ao abrir produtoras.bin");
+                                    return NULL;
+                                }
+
+                                Produtora p; // Estrutura temporária para ler as produtoras do arquivo
+
+                                // Percorro todo o arquivo produtora por produtora
+                                while (fread(&p, sizeof(Produtora), 1, fp) == 1) {
+                                    // Garante que o CNPJ lido do arquivo termina com '\0', evitando lixo
+                                    p.cnpj[sizeof(p.cnpj)-1] = '\0';
+
+                                    // Comparo o CNPJ lido com o CNPJ que queremos atualizar
+                                    // Uso strncmp com o tamanho total do campo (12) para incluir o '\0'
+                                    if (strncmp(p.cnpj, cnpj_busca, sizeof(p.cnpj)) == 0) {
+
+                                        // Volto o ponteiro do arquivo para o início deste registro
+                                        // para sobrescrever com os novos dados
+                                        if (fseek(fp, -sizeof(Produtora), SEEK_CUR) != 0) {
+                                            perror("Erro no fseek durante atualização");
+                                            fclose(fp);
+                                            return NULL;
+                                        }
+
+                                        // Mantém o CNPJ original da produtora, pois não pode ser alterado
+                                        strncpy(novos_dados->cnpj, p.cnpj, sizeof(novos_dados->cnpj));
+                                        novos_dados->cnpj[sizeof(novos_dados->cnpj)-1] = '\0';
+
+                                        // Gravo a struct atualizada no arquivo no lugar do antigo registro
+                                        if (fwrite(novos_dados, sizeof(Produtora), 1, fp) != 1) {
+                                            perror("Erro ao sobrescrever produtora em produtoras.bin");
+                                            fclose(fp);
+                                            return NULL;
+                                        }
+
+                                        // Fecho o arquivo e informo que a atualização deu certo
+                                        fclose(fp);
+                                        printf("Produtora com CNPJ %c%c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c atualizado em BINÁRIO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
+                                        cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
+                                        cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
+                                        cnpj_busca[9], cnpj_busca[10],cnpj_busca[11], cnpj_busca[12],
+                                        cnpj_busca[13], cnpj_busca[14]);
+
+                                        // Retorno o ponteiro para os novos dados
+                                        return novos_dados;
+                                    }
+                                }
+
+                                // Se chegar aqui, significa que não encontrei o CNPJ no arquivo
+                                fclose(fp);
+                                printf("Produtora com CNPJ %c%c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c não encontrada em BINÁRIO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
+                                    cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
+                                    cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
+                                    cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
+                                    cnpj_busca[13], cnpj_busca[14], cnpj_busca[11], cnpj_busca[12],
+                                    cnpj_busca[13], cnpj_busca[14]);
+                                return NULL;
+                            }
+
+        }
+    }
+}

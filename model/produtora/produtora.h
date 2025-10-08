@@ -18,4 +18,8 @@ typedef struct{
 
 // Função que cria e salva uma produtora de acordo com o tipo escolhido
 Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo);
+
+// Função que atualiza um produtora de acordo com o tipo escolhido
+// recebe o CPF/CNPJ do produtora que quero atualizar e o tipo de armazenamento
+Produtora* atualizar_produtora(const char* cnpj_busca, Produtora* novos_dados, TipoArmazenamento tipo);
 #endif
