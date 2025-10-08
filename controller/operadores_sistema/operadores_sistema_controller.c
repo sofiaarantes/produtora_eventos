@@ -52,12 +52,10 @@ void gerenciar_login() {
             adicionar_operador(&novo);
             printf("\nCadastro realizado com sucesso! Bem-vindo(a), %s.\n", novo.usuario);
             menu_main();
-
         } else if (opcao == 3) {
             printf("\nSaindo do sistema... Até logo!\n");
         } else {
             printf("\nOpção inválida! Tente novamente.\n");
         }
-
     } while (opcao != 3);
 }

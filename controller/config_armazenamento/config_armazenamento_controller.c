@@ -3,7 +3,6 @@
 #include "../view/main/main_view.h" 
 #include "../controller/main/main_controller.h" 
 
-// Ao ser rodado, primeiro o sistema pergunta ao usuário em qual formato ele quer salvar os dados
 int inicializar_armazenamento() { 
     int opcao;
     do { 

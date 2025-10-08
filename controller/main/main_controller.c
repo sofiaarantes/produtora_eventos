@@ -6,7 +6,7 @@
 #include "../controller/config_armazenamento/config_armazenamento_controller.h" 
 #include "../controller/recursos_equipamentos/recursos_equipamentos_controller.h" 
 
-//essa funçao é responsavel por controlar o primeiro menu do sistema e chamar cada menu correspondente
+// Controla o primeiro menu do sistema e chama cada menu correspondente
 void iniciar_sistema(){ 
     int opcao;
     do{ 
