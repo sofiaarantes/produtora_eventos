@@ -1,5 +1,5 @@
-#ifndef FORNECEDOR_CLIENTE_H
-#define FORNECEDOR_CLIENTE_H
+#ifndef FORNECEDOR_PARCEIRO_H
+#define FORNECEDOR_PARCEIRO_H
 #include "../model/config_armazenamento/config_armazenamento.h"
 
 //Estrtura do fornecedor/parceiro

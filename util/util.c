@@ -3,8 +3,9 @@
 #include <stdio.h>   // printf, fgets
 #include <stdlib.h>  // strtol
 #include <stddef.h>  // size_t
-
 #include "util.h"    // só 1 vez
+#include <errno.h>
+#include <float.h>
 
 
 // ----------------------------------------------------
@@ -93,4 +94,58 @@ void ler_int(const char *mensagem, int *destino) {
         *destino = (int)valor;
         return;
     } // while
+}
+
+// ======================================
+// Função para ler um número decimal (float)
+// ======================================
+void ler_float(const char *mensagem, float *destino) {
+    char buffer[128];       // buffer para armazenar o que o usuário digitou
+    char *endptr;           // ponteiro para verificar onde a conversão parou
+    float valor;            // valor convertido temporariamente
+
+    while (1) {
+        // Mostro a mensagem para o usuário (ex.: "Margem de lucro: ")
+        printf("%s", mensagem);
+
+        // Leio a linha inteira digitada pelo usuário
+        if (!fgets(buffer, sizeof buffer, stdin)) {
+            // Se ocorrer erro de leitura, limpo e tento novamente
+            clearerr(stdin);
+            printf("Erro de leitura. Tente novamente.\n");
+            continue;
+        }
+
+        // Removo o '\n' ou '\r' que podem vir no final da string (compatível com Windows e Linux)
+        buffer[strcspn(buffer, "\r\n")] = '\0';
+
+        // Preparo para a conversão usando strtof (string para float)
+        errno = 0;
+        valor = strtof(buffer, &endptr);
+
+        // 1) Verifico se o usuário digitou algo que é número
+        if (endptr == buffer) {
+            printf("Entrada inválida (não é número). Tente novamente.\n");
+            continue;
+        }
+
+        // 2) Pulo possíveis espaços após o número (aceitar '9.5   ')
+        while (isspace((unsigned char)*endptr)) endptr++;
+
+        // 3) Se ainda sobrou algum caractere diferente de '\0', rejeito (ex: '9.5abc')
+        if (*endptr != '\0') {
+            printf("Entrada inválida (caracteres extras). Tente novamente.\n");
+            continue;
+        }
+
+        // 4) Verifico se houve overflow ou underflow (muito grande ou muito pequeno)
+        if (errno == ERANGE || valor > FLT_MAX || valor < -FLT_MAX) {
+            printf("Número fora do intervalo permitido para float. Tente novamente.\n");
+            continue;
+        }
+
+        // Se passou por todas as verificações, guardo o valor no destino
+        *destino = valor;
+        return;
+    }
 }

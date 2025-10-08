@@ -12,4 +12,7 @@ void ler_string(const char *mensagem, char *destino, size_t tamanho);
 
 // Função para ler um número inteiro de forma segura
 void ler_int(const char *mensagem, int *destino);
+
+// Função para ler um número decimal (float) de forma segura
+void ler_float(const char *mensagem, float *destino);
 #endif

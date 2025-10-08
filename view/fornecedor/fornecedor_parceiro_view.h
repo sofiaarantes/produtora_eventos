@@ -6,7 +6,7 @@
 //menu do crud de fornecedor/parceiro
 int menu_fornecedor();
 
-// Mostra dados de um fornecedor/parceiro de acordo com o cpnj passado e o tipo de armazenamento
+// Mostra dados de um fornecedor/parceiro 
 void ver_fornecedor_parceiro(const Fornecedor_parceiro* fornecedor_parceiro);
 
 // Lê os dados de um fornecedor/parceiro e RETORNA um Fornecedor_parceiro preenchido

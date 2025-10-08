@@ -8,6 +8,7 @@
 #include "../controller/equipe_interna/equipe_interna_controller.h"
 #include "../controller/config_armazenamento/config_armazenamento_controller.h"
 #include "../controller/fornecedor/fornecedor_parceiro_controller.h"
+#include "../controller/produtora/produtora_controller.h"
 
 // Declaração manual para evitar "implicit declaration"
 void inicializar_armazenamento();
@@ -25,6 +26,7 @@ void iniciar_sistema(){
         }
         // Menu Produtora
         case 2:{
+            gerenciar_produtora();
             break;
         }
         // Menu Equipe Interna
