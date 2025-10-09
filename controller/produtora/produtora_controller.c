@@ -68,10 +68,10 @@ void gerenciar_produtora() {
 
             }
             case 4:{ //deletar produtora
-                // char cnpj_busca[12];
-                //     ler_string("Digite o CNPJ da produtora a ser deletada: ", cnpj_busca, sizeof(cnpj_busca));
-                //     deletar_produtora(cnpj_busca, get_armazenamento());
-                // break;
+                char cnpj_busca[15];
+                    ler_string("Digite o CNPJ da produtora a ser deletada: ", cnpj_busca, sizeof(cnpj_busca));
+                    deletar_produtora(cnpj_busca, get_armazenamento());
+                break;
             }
             case 0:{
                 exibir_mensagem("Saindo...");

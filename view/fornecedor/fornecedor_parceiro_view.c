@@ -36,7 +36,7 @@ void ver_fornecedor_parceiro(const Fornecedor_parceiro* fornecedor_parceiro) {
                                         fornecedor_parceiro->cnpj[6], fornecedor_parceiro->cnpj[7], fornecedor_parceiro->cnpj[8],
                                         fornecedor_parceiro->cnpj[9], fornecedor_parceiro->cnpj[10], fornecedor_parceiro->cnpj[11], fornecedor_parceiro->cnpj[12],
                                         fornecedor_parceiro->cnpj[13], fornecedor_parceiro->cnpj[14]);
-
+        //usando %c (em vez de %s) porque estou imprimindo cada caractere individualmente do CNPJ, e não a string completa.
     printf("| Tipo de servico : %s\n", fornecedor_parceiro->tipo_servico);
     printf("+---------------------------------------------------------------------+\n");
 }

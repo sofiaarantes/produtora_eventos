@@ -25,7 +25,11 @@ void ver_produtora(const Produtora* produtora) {
     printf("+---------------------------------------------------------------------+\n");
     printf("| Nome Fantasia : %s\n", produtora->nome_fantasia);
     printf("| Razao Social : %s\n", produtora->razao_social);
-    printf("| Inscricao Estadual : %s\n", produtora->inscricao_estadual);
+    printf("| Inscricao Estadual : %c%c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c\n", produtora->inscricao_estadual[0], produtora->inscricao_estadual[1], produtora->inscricao_estadual[2],
+       produtora->inscricao_estadual[3], produtora->inscricao_estadual[4], produtora->inscricao_estadual[5],
+       produtora->inscricao_estadual[6], produtora->inscricao_estadual[7], produtora->inscricao_estadual[8],
+       produtora->inscricao_estadual[9], produtora->inscricao_estadual[10], produtora->inscricao_estadual[11], produtora->inscricao_estadual[12],
+       produtora->inscricao_estadual[13]);
     printf("| Telefone: (%c%c) %c%c%c%c%c-%c%c%c%c\n",
        produtora->tel[0], produtora->tel[1],    // DDD
        produtora->tel[2], produtora->tel[3], produtora->tel[4], produtora->tel[5], produtora->tel[6], // primeiros 5
@@ -36,6 +40,7 @@ void ver_produtora(const Produtora* produtora) {
                                         produtora->cnpj[6], produtora->cnpj[7], produtora->cnpj[8],
                                         produtora->cnpj[9], produtora->cnpj[10], produtora->cnpj[11], produtora->cnpj[12],
                                         produtora->cnpj[13], produtora->cnpj[14]);
+    //usando %c (em vez de %s) porque estou imprimindo cada caractere individualmente do CNPJ, e não a string completa.
 
     printf("| Email : %s\n", produtora->email);
     printf("| Nome do Responsavel : %s\n", produtora->nome_resp);
@@ -82,7 +87,7 @@ void ler_dados_atualizados_produtora(
     ler_string("Novo email: ", email, tam_email);
     ler_string("Novo nome do responsavel: ", nome_resp, tam_nome_resp);
     ler_string("Novo telefone do responsavel: ", tel_resp, tam_tel_resp);
-    ler_float("Nova margem de lucro padrao (apenas número, ex: 15.5): ", lucro);
+    ler_float("Nova margem de lucro padrao (apenas numero, ex: 15.5): ", lucro);
 }
     //passar tambem o tamanho dos arrays para a funçao ler_stringsaber ate onde pode ler
 

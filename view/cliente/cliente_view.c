@@ -26,7 +26,7 @@ void ver_cliente(const Cliente* cliente) {
        cliente->cpf_cnpj[3], cliente->cpf_cnpj[4], cliente->cpf_cnpj[5],
        cliente->cpf_cnpj[6], cliente->cpf_cnpj[7], cliente->cpf_cnpj[8],
        cliente->cpf_cnpj[9], cliente->cpf_cnpj[10]);
-
+        //usando %c (em vez de %s) porque estou imprimindo cada caractere individualmente do CPF, e não a string completa.
     printf("| Email : %s\n", cliente->email);
     printf("| Nome do contato: %s\n", cliente->nome_contato);
     printf("+---------------------------------------------------------------------+\n");
