@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "../view/main/main_view.h"
+#include "../../util/util.h"
 
 int menu_main() {
     int escolher = 0;
@@ -13,11 +14,9 @@ int menu_main() {
     printf("4 - Acessar Menu Recursos e Equipamentos\n");
     printf("5 - Acessar Menu Fornecedores e Parceiros\n");
     printf("6 - Acessar Menu Operadores do Sistema\n");
-    printf("7 - Alterar método de armazenamento\n");
-    printf("8 - Editar conta\n");
+    printf("7 - Alterar metodo de armazenamento\n");
     printf("0 - Sair\n");
-    printf("Escolha: ");
-    scanf("%d", &escolher);
+    ler_int("Escolha uma opcao: ", &escolher);
     return escolher;
 }
 
@@ -28,13 +27,12 @@ void exibir_mensagem(const char* msg) {
 // Exibe o menu de configuração do tipo de armazenamento
 int mostrar_menu_configuracao() {
     int opcao = 0;
-    printf("\n=== Configuração de Armazenamento ===\n");
-    printf("Em qual formato gostaria de salvar as informações inseridas no sistema?\n");
-    printf("1 - Memória (dados temporários)\n");
+    printf("\n=== Configuracao de Armazenamento ===\n");
+    printf("\nEm qual formato gostaria de salvar as informacoes inseridas no sistema?\n");
+    printf("1 - Memoria (dados temporarios)\n");
     printf("2 - Arquivo Texto\n");
-    printf("3 - Arquivo Binário\n");
+    printf("3 - Arquivo Binario\n");
     printf("0 - Sair\n");
-    printf("Escolha: ");
-    scanf("%d", &opcao);
+    ler_int("Escolha uma opcao: ", &opcao);
     return opcao;
 }
