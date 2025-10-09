@@ -1,24 +1,24 @@
 #include <stdio.h>
 #include "operadores_sistema/operadores_sistema_view.h"
 #include "main/main_view.h"
+#include "../../util/util.h"
 
 int exibir_menu_operadores() {
     int opcao;
     printf("==================================\n");
     printf("--- BEM VINDO AO NOSSO SISTEMA ---\n");
     printf("==================================\n");
-    printf("1 - Já tenho uma conta, quero fazer login\n");
+    printf("1 - Ja tenho uma conta, quero fazer login\n");
     printf("2 - Ainda não tenho uma conta, quero me registrar\n");
     printf("3 - Sair\n");
-    printf("Escolha: ");
-    scanf("%d", &opcao);
+    ler_int("Escolha uma opcao: ", &opcao);
     return opcao;
 }
 
 Operadores ler_dados_operador_login() {
     Operadores o;
-    printf("Usuário: "); scanf(" %[^\n]", o.usuario); 
-    printf("Senha: "); scanf(" %[^\n]", o.senha); 
+    ler_string("Usuário: ", o.usuario, sizeof(o.usuario));
+    ler_string("Senha: ", o.senha, sizeof(o.senha));
     return o;  // Retorna a struct preenchida
 }
 
@@ -26,9 +26,9 @@ Operadores ler_dados_operador_login() {
 Operadores ler_dados_operador_cadastro() {
     Operadores o;
     printf("Para continuar, nos informe seus dados de login:\n");
-    printf("Nome: "); scanf(" %[^\n]", o.nome); 
-    printf("Usuário: "); scanf(" %[^\n]", o.usuario); 
-    printf("Senha: "); scanf(" %[^\n]", o.senha); 
+    ler_string("Nome: ", o.nome, sizeof(o.nome));
+    ler_string("Usuário: ", o.usuario, sizeof(o.usuario));
+    ler_string("Senha: ", o.senha, sizeof(o.senha));
     int opcao = mostrar_menu_configuracao(); // mostra menu e retorna a opção
     switch (opcao) {
         case 1:

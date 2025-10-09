@@ -6,6 +6,7 @@
 #include "../view/main/main_view.h"
 #include "../model/config_armazenamento/config_armazenamento.h"
 #include "recursos_equipamentos_controller.h"
+#include "../../util/util.h"
 
 
 void gerenciar_equipamento() {
@@ -70,8 +71,8 @@ void gerenciar_equipamento() {
 
                 // Peço para o usuário digitar o id do equipamento que ele quer atualizar
                 int id_busca;
-                printf("Digite o id do equipamento que deseja atualizar: ");
-                scanf(" %d", &id_busca);   
+                  ler_int("Digite o id do equipamento que deseja atualizar: ", &id_busca);
+               
 
                 // Variáveis que vão receber os novos dados
                 char descricao[100];
@@ -109,8 +110,7 @@ void gerenciar_equipamento() {
                 TipoArmazenamento tipo = get_armazenamento();
 
                 int id_busca;
-                printf("Digite o id do equipamento que deseja exibir: ");
-                scanf(" %d", &id_busca);   
+                ler_int("Digite o id do equipamento que deseja exibir: ", &id_busca);
 
                 RecursosEquipamentos* eq = NULL;
 
@@ -138,8 +138,8 @@ void gerenciar_equipamento() {
             // Deletar equipamento
             case 4: {
                 int id_busca;
-                printf("Digite o id do equipamento que deseja deletar: ");
-                scanf(" %d", &id_busca); 
+                ler_int("Digite o id do equipamento que deseja deletar: ", &id_busca);
+                
 
                 TipoArmazenamento tipo = get_armazenamento();
                 int removido = 0;

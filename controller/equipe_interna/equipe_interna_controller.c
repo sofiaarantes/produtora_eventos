@@ -6,6 +6,7 @@
 #include "../view/main/main_view.h"
 #include "../model/config_armazenamento/config_armazenamento.h"
 #include "equipe_interna_controller.h"
+#include "../../util/util.h"
 
 void gerenciar_funcionario() {
     EquipeInterna* equipeInterna = NULL;
@@ -69,8 +70,8 @@ void gerenciar_funcionario() {
 
                 // Peço para o usuário digitar o CPF do funcionário que ele quer atualizar
                 char cpf_busca[20];
-                printf("Digite o CPF do funcionário que deseja atualizar: ");
-                scanf(" %19s", cpf_busca);   // lê até 19 caracteres
+                ler_string("Digite o CPF do funcionário que deseja atualizar: ", cpf_busca, sizeof(cpf_busca));
+                
 
                 // Variáveis que vão receber os novos dados
                 char nome[50];
@@ -106,9 +107,8 @@ void gerenciar_funcionario() {
                 TipoArmazenamento tipo = get_armazenamento();
 
                 char cpf_busca[20];
-                printf("Digite o CPF do funcionário que deseja exibir: ");
-                scanf(" %19s", cpf_busca);   // lê até 19 caracteres
-
+                ler_string("Digite o CPF do funcionário que deseja exibir: ", cpf_busca, sizeof(cpf_busca));
+                
                 EquipeInterna* func = NULL;
 
                 switch (tipo) {
