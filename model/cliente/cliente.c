@@ -10,15 +10,24 @@
 static Cliente clientes_memoria[MAX_CLIENTES]; // cada posição guarda um cliente
 static int qtd = 0; // contador de quantos clientes já estão salvos na memória
 
+
 // Função que cria e salva um cliente de acordo com o tipo escolhido
 Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
     if (!cliente) return NULL; // se o ponteiro for nulo, não posso salvar
+
+    int novo_id = 1; // Id começa em 1 por padrão
 
     switch (tipo) {
 
         // Caso 1: salvar na memória
         case MEMORIA: {
             if (qtd < MAX_CLIENTES) {
+                // Se houver dados na memória, ele continua com o novo_id = 1, caso contrário, resgatará o
+                // último id e somará mais 1
+                if (qtd > 0) 
+                    novo_id = clientes_memoria[qtd - 1].id + 1;
+
+                cliente->id = novo_id;
                 // copio todos os dados do cliente passado para o array de memória
                 clientes_memoria[qtd] = *cliente;
 
@@ -37,8 +46,22 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
 
         // Caso 2: salvar em arquivo texto
             case TEXTO: {
+                // Descobre o último id no arquivo
+            FILE* fp = fopen("clientes.txt", "r");
+            if (fp) {
+                Cliente tmp;
+                while (fscanf(fp, "%d;%49[^;];%d;%99[^;];%11[^;];%11[^;];%49[^;];%49[^;];\n",
+                              &tmp.id, tmp.nome, &tmp.idade,
+                              tmp.endereco_completo, tmp.cpf_cnpj,
+                              tmp.tel, tmp.email, tmp.nome_contato) != EOF) {
+                    novo_id = tmp.id + 1; // sempre fica com o último id lido +1
+                }
+                fclose(fp);
+            }
+            cliente->id = novo_id;
+
                 // Abro o arquivo em modo append para não sobrescrever os clientes anteriores
-                FILE* fp = fopen("clientes.txt", "a");
+                 fp = fopen("clientes.txt", "a");
                 if (!fp) {
                     perror("Erro ao abrir clientes.txt");
                     return NULL;
@@ -64,12 +87,22 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
             }
         // Caso 3: salvar cliente em arquivo binário
             case BINARIO: {
+                // Descobre último id no arquivo
+                FILE* fp = fopen("clientes.bin", "rb");
+                if (fp) {
+                    Cliente tmp;
+                    while (fread(&tmp, sizeof(Cliente), 1, fp) == 1) {
+                        novo_id = tmp.id + 1;
+                    }
+                    fclose(fp);
+                }
+                cliente->id = novo_id;
                 // garante que CPF e telefone terminam com '\0'
                 cliente->cpf_cnpj[sizeof(cliente->cpf_cnpj) - 1] = '\0';
                 cliente->tel[sizeof(cliente->tel) - 1] = '\0';
 
                 // abre o arquivo em modo append binário
-                FILE* fp = fopen("clientes.bin", "ab");
+                 fp = fopen("clientes.bin", "ab");
                 if (!fp) {
                     perror("Erro ao abrir clientes.bin");
                     return NULL;

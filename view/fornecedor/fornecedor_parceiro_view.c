@@ -44,7 +44,7 @@ void ver_fornecedor_parceiro(const Fornecedor_parceiro* fornecedor_parceiro) {
 Fornecedor_parceiro ler_dados_fornecedor_parceiro() {
     Fornecedor_parceiro fp;
 
-    ler_int("ID: ", &fp.id);
+    printf("\n==== DADOS DO FORNECEDOR/PARCEIRO ====\n");
     ler_string("Nome Fantasia: ", fp.nome_fantasia, sizeof(fp.nome_fantasia));
     ler_string("Razao Social: ", fp.razao_social, sizeof(fp.razao_social));
     ler_string("Endereco completo: ", fp.endereco_completo, sizeof(fp.endereco_completo));

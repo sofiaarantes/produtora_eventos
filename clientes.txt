@@ -1,6 +1,0 @@
-2;ana;67;rua;b;15126624577;ana@gmail.com;ana
-1;aaa;12;rua n;15128864677;15126624577;ana@gmail.com;ana
-2;sofia;19;rua b;32165498712;15126624577;ana@gmail.com;ana
-2;kkk;15;rua p;14725836977;15126624577;ana@gmail.com;ana
-1;aaa;15;rua yt;1512886467;15126624577;ana@gmail.com;ana
-3;aqu;58;rua p;147147147;37999654788;ana@gmail.com;ana

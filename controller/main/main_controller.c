@@ -11,8 +11,6 @@
 #include "../controller/fornecedor/fornecedor_parceiro_controller.h"
 #include "../controller/produtora/produtora_controller.h"
 
-// Declaração manual para evitar "implicit declaration"
-//void inicializar_armazenamento();
 
 // Controla o primeiro menu do sistema e chama cada menu correspondente
 void iniciar_sistema(){ 

@@ -46,8 +46,7 @@ int menu_cliente() {
 
 Cliente ler_dados_cliente() {
     Cliente c;
-
-    ler_int("ID: ", &c.id);
+    printf("\n==== DADOS DO CLIENTE ====\n");
     ler_string("Nome: ", c.nome, sizeof(c.nome));
     ler_int("Idade: ", &c.idade);
     ler_string("Endereco completo: ", c.endereco_completo, sizeof(c.endereco_completo));

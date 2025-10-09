@@ -54,6 +54,7 @@ void ver_produtora(const Produtora* produtora) {
 
 Produtora ler_dados_produtora() {
     Produtora p;
+    printf("\n==== DADOS DA PRODUTORA ====\n");
     ler_string("Nome Fantasia: ", p.nome_fantasia, sizeof(p.nome_fantasia));
     ler_string("Razao Social: ", p.razao_social, sizeof(p.razao_social));
     ler_string("Inscricao Estadual: ", p.inscricao_estadual, sizeof(p.inscricao_estadual));
