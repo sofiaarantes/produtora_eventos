@@ -11,8 +11,8 @@ Operadores* adicionar_operador(Operadores* operador) {
     FILE* fp = fopen("operadores.txt", "r");
     if (fp) {
         Operadores tmp;
-        while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];\n",
-                      &tmp.id, tmp.nome, tmp.usuario, tmp.senha) != EOF) {
+        while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];%d;\n",
+                      &tmp.id, tmp.nome, tmp.usuario, tmp.senha, (int*)&tmp.tipo) != EOF) {
             novo_id = tmp.id + 1;
         }
         fclose(fp);
@@ -26,11 +26,12 @@ Operadores* adicionar_operador(Operadores* operador) {
         return NULL;
     }
 
-    fprintf(fp, "%d;%s;%s;%s;\n",
+    fprintf(fp, "%d;%s;%s;%s;%d;\n",
             operador->id,
             operador->nome,
             operador->usuario,
-            operador->senha);
+            operador->senha,
+            operador->tipo);
     fclose(fp);
 
     return operador;
@@ -50,17 +51,17 @@ int deletar_operador(const int id) {
     Operadores f;
     int removido = 0;
     // Lê linha por linha do arquivo original
-    while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];\n",
-                  &f.id, f.nome, f.usuario, f.senha) != EOF) {
-        // Se não for o CPF que quero remover, regravo no temp
-        if (f.id == id) {
-            fprintf(temp, "%d;%s;%s;%s;\n",
-                f.id, f.nome, f.usuario, f.senha);
+    while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];%d;\n",
+                  &f.id, f.nome, f.usuario, f.senha, (int*)&f.tipo) != EOF) {
+        // Só regrava se não for o operador que queremos remover
+        if (f.id != id) {
+            fprintf(temp, "%d;%s;%s;%s;%d;\n",
+                f.id, f.nome, f.usuario, f.senha, f.tipo);
         } else {
-            removido = 1;
+            removido = 1; // operador encontrado e removido
         }
     }
-
+    
     fclose(fp);
     fclose(temp);
     remove("operadores.txt");
@@ -74,8 +75,8 @@ Operadores* buscar_operador_por_credenciais(const char* usuario, const char* sen
     if (!fp) return NULL;
 
     Operadores* encontrado = malloc(sizeof(Operadores));
-    while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];\n",
-                  &encontrado->id, encontrado->nome, encontrado->usuario, encontrado->senha) != EOF) {
+    while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];%d;\n",
+              &encontrado->id, encontrado->nome, encontrado->usuario, encontrado->senha, &encontrado->tipo) != EOF) {
         if (strcmp(encontrado->usuario, usuario) == 0 &&
             strcmp(encontrado->senha, senha) == 0) {
             fclose(fp);

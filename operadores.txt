@@ -1,3 +1,2 @@
-1;Sofia;sofia;456;
-2;sofia1;sofis;456;
-3;sofia leal;sofialeal;789;
+1;Sofia;sofis;456;
+2;SOfia;sofia;456;

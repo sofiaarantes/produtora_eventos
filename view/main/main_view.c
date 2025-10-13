@@ -14,7 +14,7 @@ int menu_main() {
     printf("4 - Acessar Menu Recursos e Equipamentos\n");
     printf("5 - Acessar Menu Fornecedores e Parceiros\n");
     printf("6 - Acessar Menu Operadores do Sistema\n");
-    printf("7 - Alterar metodo de armazenamento\n");
+    printf("7 - Minha Conta\n");
     printf("0 - Sair\n");
     ler_int("Escolha uma opcao: ", &escolher);
     return escolher;

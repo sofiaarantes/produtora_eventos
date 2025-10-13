@@ -9,7 +9,7 @@ int exibir_menu_operadores() {
     printf("==================================\n");
     printf("1 - Já tenho uma conta, quero fazer login\n");
     printf("2 - Ainda não tenho uma conta, quero me registrar\n");
-    printf("3 - Sair\n");
+    printf("0 - Sair\n");
     printf("Escolha: ");
     scanf("%d", &opcao);
     return opcao;
@@ -45,4 +45,53 @@ Operadores ler_dados_operador_cadastro() {
             break;
     }
     return o;  // Retorna a struct preenchida
+}
+
+void exibir_operador(const Operadores* operador) {
+    if (!operador) {
+        printf("+--------------------------+\n");
+        printf("|   Operador inexistente!  |\n");
+        printf("+--------------------------+\n");
+        return;
+    }
+    const char* tipo_str;
+    switch (operador->tipo) {
+        case MEMORIA:
+            tipo_str = "Memória";
+            break;
+        case TEXTO:
+            tipo_str = "Texto";
+            break;
+        case BINARIO:
+            tipo_str = "Binário";
+            break;
+        default:
+            tipo_str = "Desconhecido";
+            break;
+    }
+    printf("+-----------------------+\n");
+    printf("| Nome: %s\n", operador->nome);
+    printf("| Usuário: %s\n", operador->usuario);
+    printf("| Armazenamento: %s\n", tipo_str);
+    printf("+-----------------------+\n");
+}
+
+int exibir_menu_operadores_editar() {
+    int opcao;
+    printf("=================\n");
+    printf("----- CONTA -----\n");
+    printf("=================\n");
+    printf("1 - Editar dados\n");
+    printf("1 - Editar método de armazenamento\n");
+    printf("2 - Deletar conta\n");
+    printf("0 - Sair\n");
+    printf("Escolha: ");
+    scanf("%d", &opcao);
+    return opcao;
+}
+
+void ler_dados_atualizados_operador(char* nome, char* usuario) {
+    printf("\n--- Editar Dados ---\n");
+    printf("Novo nome: "); scanf(" %[^\n]", nome);
+    printf("Novo usuário: "); scanf(" %[^\n]", usuario);
 }

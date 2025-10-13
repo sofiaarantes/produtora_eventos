@@ -84,11 +84,11 @@ void ler_int(const char *mensagem, int *destino) {
             continue;
         }
 
-        // 4) Verifico overflow/underflow do strtol
-        if (errno == ERANGE || valor < INT_MIN || valor > INT_MAX) {
-            printf("Número fora do intervalo. Tente novamente.\n");
-            continue;
-        }
+        // // 4) Verifico overflow/underflow do strtol
+        // if (errno == ERANGE || valor < INT_MIN || valor > INT_MAX) {
+        //     printf("Número fora do intervalo. Tente novamente.\n");
+        //     continue;
+        // }
 
         // Se cheguei aqui, está tudo certo — guardo no destino e retorno
         *destino = (int)valor;
