@@ -1,9 +1,0 @@
-<<<<<<< HEAD
-1;Sofia;sofia;456;
-2;sofia1;sofis;456;
-3;sofia leal;sofialeal;789;
-4;sofia maria;sofiatxt;456;
-=======
-1;Sofia;sofis;456;
-2;SOfia;sofia;456;
->>>>>>> 2f72567 (operadores)
