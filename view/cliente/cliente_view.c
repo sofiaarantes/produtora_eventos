@@ -66,7 +66,7 @@ void ler_dados_atualizados_cliente(
     char* tel, size_t tam_tel,
     char* email, size_t tam_email,
     char* nome_contato, size_t tam_nome_contato
-    //passar tambem o tamanho dos arrays para a funçao ler_stringsaber ate onde pode ler
+    //passar tambem o tamanho dos arrays para a funçao ler_string saber ate onde pode ler
 ) {
     ler_string("Novo nome: ", nome, tam_nome);
     ler_int("Nova idade: ", idade);
