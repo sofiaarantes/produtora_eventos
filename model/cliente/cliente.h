@@ -5,6 +5,12 @@
 // =============================
 // MODEL: representa os dados
 // =============================
+// Enum para definir o tipo de documento
+typedef enum {
+    TIPO_CPF, //vale 0
+    TIPO_CNPJ, //vale 1
+    TIPO_DESCONHECIDO //vale 2
+} TipoDocumento;
 
 // Estrutura de Cliente
 typedef struct {
@@ -12,10 +18,11 @@ typedef struct {
     char nome[50];
     int idade;
     char endereco_completo[100];
-    char cpf_cnpj[12];
+    char cpf_cnpj[20]; //14 digitos para cnpj ou 11 digitso para cpf + '\0'
     char tel[12];
     char email[50];
     char nome_contato[50];
+    TipoDocumento tipo_doc;
    
 } Cliente;
 
@@ -36,4 +43,7 @@ Cliente* atualizar_cliente(const char* cpf_cnpj_busca, Cliente* novos_dados, Tip
 
 // Remove o cliente (libera memória) de acordo com o cpf/cnpj e tipo de armazenamento
 void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo);
+
+//preciso dessa funçao para identificar se o documento do cliente é cpf ou cnpj
+TipoDocumento identificar_documento(const char *doc);
 #endif

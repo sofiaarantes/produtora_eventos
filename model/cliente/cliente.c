@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "cliente.h"
 #include "../../view/cliente/cliente_view.h"
 #include "../../view/main/main_view.h"
@@ -14,6 +15,13 @@ static int qtd = 0; // contador de quantos clientes já estão salvos na memóri
 // Função que cria e salva um cliente de acordo com o tipo escolhido
 Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
     if (!cliente) return NULL; // se o ponteiro for nulo, não posso salvar
+
+    // Verifica automaticamente se é CPF ou CNPJ
+    cliente->tipo_doc = identificar_documento(cliente->cpf_cnpj);
+    if (cliente->tipo_doc == TIPO_DESCONHECIDO) {
+        printf("Erro: documento inválido (%s). Deve ter 11 (CPF) ou 14 (CNPJ) dígitos.\n", cliente->cpf_cnpj);
+        return NULL;
+    }
 
     int novo_id = 1; // Id começa em 1 por padrão
 
@@ -36,7 +44,10 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
 
                 qtd++; // aumento o contador de clientes na memória
 
-                printf("Cliente %s salvo em MEMÓRIA!\n", salvo->nome);
+                const char* tipoTexto = (cliente->tipo_doc == TIPO_CPF) ? "CPF" :
+                            (cliente->tipo_doc == TIPO_CNPJ) ? "CNPJ" : "DESCONHECIDO";
+
+                printf("Cliente %s salvo em MEMORIA! Tipo de documento: %s\n", cliente->nome, tipoTexto);
                 return salvo; // retorno o endereço do cliente salvo
             } else {
                 printf("Erro: limite de clientes na memória atingido!\n");
@@ -82,7 +93,10 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
                 );
 
                 fclose(fp); // Fecho o arquivo
-                printf("Cliente %s salvo em TEXTO!\n", cliente->nome);
+                const char* tipoTexto = (cliente->tipo_doc == TIPO_CPF) ? "CPF" :
+                            (cliente->tipo_doc == TIPO_CNPJ) ? "CNPJ" : "DESCONHECIDO";
+
+                printf("Cliente %s salvo em TEXTO! Tipo de documento: %s\n", cliente->nome, tipoTexto);
                 return cliente; // Retorno o cliente que foi salvo
             }
         // Caso 3: salvar cliente em arquivo binário
@@ -117,7 +131,10 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
 
                 fclose(fp);
 
-                printf("Cliente %s salvo em BINÁRIO!\n", cliente->nome);
+                const char* tipoTexto = (cliente->tipo_doc == TIPO_CPF) ? "CPF" :
+                            (cliente->tipo_doc == TIPO_CNPJ) ? "CNPJ" : "DESCONHECIDO";
+
+                printf("Cliente %s salvo em BINÁRIO! Tipo de documento: %s\n", cliente->nome, tipoTexto);
                 return cliente;
                     }
 
@@ -627,5 +644,25 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
         default:
             printf("Tipo de armazenamento inválido!\n");
             break;
+    }
+}
+
+TipoDocumento identificar_documento(const char *doc) {
+    int len = 0;
+
+    // Conta apenas os dígitos
+    for (int i = 0; doc[i] != '\0'; i++) {
+        if (isdigit((unsigned char)doc[i])) {
+            len++;
+        }
+    }
+
+    // Garante que não ultrapasse o tamanho máximo esperado
+    if (len == 11) {
+        return TIPO_CPF;
+    } else if (len == 14) {
+        return TIPO_CNPJ;
+    } else {
+        return TIPO_DESCONHECIDO;
     }
 }

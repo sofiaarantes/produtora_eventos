@@ -21,7 +21,7 @@ void gerenciar_cliente() {
                     exibir_mensagem("Já existe um cliente. Delete-o antes de criar outro.");
                 } else {
                     Cliente* cliente_salvo = criar_cliente(&temp, get_armazenamento());
-                    exibir_mensagem("Cliente criado com sucesso!");
+                    
                 }
                 break;
             }
