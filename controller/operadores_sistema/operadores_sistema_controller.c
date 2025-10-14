@@ -4,7 +4,6 @@
 #include "../../view/operadores_sistema/operadores_sistema_view.h"
 #include "../../controller/config_armazenamento/config_armazenamento_controller.h"
 #include "../../view/main/main_view.h"
-#include "../../controller/main/main_controller.h"
 #include "../../model/sessao/sessao.h"
 
 void criptografar_senha(char* senha) {
@@ -43,7 +42,7 @@ void gerenciar_login() {
             if (encontrado) {
                 printf("\nLogin realizado com sucesso! Bem-vindo(a), %s.\n", tmp.nome);
                 set_operador_logado(tmp.id); 
-                iniciar_sistema();
+                return;
             } else {
                 printf("\nCredenciais inválidas! Tente novamente.\n");
             }
@@ -52,9 +51,9 @@ void gerenciar_login() {
             Operadores novo = ler_dados_operador_cadastro();
             criptografar_senha(novo.senha);
             adicionar_operador(&novo);
-            printf("\nCadastro realizado com sucesso! Bem-vindo(a), %s.\n", novo.usuario);
             set_operador_logado(novo.id); 
-            iniciar_sistema();
+            printf("\nCadastro realizado com sucesso! Bem-vindo(a), %s.\n", novo.usuario);
+            return;
         } else if (opcao == 0) {
             printf("\nSaindo do sistema... Até logo!\n");
         } else {
@@ -84,8 +83,8 @@ void editar_operador() {
     int encontrado = 0;
 
     // Buscar operador logado no arquivo
-    while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];\n",
-                  &operador.id, operador.nome, operador.usuario, operador.senha) != EOF) {
+    while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];%d;\n",
+            &operador.id, operador.nome, operador.usuario, operador.senha, (int*)&operador.tipo) != EOF) {
         if (operador.id == id_logado) {
             encontrado = 1;
             atual = operador;
@@ -142,6 +141,50 @@ void editar_operador() {
             printf("\nDados atualizados com sucesso!\n");
 
         } else if (opcao == 2) {
+            printf("\n=== Editar Tipo de Armazenamento ===\n");
+
+            int novo_tipo = mostrar_menu_configuracao(); // Mostra o menu e recebe o novo tipo
+            if (novo_tipo == 0) {
+                printf("\nOperação cancelada.\n");
+                return;
+            }
+
+            // Atualiza o tipo de armazenamento do operador atual
+            atual.tipo = novo_tipo;
+
+            // Abre arquivos para atualizar
+            FILE* original = fopen("operadores.txt", "r");
+            FILE* temp = fopen("operadores_temp.txt", "w");
+            if (!original || !temp) {
+                printf("\nErro ao abrir arquivos para atualização.\n");
+                if (original) fclose(original);
+                if (temp) fclose(temp);
+                return;
+            }
+
+            Operadores tmp;
+            // Copia todos os operadores, substituindo o tipo do operador logado
+            while (fscanf(original, "%d;%49[^;];%49[^;];%19[^;];%d;\n",
+                        &tmp.id, tmp.nome, tmp.usuario, tmp.senha, (int*)&tmp.tipo) != EOF) {
+                if (tmp.id == atual.id) {
+                    fprintf(temp, "%d;%s;%s;%s;%d;\n",
+                            atual.id, atual.nome, atual.usuario, tmp.senha, atual.tipo);
+                } else {
+                    fprintf(temp, "%d;%s;%s;%s;%d;\n",
+                            tmp.id, tmp.nome, tmp.usuario, tmp.senha, tmp.tipo);
+                }
+            }
+
+            fclose(original);
+            fclose(temp);
+            remove("operadores.txt");
+            rename("operadores_temp.txt", "operadores.txt");
+
+            // Chama o controlador de armazenamento para atualizar o tipo no sistema
+            set_armazenamento((TipoArmazenamento)novo_tipo);
+
+            printf("\nTipo de armazenamento atualizado com sucesso!\n");
+        } else if (opcao == 3) {
             // Deletar conta
             printf("\nTem certeza que deseja deletar sua conta? (1 - Sim / 0 - Não): ");
             int confirmar;
