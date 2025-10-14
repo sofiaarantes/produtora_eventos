@@ -271,7 +271,7 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
 
                                         // Volto o ponteiro do arquivo para o início deste registro
                                         // para sobrescrever com os novos dados
-                                        if (fseek(fp, -sizeof(Cliente), SEEK_CUR) != 0) {
+                                        if (fseek(fp, -(long)sizeof(Cliente), SEEK_CUR) != 0) {
                                             perror("Erro no fseek durante atualização");
                                             fclose(fp);
                                             return NULL;

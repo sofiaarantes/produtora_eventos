@@ -204,7 +204,7 @@ int atualizar_funcionario_binario(const char* cpf, const char* nome, const char*
             f.valor_diaria = valor_diaria;
 
             // Move o ponteiro do arquivo de volta para o início do registro que acabou de ler
-            fseek(fp, -sizeof(EquipeInterna), SEEK_CUR);
+            fseek(fp, -(long)sizeof(EquipeInterna), SEEK_CUR);
             fwrite(&f, sizeof(EquipeInterna), 1, fp);
 
             printf("funcion %s atualizado no arquivo Binário!\n", nome);

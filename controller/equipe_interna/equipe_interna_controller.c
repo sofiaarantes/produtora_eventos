@@ -9,7 +9,6 @@
 #include "../../util/util.h"
 
 void gerenciar_funcionario() {
-    EquipeInterna* equipeInterna = NULL;
     int opcao;
 
     do {
@@ -18,7 +17,7 @@ void gerenciar_funcionario() {
             // Adicionar funcionário
             case 1: {
                 EquipeInterna add = ler_dados_funcionario();
-                equipeInterna = adicionar_funcionario(&add, get_armazenamento());
+                adicionar_funcionario(&add, get_armazenamento());
                 break;
             }
             // Atualizar funcionário

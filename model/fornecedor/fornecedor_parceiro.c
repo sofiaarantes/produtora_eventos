@@ -144,7 +144,7 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor_p
                                 printf("Fornecedor/Parceiro com CNPJ %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c atualizado em MEMÓRIA!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                                 cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                                 cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
-                                cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12], cnpj_busca[13], cnpj_busca[14]);
+                                cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12], cnpj_busca[13]);
                                 return &fornecedores_memoria[i];
                             }
                            
@@ -152,7 +152,7 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor_p
                         printf("Fornecedor/Parceiro com CNPJ %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c não encontrado em MEMÓRIA!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                         cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                         cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
-                        cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12], cnpj_busca[13], cnpj_busca[14]);
+                        cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12], cnpj_busca[13]);
                         return NULL;
                     }
 
@@ -245,7 +245,7 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor_p
 
                                             // Volto o ponteiro do arquivo para o início deste registro
                                             // para sobrescrever com os novos dados
-                                            if (fseek(fp, -sizeof(Fornecedor_parceiro), SEEK_CUR) != 0) {
+                                            if (fseek(fp, -(long)sizeof(Fornecedor_parceiro), SEEK_CUR) != 0) {
                                                 perror("Erro no fseek durante atualização");
                                                 fclose(fp);
                                                 return NULL;
@@ -268,7 +268,7 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor_p
                                             cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                                             cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                                             cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
-                                            cnpj_busca[13], cnpj_busca[14]);
+                                            cnpj_busca[13]);
 
                                             // Retorno o ponteiro para os novos dados
                                             return novos_dados;
@@ -281,7 +281,7 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor_p
                                         cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                                         cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                                         cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
-                                        cnpj_busca[13], cnpj_busca[14]);
+                                        cnpj_busca[13]);
                                     return NULL;
                                  }
 
@@ -462,7 +462,7 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor_p
                                 cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                                 cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                                 cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
-                                cnpj_busca[13], cnpj_busca[14]);
+                                cnpj_busca[13]);
                                 break; // saio do laço, já deletei
                             }
                         }
@@ -473,7 +473,7 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor_p
                                 cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                                 cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                                 cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
-                                cnpj_busca[13], cnpj_busca[14]);
+                                cnpj_busca[13]);
 
                         break;
                     }
@@ -544,12 +544,12 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor_p
                             printf("Fornecedor com CNPJ %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%cdeletado em ARQUIVO TEXTO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                                 cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                                 cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
-                                cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12], cnpj_busca[13], cnpj_busca[14]);
+                                cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12], cnpj_busca[13]);
                         else
                             printf("Fornecedor com CNPJ %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%cnão encontrado em ARQUIVO TEXTO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                                 cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                                 cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
-                                cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12], cnpj_busca[13], cnpj_busca[14]);
+                                cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12], cnpj_busca[13]);
 
                         break;
                     }
@@ -603,12 +603,12 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor_p
                                 printf("Fornecedor com CNPJ %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%cdeletado em ARQUIVO BINARIO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                                     cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                                     cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
-                                    cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12], cnpj_busca[13], cnpj_busca[14]);
+                                    cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12], cnpj_busca[13]);
                             else
                             printf("Fornecedor com CNPJ %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%cnão encontrado em ARQUIVO BINARIO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                                     cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                                     cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
-                                    cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12], cnpj_busca[13], cnpj_busca[14]);
+                                    cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12], cnpj_busca[13]);
 
                             break;
                         }

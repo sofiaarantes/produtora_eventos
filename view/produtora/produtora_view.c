@@ -25,7 +25,7 @@ void ver_produtora(const Produtora* produtora) {
     printf("+---------------------------------------------------------------------+\n");
     printf("| Nome Fantasia : %s\n", produtora->nome_fantasia);
     printf("| Razao Social : %s\n", produtora->razao_social);
-    printf("| Inscricao Estadual : %c%c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c\n", produtora->inscricao_estadual[0], produtora->inscricao_estadual[1], produtora->inscricao_estadual[2],
+    printf("| Inscricao Estadual : %c%c%c%c%c%c%c%c%c%c%c%c%c\n", produtora->inscricao_estadual[0], produtora->inscricao_estadual[1], produtora->inscricao_estadual[2],
        produtora->inscricao_estadual[3], produtora->inscricao_estadual[4], produtora->inscricao_estadual[5],
        produtora->inscricao_estadual[6], produtora->inscricao_estadual[7], produtora->inscricao_estadual[8],
        produtora->inscricao_estadual[9], produtora->inscricao_estadual[10], produtora->inscricao_estadual[11], produtora->inscricao_estadual[12]);

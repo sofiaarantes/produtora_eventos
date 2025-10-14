@@ -111,7 +111,7 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
                                 strcpy(produtoras_memoria[i].cnpj, cnpj_busca);
                                 // garantia de não mudar o CNPJ
 
-                                printf("Produtora com CNPJ %c%c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c atualizado em MEMÓRIA!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
+                                printf("Produtora com CNPJ %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c atualizado em MEMÓRIA!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                                 cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                                 cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                                 cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
@@ -120,7 +120,7 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
                             }
                            
                         }
-                        printf("Produtora com CNPJ %c%c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c não encontrada em MEMÓRIA!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
+                        printf("Produtora com CNPJ %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c não encontrada em MEMÓRIA!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                         cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                         cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                         cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
@@ -192,14 +192,14 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
 
                                 // Mensagem de sucesso ou falha
                                 if (atualizado) {
-                                   printf("Produtora com %c%c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c atualizado em TEXTO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
+                                   printf("Produtora com %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c atualizado em TEXTO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                                     cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                                     cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                                     cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
                                     cnpj_busca[13], cnpj_busca[14]);
                                     return novos_dados; // retorna os novos dados do produtora
                                 } else {
-                                    printf("Produtora com %c%c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c não encontrado em TEXTO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
+                                    printf("Produtora com %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c não encontrado em TEXTO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                                     cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                                     cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                                     cnpj_busca[9], cnpj_busca[10],cnpj_busca[11], cnpj_busca[12],
@@ -230,7 +230,7 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
 
                                         // Volto o ponteiro do arquivo para o início deste registro
                                         // para sobrescrever com os novos dados
-                                        if (fseek(fp, -sizeof(Produtora), SEEK_CUR) != 0) {
+                                        if (fseek(fp, -(long)sizeof(Produtora), SEEK_CUR) != 0) {
                                             perror("Erro no fseek durante atualização");
                                             fclose(fp);
                                             return NULL;
@@ -249,7 +249,7 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
 
                                         // Fecho o arquivo e informo que a atualização deu certo
                                         fclose(fp);
-                                        printf("Produtora com CNPJ %c%c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c atualizado em BINÁRIO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
+                                        printf("Produtora com CNPJ %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c atualizado em BINÁRIO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                                         cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                                         cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                                         cnpj_busca[9], cnpj_busca[10],cnpj_busca[11], cnpj_busca[12],
@@ -262,12 +262,11 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
 
                                 // Se chegar aqui, significa que não encontrei o CNPJ no arquivo
                                 fclose(fp);
-                                printf("Produtora com CNPJ %c%c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c não encontrada em BINÁRIO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
+                                printf("Produtora com CNPJ %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c não encontrada em BINÁRIO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                                     cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                                     cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                                     cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
-                                    cnpj_busca[13], cnpj_busca[14], cnpj_busca[11], cnpj_busca[12],
-                                    cnpj_busca[13], cnpj_busca[14]);
+                                    cnpj_busca[13]);
                                 return NULL;
                             }
 
@@ -449,7 +448,7 @@ void deletar_produtora(const char* cnpj_busca, TipoArmazenamento tipo) {
                     // Marco que encontrei o produtora
                     encontrado = 1;
 
-                    printf("Produtora com CNPJ %c%c%c.%c%c%c.%c%c%c-%c%c deletada em MEMÓRIA!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
+                    printf("Produtora com CNPJ  %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c deletada em MEMÓRIA!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                        cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                        cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                        cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
@@ -460,11 +459,11 @@ void deletar_produtora(const char* cnpj_busca, TipoArmazenamento tipo) {
 
             // Caso o produtora não tenha sido encontrado, aviso o usuário
             if (!encontrado)
-                 printf("Produtora com CNPJ %c%c%c.%c%c%c.%c%c%c-%c%c nao encontrada em MEMÓRIA!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
+                 printf("Produtora com CNPJ  %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c nao encontrada em MEMÓRIA!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                        cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                        cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                        cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
-                       cnpj_busca[13], cnpj_busca[14]);
+                       cnpj_busca[13]);
 
             break;
         }
@@ -539,13 +538,13 @@ void deletar_produtora(const char* cnpj_busca, TipoArmazenamento tipo) {
 
             // Exibo mensagem informando o resultado da operação
             if (deletado)
-                printf("Produtora com CNPJ %c%c%c.%c%c%c.%c%c%c-%c%c deletada em ARQUIVO TEXTO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
+                printf("Produtora com CNPJ  %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c deletada em ARQUIVO TEXTO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                        cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                        cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                        cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
                        cnpj_busca[13]);
             else
-                printf("Produtora com CNPJ %c%c%c.%c%c%c.%c%c%c-%c%c não encontrada no ARQUIVO TEXTO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
+                printf("Produtora com CNPJ  %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c não encontrada no ARQUIVO TEXTO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                        cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                        cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                        cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
@@ -600,13 +599,13 @@ void deletar_produtora(const char* cnpj_busca, TipoArmazenamento tipo) {
 
             // Exibo mensagens de status ao usuário
             if (deletado)
-                 printf("Produtora com CNPJ %c%c%c.%c%c%c.%c%c%c-%c%c deletada em ARQUIVO BINÁRIO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
+                 printf("Produtora com CNPJ  %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c deletada em ARQUIVO BINÁRIO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                        cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                        cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                        cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
                        cnpj_busca[13]);
             else
-                printf("Produtora com CNPJ %c%c%c.%c%c%c.%c%c%c-%c%c não encontrada no ARQUIVO BINÁRIO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
+                printf("Produtora com CNPJ  %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c não encontrada no ARQUIVO BINÁRIO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                        cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                        cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                        cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],

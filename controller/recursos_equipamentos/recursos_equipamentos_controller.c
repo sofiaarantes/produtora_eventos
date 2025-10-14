@@ -10,7 +10,6 @@
 
 
 void gerenciar_equipamento() {
-    RecursosEquipamentos* equipamentos = NULL;
     int opcao;
 
     do {
@@ -19,7 +18,7 @@ void gerenciar_equipamento() {
             // Adicionar equipamento
             case 1: {
                 RecursosEquipamentos add = ler_dados_equipamento();
-                equipamentos = adicionar_equipamento(&add, get_armazenamento());
+                adicionar_equipamento(&add, get_armazenamento());
                 break;
             }
             // Atualizar equipamento
