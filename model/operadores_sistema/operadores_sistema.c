@@ -76,7 +76,8 @@ Operadores* buscar_operador_por_credenciais(const char* usuario, const char* sen
 
     Operadores* encontrado = malloc(sizeof(Operadores));
     while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];%d;\n",
-              &encontrado->id, encontrado->nome, encontrado->usuario, encontrado->senha, &encontrado->tipo) != EOF) {
+              &encontrado->id, encontrado->nome, encontrado->usuario, encontrado->senha,
+              (int*)&encontrado->tipo) != EOF) { 
         if (strcmp(encontrado->usuario, usuario) == 0 &&
             strcmp(encontrado->senha, senha) == 0) {
             fclose(fp);

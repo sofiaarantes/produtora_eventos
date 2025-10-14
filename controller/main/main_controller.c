@@ -6,6 +6,8 @@
 #include "../controller/config_armazenamento/config_armazenamento_controller.h"
 #include "../controller/fornecedor/fornecedor_parceiro_controller.h"
 #include "../controller/produtora/produtora_controller.h"
+#include "../controller/operadores_sistema/operadores_sistema_controller.h"
+#include "../view/main/main_view.h"
 
 // Controla o primeiro menu do sistema e chama cada menu correspondente
 void iniciar_sistema(){ 
