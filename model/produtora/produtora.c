@@ -89,9 +89,10 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
                 printf("Produtora %s salva em BINÁRIO!\n", produtora->nome_fantasia);
                 return produtora;
             }
-
-
-        
+        default: {
+            printf("Tipo de armazenamento inválido!\n");
+            return NULL;
+        }
     }
 }    
             // Função que atualiza um produtora de acordo com o tipo escolhido
@@ -270,6 +271,10 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
                                 return NULL;
                             }
 
+        }
+        default: {
+            printf("Tipo de armazenamento inválido!\n");
+            return NULL;
         }
     }
 }
@@ -538,13 +543,13 @@ void deletar_produtora(const char* cnpj_busca, TipoArmazenamento tipo) {
                        cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                        cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                        cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
-                       cnpj_busca[13], cnpj_busca[14]);
+                       cnpj_busca[13]);
             else
                 printf("Produtora com CNPJ %c%c%c.%c%c%c.%c%c%c-%c%c não encontrada no ARQUIVO TEXTO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                        cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                        cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                        cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
-                       cnpj_busca[13], cnpj_busca[14]);
+                       cnpj_busca[13]);
 
             break;
         }
@@ -598,13 +603,14 @@ void deletar_produtora(const char* cnpj_busca, TipoArmazenamento tipo) {
                  printf("Produtora com CNPJ %c%c%c.%c%c%c.%c%c%c-%c%c deletada em ARQUIVO BINÁRIO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                        cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                        cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
-                       cnpj_busca[9], cnpj_busca[10]);
+                       cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
+                       cnpj_busca[13]);
             else
                 printf("Produtora com CNPJ %c%c%c.%c%c%c.%c%c%c-%c%c não encontrada no ARQUIVO BINÁRIO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                        cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                        cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                        cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
-                       cnpj_busca[13], cnpj_busca[14]);
+                       cnpj_busca[13]);
 
             break;
         }

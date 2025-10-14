@@ -20,7 +20,7 @@ void gerenciar_fornecedor_parceiro() {
                 if (fornecedor_parceiro) {
                     exibir_mensagem("Já existe um fornecedor/parceiro. Delete-o antes de criar outro.");
                 } else {
-                    Fornecedor_parceiro* fornecedor_parceiro_salvo = criar_fornecedor_parceiro(&temp, get_armazenamento());
+                     criar_fornecedor_parceiro(&temp, get_armazenamento());
                     exibir_mensagem("Fornecedor/Parceiro criado com sucesso!");
                 }
                 break;

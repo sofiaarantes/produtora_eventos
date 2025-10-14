@@ -220,7 +220,7 @@ int atualizar_equipamento_binario(int id, const char* descricao, const char* cat
             e.valor_diaria = valor_diaria;
 
             // Move o ponteiro do arquivo de volta para o início do registro que acabou de ler
-            fseek(fp, -sizeof(RecursosEquipamentos), SEEK_CUR);
+            fseek(fp, -(long)sizeof(RecursosEquipamentos), SEEK_CUR);
             fwrite(&e, sizeof(RecursosEquipamentos), 1, fp);
 
             printf("Equipamento atualizado no arquivo Binário!\n");

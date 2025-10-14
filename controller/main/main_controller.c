@@ -11,7 +11,6 @@
 #include "../controller/fornecedor/fornecedor_parceiro_controller.h"
 #include "../controller/produtora/produtora_controller.h"
 
-
 // Controla o primeiro menu do sistema e chama cada menu correspondente
 void iniciar_sistema(){ 
     int opcao;
@@ -47,9 +46,9 @@ void iniciar_sistema(){
         case 6:{
             break;
         }
-        // Menu Configuração de Armazenamento
+        // Editar conta
         case 7:{ 
-           inicializar_armazenamento();
+            editar_operador();
             break;
         }
         

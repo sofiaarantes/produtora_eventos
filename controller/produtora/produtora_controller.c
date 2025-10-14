@@ -20,7 +20,7 @@ void gerenciar_produtora() {
                 if (produtora) {
                     exibir_mensagem("Já existe uma produtora. Delete-a antes de criar outra.");
                 } else {
-                    Produtora* produtora_salva = criar_produtora(&temp, get_armazenamento());
+                     criar_produtora(&temp, get_armazenamento());
                     exibir_mensagem("Produtora criada com sucesso!");
                 }
                 break;

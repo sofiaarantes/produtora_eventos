@@ -28,8 +28,7 @@ void ver_produtora(const Produtora* produtora) {
     printf("| Inscricao Estadual : %c%c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c\n", produtora->inscricao_estadual[0], produtora->inscricao_estadual[1], produtora->inscricao_estadual[2],
        produtora->inscricao_estadual[3], produtora->inscricao_estadual[4], produtora->inscricao_estadual[5],
        produtora->inscricao_estadual[6], produtora->inscricao_estadual[7], produtora->inscricao_estadual[8],
-       produtora->inscricao_estadual[9], produtora->inscricao_estadual[10], produtora->inscricao_estadual[11], produtora->inscricao_estadual[12],
-       produtora->inscricao_estadual[13]);
+       produtora->inscricao_estadual[9], produtora->inscricao_estadual[10], produtora->inscricao_estadual[11], produtora->inscricao_estadual[12]);
     printf("| Telefone: (%c%c) %c%c%c%c%c-%c%c%c%c\n",
        produtora->tel[0], produtora->tel[1],    // DDD
        produtora->tel[2], produtora->tel[3], produtora->tel[4], produtora->tel[5], produtora->tel[6], // primeiros 5
@@ -39,7 +38,7 @@ void ver_produtora(const Produtora* produtora) {
                                         produtora->cnpj[3], produtora->cnpj[4], produtora->cnpj[5],
                                         produtora->cnpj[6], produtora->cnpj[7], produtora->cnpj[8],
                                         produtora->cnpj[9], produtora->cnpj[10], produtora->cnpj[11], produtora->cnpj[12],
-                                        produtora->cnpj[13], produtora->cnpj[14]);
+                                        produtora->cnpj[13]);
     //usando %c (em vez de %s) porque estou imprimindo cada caractere individualmente do CNPJ, e não a string completa.
 
     printf("| Email : %s\n", produtora->email);
