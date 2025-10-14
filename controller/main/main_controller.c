@@ -3,7 +3,6 @@
 #include "../controller/equipe_interna/equipe_interna_controller.h"  
 #include "../controller/recursos_equipamentos/recursos_equipamentos_controller.h" 
 #include "../controller/cliente/cliente_controller.h"
-#include "../controller/config_armazenamento/config_armazenamento_controller.h"
 #include "../controller/fornecedor/fornecedor_parceiro_controller.h"
 #include "../controller/produtora/produtora_controller.h"
 #include "../controller/operadores_sistema/operadores_sistema_controller.h"

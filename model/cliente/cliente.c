@@ -19,7 +19,8 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
     // Verifica automaticamente se é CPF ou CNPJ
     cliente->tipo_doc = identificar_documento(cliente->cpf_cnpj);
     if (cliente->tipo_doc == TIPO_DESCONHECIDO) {
-        printf("Erro: documento inválido (%s). Deve ter 11 (CPF) ou 14 (CNPJ) dígitos.\n", cliente->cpf_cnpj);
+        printf("Erro: documento invalido (%s). Deve ter 11 (CPF) ou 14 (CNPJ) digitos.\n", cliente->cpf_cnpj);
+        printf("Cliente NAO salvo.\n");
         return NULL;
     }
 

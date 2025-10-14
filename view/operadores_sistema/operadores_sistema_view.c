@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "operadores_sistema/operadores_sistema_view.h"
 #include "main/main_view.h"
+#include "../../model/config_armazenamento/config_armazenamento.h"
 #include "../../util/util.h"
 
 int exibir_menu_operadores() {
@@ -11,7 +12,6 @@ int exibir_menu_operadores() {
     printf("1 - Ja tenho uma conta, quero fazer login\n");
     printf("2 - Ainda não tenho uma conta, quero me registrar\n");
     printf("3 - Sair\n");
-    printf("[DEBUG] Chamando ler_int agora...\n");
 
     ler_int("Escolha uma opcao: ", &opcao);
     return opcao;
@@ -21,7 +21,7 @@ Operadores ler_dados_operador_login() {
     Operadores o;
     ler_string("Usuário: ", o.usuario, sizeof(o.usuario));
     ler_string("Senha: ", o.senha, sizeof(o.senha));
-    printf("[DEBUG] Chamando ler_int agora...\n");
+    
 
     return o;  // Retorna a struct preenchida
 }
@@ -33,23 +33,31 @@ Operadores ler_dados_operador_cadastro() {
     ler_string("Nome: ", o.nome, sizeof(o.nome));
     ler_string("Usuário: ", o.usuario, sizeof(o.usuario));
     ler_string("Senha: ", o.senha, sizeof(o.senha));
-    int opcao = mostrar_menu_configuracao(); // mostra menu e retorna a opção
+
+    int opcao = mostrar_menu_configuracao();
     switch (opcao) {
         case 1:
             o.tipo = MEMORIA;
+            set_armazenamento(MEMORIA);  // <- aqui
             break;
         case 2:
             o.tipo = TEXTO;
+            set_armazenamento(TEXTO);   // <- aqui
             break;
         case 3:
             o.tipo = BINARIO;
+            set_armazenamento(BINARIO); // <- aqui
             break;
         default:
-            o.tipo = MEMORIA; 
+            o.tipo = MEMORIA;
+            set_armazenamento(MEMORIA); // <- aqui
             break;
     }
+
+    exibir_mensagem("Armazenamento configurado!");
     return o;  // Retorna a struct preenchida
 }
+
 
 void exibir_operador(const Operadores* operador) {
     if (!operador) {
@@ -60,13 +68,13 @@ void exibir_operador(const Operadores* operador) {
     }
     const char* tipo_str;
     switch (operador->tipo) {
-        case 1:
+        case MEMORIA:
             tipo_str = "Memória";
             break;
-        case 2:
+        case TEXTO:
             tipo_str = "Texto";
             break;
-        case 3:
+        case BINARIO:
             tipo_str = "Binário";
             break;
         default:
@@ -86,8 +94,8 @@ int exibir_menu_operadores_editar() {
     printf("----- CONTA -----\n");
     printf("=================\n");
     printf("1 - Editar dados\n");
-    printf("2 - Editar método de armazenamento\n");
-    printf("3 - Deletar conta\n");
+    printf("1 - Editar método de armazenamento\n");
+    printf("2 - Deletar conta\n");
     printf("0 - Sair\n");
     ler_int("Escolha uma opcao: ", &opcao);
     return opcao;

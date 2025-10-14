@@ -2,8 +2,9 @@
 #include "../model/config_armazenamento/config_armazenamento.h"
 #include "../view/main/main_view.h"
 #include "../controller/main/main_controller.h"
-#include "../controller/config_armazenamento/config_armazenamento_controller.h"
+#include "config_armazenamento_controller.h"
 
+// Inicializa a configuração do armazenamento
 int inicializar_armazenamento() { 
     int opcao = mostrar_menu_configuracao();
 
@@ -21,11 +22,10 @@ int inicializar_armazenamento() {
             exibir_mensagem("Saindo da configuracao.\n");
             return 0;
         default:
-            exibir_mensagem("Opção invalida\n");
-            return inicializar_armazenamento(); // repete
+            exibir_mensagem("Opção inválida\n");
+            return inicializar_armazenamento(); // repete até o usuário escolher certo
     }
 
     exibir_mensagem("Armazenamento configurado!");
-    iniciar_sistema(); // inicia e não volta aqui
-    return 0;
+    return get_armazenamento(); // retorna o tipo selecionado
 }
