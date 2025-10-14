@@ -123,7 +123,9 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor_p
     
      
     }
-}
+    return NULL; // Caso inválido
+} 
+
 
 // Função que atualiza um fornecedor/parceiro de acordo com o tipo escolhido
             // recebe o CNPJ do fornecedor/parceiro que quero atualizar e o tipo de armazenamento
@@ -286,6 +288,7 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor_p
                                  }
 
                 }
+                return NULL; // Caso inválido
              }
 
              // Retorna quantos fornecedores/parceiros já estão salvos em memória

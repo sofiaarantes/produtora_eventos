@@ -115,7 +115,7 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
                                 cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                                 cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                                 cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
-                                cnpj_busca[13], cnpj_busca[14]);
+                                cnpj_busca[13]);
                                 return &produtoras_memoria[i];
                             }
                            
@@ -124,7 +124,7 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
                         cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                         cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                         cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
-                        cnpj_busca[13], cnpj_busca[14]);
+                        cnpj_busca[13]);
                                             return NULL;
                     }
 
@@ -154,7 +154,7 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
                                     // Leitura dos campos da linha, separados por ';'
                                     sscanf(linha, "%49[^;];%49[^;];%13[^;];%14[^;];%99[^;];%11[^\n];%49[^\n];%49[^\n];%11[^\n];%f",
                                          p.nome_fantasia, p.razao_social, p.inscricao_estadual,
-                                        p.cnpj, p.endereco_completo,p.tel, p.email, p.nome_resp,p.tel_resp,p.lucro);
+                                        p.cnpj, p.endereco_completo,p.tel, p.email, p.nome_resp,p.tel_resp,&p.lucro);
 
                                     // Removo possíveis '\n' ou '\r' de todos os campos lidos
                                     
@@ -196,14 +196,14 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
                                     cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                                     cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                                     cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
-                                    cnpj_busca[13], cnpj_busca[14]);
+                                    cnpj_busca[13]);
                                     return novos_dados; // retorna os novos dados do produtora
                                 } else {
                                     printf("Produtora com %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c não encontrado em TEXTO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
                                     cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                                     cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                                     cnpj_busca[9], cnpj_busca[10],cnpj_busca[11], cnpj_busca[12],
-                                    cnpj_busca[13], cnpj_busca[14]);
+                                    cnpj_busca[13]);
                                     return NULL; // produtora não encontrada
                                 }
                             }
@@ -253,7 +253,7 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
                                         cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
                                         cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
                                         cnpj_busca[9], cnpj_busca[10],cnpj_busca[11], cnpj_busca[12],
-                                        cnpj_busca[13], cnpj_busca[14]);
+                                        cnpj_busca[13]);
 
                                         // Retorno o ponteiro para os novos dados
                                         return novos_dados;
@@ -519,7 +519,7 @@ void deletar_produtora(const char* cnpj_busca, TipoArmazenamento tipo) {
                         produtora.email,
                         produtora.nome_resp,
                         produtora.tel_resp,
-                        &produtora.lucro
+                        produtora.lucro
                     );
                 } else {
                     // Caso o CNPJ seja o que quero deletar, apenas marco a exclusão
