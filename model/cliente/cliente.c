@@ -141,6 +141,7 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
 
      
     }
+    return NULL; // Caso inválido
 }
 //-------------------------------------
  // Função que atualiza um cliente de acordo com o tipo escolhido
@@ -310,6 +311,7 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
                             }
 
         }
+        return NULL; // Caso inválido
     }
 
 //------------------------------------
