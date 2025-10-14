@@ -60,13 +60,13 @@ void exibir_operador(const Operadores* operador) {
     }
     const char* tipo_str;
     switch (operador->tipo) {
-        case MEMORIA:
+        case 1:
             tipo_str = "Memória";
             break;
-        case TEXTO:
+        case 2:
             tipo_str = "Texto";
             break;
-        case BINARIO:
+        case 3:
             tipo_str = "Binário";
             break;
         default:
@@ -86,8 +86,8 @@ int exibir_menu_operadores_editar() {
     printf("----- CONTA -----\n");
     printf("=================\n");
     printf("1 - Editar dados\n");
-    printf("1 - Editar método de armazenamento\n");
-    printf("2 - Deletar conta\n");
+    printf("2 - Editar método de armazenamento\n");
+    printf("3 - Deletar conta\n");
     printf("0 - Sair\n");
     ler_int("Escolha uma opcao: ", &opcao);
     return opcao;

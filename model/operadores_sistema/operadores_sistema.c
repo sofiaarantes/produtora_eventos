@@ -11,9 +11,10 @@ Operadores* adicionar_operador(Operadores* operador) {
     FILE* fp = fopen("operadores.txt", "r");
     if (fp) {
         Operadores tmp;
-        while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];%d;\n",
-                      &tmp.id, tmp.nome, tmp.usuario, tmp.senha, (int*)&tmp.tipo) != EOF) {
-            novo_id = tmp.id + 1;
+        while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];%d;\n", 
+            &tmp.id, tmp.nome, tmp.usuario, tmp.senha, (int*)&tmp.tipo) != EOF) 
+        {
+            novo_id = tmp.id + 1; 
         }
         fclose(fp);
     }
