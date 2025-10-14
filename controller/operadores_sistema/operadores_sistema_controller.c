@@ -6,6 +6,7 @@
 #include "../../view/main/main_view.h"
 #include "../../controller/main/main_controller.h"
 #include "../../model/sessao/sessao.h"
+#include "../../util/util.h"
 
 void criptografar_senha(char* senha) {
     for (int i = 0; senha[i] != '\0'; i++) {
@@ -143,9 +144,8 @@ void editar_operador() {
 
         } else if (opcao == 2) {
             // Deletar conta
-            printf("\nTem certeza que deseja deletar sua conta? (1 - Sim / 0 - Não): ");
             int confirmar;
-            scanf("%d", &confirmar);
+           ler_int("\nTem certeza que deseja deletar sua conta? (1-Sim / 0-Não): ", &confirmar);
             if (confirmar == 1) {
                 deletar_operador(id_logado);
                 limpar_sessao();

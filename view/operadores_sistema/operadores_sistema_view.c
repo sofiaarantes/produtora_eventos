@@ -11,6 +11,8 @@ int exibir_menu_operadores() {
     printf("1 - Ja tenho uma conta, quero fazer login\n");
     printf("2 - Ainda não tenho uma conta, quero me registrar\n");
     printf("3 - Sair\n");
+    printf("[DEBUG] Chamando ler_int agora...\n");
+
     ler_int("Escolha uma opcao: ", &opcao);
     return opcao;
 }
@@ -19,6 +21,8 @@ Operadores ler_dados_operador_login() {
     Operadores o;
     ler_string("Usuário: ", o.usuario, sizeof(o.usuario));
     ler_string("Senha: ", o.senha, sizeof(o.senha));
+    printf("[DEBUG] Chamando ler_int agora...\n");
+
     return o;  // Retorna a struct preenchida
 }
 
@@ -85,13 +89,12 @@ int exibir_menu_operadores_editar() {
     printf("1 - Editar método de armazenamento\n");
     printf("2 - Deletar conta\n");
     printf("0 - Sair\n");
-    printf("Escolha: ");
-    scanf("%d", &opcao);
+    ler_int("Escolha uma opcao: ", &opcao);
     return opcao;
 }
 
 void ler_dados_atualizados_operador(char* nome, char* usuario) {
     printf("\n--- Editar Dados ---\n");
-    printf("Novo nome: "); scanf(" %[^\n]", nome);
-    printf("Novo usuário: "); scanf(" %[^\n]", usuario);
+    ler_string("Novo nome: ", nome, sizeof(nome));
+    ler_string("Novo usuário: ", usuario,sizeof(usuario));
 }
