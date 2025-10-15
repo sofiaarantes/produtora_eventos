@@ -3,3 +3,4 @@
 3;alex;alexbin;456;3;
 4;felipe;felipetxt;456;2;
 5;linda;lindatxt;456;2;
+6;livia;liviatxt;456;2;
