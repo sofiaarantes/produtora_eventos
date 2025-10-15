@@ -19,7 +19,7 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
     // Antes de salvar, garanto que o tipo de documento (CPF ou CNPJ) foi identificado corretamente
     cliente->tipo_doc = identificar_documento(cliente->cpf_cnpj);
 
-    // Se o documento for inválido, aviso e encerro a função
+    // Se o documento for invalido, aviso e encerro a função
     if (cliente->tipo_doc == TIPO_DESCONHECIDO) {
         printf("Erro: documento invalido (%s). Deve ter 11 (CPF) ou 14 (CNPJ) digitos.\n", cliente->cpf_cnpj);
         printf("Cliente NAO salvo.\n");
@@ -33,7 +33,7 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
     switch (tipo) {
 
         // ============================================
-        // CASO 1 - SALVAR CLIENTE NA MEMÓRIA
+        // CASO 1 - SALVAR CLIENTE NA MEMORIA
         // ============================================
         case MEMORIA: {
             // Verifico se ainda há espaço no array de clientes em memória
@@ -144,7 +144,7 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
 
 
         // ============================================
-        // CASO 3 - SALVAR CLIENTE EM ARQUIVO BINÁRIO
+        // CASO 3 - SALVAR CLIENTE EM ARQUIVO BINARIO
         // ============================================
         case BINARIO: {
             // Abre o arquivo binário em modo leitura ("rb") para descobrir o último ID
@@ -189,7 +189,7 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
             const char* tipoTexto = (cliente->tipo_doc == TIPO_CPF) ? "CPF" :
                                     (cliente->tipo_doc == TIPO_CNPJ) ? "CNPJ" : "DESCONHECIDO";
 
-            printf("Cliente %s salvo em BINÁRIO! Tipo de documento: %s\n", cliente->nome, tipoTexto);
+            printf("Cliente %s salvo em BINARIO! Tipo de documento: %s\n", cliente->nome, tipoTexto);
 
             // Retorna o ponteiro do cliente que foi salvo
             return cliente;
@@ -213,7 +213,7 @@ Cliente* atualizar_cliente(const char* cpf_cnpj_busca, Cliente* novos_dados, Tip
     switch (tipo) {
 
         // ==========================
-        // CASO 1: CLIENTES EM MEMÓRIA
+        // CASO 1: CLIENTES EM MEMORIA
         // ==========================
         case MEMORIA: {
             // Percorro todos os clientes armazenados em memória
@@ -234,7 +234,7 @@ Cliente* atualizar_cliente(const char* cpf_cnpj_busca, Cliente* novos_dados, Tip
                     clientes_memoria[i].tipo_doc = tipo_doc_original;
 
                     // Mensagem de sucesso
-                    printf(" Cliente %s atualizado em MEMÓRIA!\n", clientes_memoria[i].nome);
+                    printf(" Cliente %s atualizado em MEMORIA!\n", clientes_memoria[i].nome);
 
                     // Retorna o endereço do cliente atualizado
                     return &clientes_memoria[i];
@@ -242,7 +242,7 @@ Cliente* atualizar_cliente(const char* cpf_cnpj_busca, Cliente* novos_dados, Tip
             }
 
             // Caso o cliente não seja encontrado
-            printf(" Cliente com CPF/CNPJ %s não encontrado em MEMÓRIA!\n", cpf_cnpj_busca);
+            printf(" Cliente com CPF/CNPJ %s não encontrado em MEMORIA!\n", cpf_cnpj_busca);
             return NULL;
         }
 
@@ -320,7 +320,7 @@ Cliente* atualizar_cliente(const char* cpf_cnpj_busca, Cliente* novos_dados, Tip
                     }
 
         // ==========================
-        // CASO 3: ARQUIVO BINÁRIO
+        // CASO 3: ARQUIVO BINARIO
         // ==========================
         case BINARIO: {
             // Abro o arquivo binário no modo leitura/escrita
@@ -349,14 +349,14 @@ Cliente* atualizar_cliente(const char* cpf_cnpj_busca, Cliente* novos_dados, Tip
 
                     // Fecho o arquivo e retorno
                     fclose(fp);
-                    printf("Cliente %s atualizado em BINÁRIO!\n", novos_dados->nome);
+                    printf("Cliente %s atualizado em BINARIO!\n", novos_dados->nome);
                     return novos_dados;
                 }
             }
 
             // Caso não encontre o cliente
             fclose(fp);
-            printf(" Cliente com CPF/CNPJ %s não encontrado em BINÁRIO!\n", cpf_cnpj_busca);
+            printf(" Cliente com CPF/CNPJ %s não encontrado em BINARIO!\n", cpf_cnpj_busca);
             return NULL;
         }
 
@@ -364,7 +364,7 @@ Cliente* atualizar_cliente(const char* cpf_cnpj_busca, Cliente* novos_dados, Tip
         // CASO INVÁLIDO
         // ==========================
         default:
-            printf("Tipo de armazenamento inválido!\n");
+            printf("Tipo de armazenamento invalido!\n");
             return NULL;
     }
 }
@@ -382,12 +382,12 @@ int get_qtd_clientes() {
 //-----------------------------
 // Função para buscar e exibir diretamente um cliente pelo CPF/CNPJ
 void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
-    // Verifico se o CPF/CNPJ passado é nulo (inválido)
+    // Verifico se o CPF/CNPJ passado é nulo (invalido)
     if (!cpf_cnpj_busca) {
         exibir_mensagem("+--------------------------+\n");
-        exibir_mensagem("| CPF/CNPJ inválido!       |\n");
+        exibir_mensagem("| CPF/CNPJ invalido!       |\n");
         exibir_mensagem("+--------------------------+\n");
-        return; // se for inválido, saio da função
+        return; // se for invalido, saio da função
     }
 
     Cliente* cliente = NULL; // Ponteiro que vai armazenar o cliente encontrado, se existir
@@ -432,7 +432,7 @@ void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo)
             // Leio o arquivo linha por linha
             while (fgets(linha, sizeof(linha), fp)) {
                 // Extraio os campos separados por ponto e vírgula
-                sscanf(linha, "%d;%49[^;];%d;%99[^;];%11[^;];%11[^;];%49[^;];%49[^\n]",
+                sscanf(linha, "%d;%49[^;];%d;%99[^;];%19[^;];%11[^;];%49[^;];%49[^;];%d",
                     &cliente->id,
                     cliente->nome,
                     &cliente->idade,
@@ -440,8 +440,10 @@ void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo)
                     cliente->cpf_cnpj,
                     cliente->tel,
                     cliente->email,
-                    cliente->nome_contato
+                    cliente->nome_contato,
+                    (int*)&cliente->tipo_doc   // <-- adiciona esta leitura!
                 );
+
 
                 // Comparo o CPF lido com o CPF buscado
                 if (strncmp(cliente->cpf_cnpj, cpf_cnpj_busca, sizeof(cliente->cpf_cnpj)) == 0) {
@@ -499,7 +501,7 @@ void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo)
 
         // Caso o tipo de armazenamento não seja reconhecido
         default:
-            exibir_mensagem("Tipo de armazenamento inválido!\n");
+            exibir_mensagem("Tipo de armazenamento invalido!\n");
             return;
     }
 
@@ -514,7 +516,7 @@ void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo)
 void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
     // Verifico se o parâmetro cpf_cnpj_busca é nulo antes de continuar
     if (!cpf_cnpj_busca) {
-        printf("CPF/CNPJ inválido!\n");
+        printf("CPF/CNPJ invalido!\n");
         return;
     }
 
@@ -522,7 +524,7 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
     switch (tipo) {
 
         // =====================================================
-        // Caso 1 — Deletar cliente armazenado em MEMÓRIA
+        // Caso 1 — Deletar cliente armazenado em MEMORIA
         // =====================================================
         case MEMORIA: {
             int encontrado = 0; // variável para controlar se o cliente foi achado
@@ -543,7 +545,7 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
                     // Marco que encontrei o cliente
                     encontrado = 1;
 
-                    printf("Cliente com CPF %c%c%c.%c%c%c.%c%c%c-%c%c deletado em MEMÓRIA!\n", cpf_cnpj_busca[0], cpf_cnpj_busca[1], cpf_cnpj_busca[2],
+                    printf("Cliente com CPF %c%c%c.%c%c%c.%c%c%c-%c%c deletado em MEMORIA!\n", cpf_cnpj_busca[0], cpf_cnpj_busca[1], cpf_cnpj_busca[2],
                        cpf_cnpj_busca[3], cpf_cnpj_busca[4], cpf_cnpj_busca[5],
                        cpf_cnpj_busca[6], cpf_cnpj_busca[7], cpf_cnpj_busca[8],
                        cpf_cnpj_busca[9], cpf_cnpj_busca[10]);
@@ -553,7 +555,7 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
 
             // Caso o cliente não tenha sido encontrado, aviso o usuário
             if (!encontrado)
-                 printf("Cliente com CPF %c%c%c.%c%c%c.%c%c%c-%c%c nao encontrado em MEMÓRIA!\n", cpf_cnpj_busca[0], cpf_cnpj_busca[1], cpf_cnpj_busca[2],
+                 printf("Cliente com CPF %c%c%c.%c%c%c.%c%c%c-%c%c nao encontrado em MEMORIA!\n", cpf_cnpj_busca[0], cpf_cnpj_busca[1], cpf_cnpj_busca[2],
                        cpf_cnpj_busca[3], cpf_cnpj_busca[4], cpf_cnpj_busca[5],
                        cpf_cnpj_busca[6], cpf_cnpj_busca[7], cpf_cnpj_busca[8],
                        cpf_cnpj_busca[9], cpf_cnpj_busca[10]);
@@ -640,7 +642,7 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
         }
 
         // =====================================================
-        // Caso 3 — Deletar cliente de ARQUIVO BINÁRIO
+        // Caso 3 — Deletar cliente de ARQUIVO BINARIO
         // =====================================================
         case BINARIO: {
             // Abro o arquivo binário original em modo leitura binária
@@ -685,12 +687,12 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
 
             // Exibo mensagens de status ao usuário
             if (deletado)
-                 printf("Cliente com CPF %c%c%c.%c%c%c.%c%c%c-%c%c deletado em ARQUIVO BINÁRIO!\n", cpf_cnpj_busca[0], cpf_cnpj_busca[1], cpf_cnpj_busca[2],
+                 printf("Cliente com CPF %c%c%c.%c%c%c.%c%c%c-%c%c deletado em ARQUIVO BINARIO!\n", cpf_cnpj_busca[0], cpf_cnpj_busca[1], cpf_cnpj_busca[2],
                        cpf_cnpj_busca[3], cpf_cnpj_busca[4], cpf_cnpj_busca[5],
                        cpf_cnpj_busca[6], cpf_cnpj_busca[7], cpf_cnpj_busca[8],
                        cpf_cnpj_busca[9], cpf_cnpj_busca[10]);
             else
-                printf("Cliente com CPF %c%c%c.%c%c%c.%c%c%c-%c%c não encontrado no ARQUIVO BINÁRIO!\n", cpf_cnpj_busca[0], cpf_cnpj_busca[1], cpf_cnpj_busca[2],
+                printf("Cliente com CPF %c%c%c.%c%c%c.%c%c%c-%c%c não encontrado no ARQUIVO BINARIO!\n", cpf_cnpj_busca[0], cpf_cnpj_busca[1], cpf_cnpj_busca[2],
                        cpf_cnpj_busca[3], cpf_cnpj_busca[4], cpf_cnpj_busca[5],
                        cpf_cnpj_busca[6], cpf_cnpj_busca[7], cpf_cnpj_busca[8],
                        cpf_cnpj_busca[9], cpf_cnpj_busca[10]);
@@ -699,10 +701,10 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
         }
 
         // =====================================================
-        // Caso padrão — tipo de armazenamento inválido
+        // Caso padrão — tipo de armazenamento invalido
         // =====================================================
         default:
-            printf("Tipo de armazenamento inválido!\n");
+            printf("Tipo de armazenamento invalido!\n");
             break;
     }
 }

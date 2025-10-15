@@ -8,3 +8,7 @@
 8;ru;rubin;456;3;
 9;alu;alutxt;456;2;
 10;gau;gautxt;456;2;
+11;li;litxt;456;2;
+12;kau;kautxt;456;2;
+13;kuna;kunamemoria;456;1;
+14;davi;davibin;456;3;

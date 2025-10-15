@@ -2,10 +2,12 @@
 #include "cliente/cliente_view.h"
 #include "../../util/util.h"
 #include "../../view/main/main_view.h"
+#include "../../model/cliente/cliente.h"
 
 
 
 void ver_cliente(const Cliente* cliente) {
+    
     if (!cliente) {
         printf("+--------------------------+\n");
         printf("| Cliente inexistente!     |\n");
@@ -21,14 +23,29 @@ void ver_cliente(const Cliente* cliente) {
        cliente->tel[2], cliente->tel[3], cliente->tel[4], cliente->tel[5], cliente->tel[6], // primeiros 5
        cliente->tel[7], cliente->tel[8], cliente->tel[9], cliente->tel[10]); // últimos 4   
     printf("| Endereco : %s\n", cliente->endereco_completo);
-    printf("| CPF/CNPJ: %c%c%c.%c%c%c.%c%c%c-%c%c\n",
+    if (cliente->tipo_doc == TIPO_CPF) {
+         printf("| CPF: %c%c%c.%c%c%c.%c%c%c-%c%c\n",
        cliente->cpf_cnpj[0], cliente->cpf_cnpj[1], cliente->cpf_cnpj[2],
        cliente->cpf_cnpj[3], cliente->cpf_cnpj[4], cliente->cpf_cnpj[5],
        cliente->cpf_cnpj[6], cliente->cpf_cnpj[7], cliente->cpf_cnpj[8],
        cliente->cpf_cnpj[9], cliente->cpf_cnpj[10]);
-        //usando %c (em vez de %s) porque estou imprimindo cada caractere individualmente do CPF, e não a string completa.
+    } else if (cliente->tipo_doc == TIPO_CNPJ) {
+        printf("| CNPJ: %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c\n",
+               cliente->cpf_cnpj[0], cliente->cpf_cnpj[1], cliente->cpf_cnpj[2],
+               cliente->cpf_cnpj[3], cliente->cpf_cnpj[4], cliente->cpf_cnpj[5],
+               cliente->cpf_cnpj[6], cliente->cpf_cnpj[7], cliente->cpf_cnpj[8],
+               cliente->cpf_cnpj[9], cliente->cpf_cnpj[10], cliente->cpf_cnpj[11],
+               cliente->cpf_cnpj[12], cliente->cpf_cnpj[13]);
+    } else {
+        printf("| Tipo de documento: DESCONHECIDO\n");
+    }
+   
+    
     printf("| Email : %s\n", cliente->email);
     printf("| Nome do contato: %s\n", cliente->nome_contato);
+    const char* tipoTexto = (cliente->tipo_doc == TIPO_CPF) ? "CPF" :
+                                        (cliente->tipo_doc == TIPO_CNPJ) ? "CNPJ" : "DESCONHECIDO";
+    printf("| Tipo de documento: %s\n", tipoTexto);
     printf("+---------------------------------------------------------------------+\n");
 }
 
