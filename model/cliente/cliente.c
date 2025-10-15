@@ -12,11 +12,10 @@ static Cliente clientes_memoria[MAX_CLIENTES]; // cada posição guarda um clien
 static int qtd = 0; // contador de quantos clientes já estão salvos na memória
 
 
-// Função que cria e salva um cliente de acordo com o tipo escolhido
 Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
     if (!cliente) return NULL; // se o ponteiro for nulo, não posso salvar
 
-    // Verifica automaticamente se é CPF ou CNPJ
+    // Garante que o tipo de documento está correto (recalcula sempre)
     cliente->tipo_doc = identificar_documento(cliente->cpf_cnpj);
     if (cliente->tipo_doc == TIPO_DESCONHECIDO) {
         printf("Erro: documento invalido (%s). Deve ter 11 (CPF) ou 14 (CNPJ) digitos.\n", cliente->cpf_cnpj);
@@ -28,122 +27,138 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
 
     switch (tipo) {
 
-        // Caso 1: salvar na memória
+        // =============================
+        // CASO 1 - MEMÓRIA
+        // =============================
         case MEMORIA: {
             if (qtd < MAX_CLIENTES) {
-                // Se houver dados na memória, ele continua com o novo_id = 1, caso contrário, resgatará o
-                // último id e somará mais 1
-                if (qtd > 0) 
+                if (qtd > 0)
                     novo_id = clientes_memoria[qtd - 1].id + 1;
 
                 cliente->id = novo_id;
-                // copio todos os dados do cliente passado para o array de memória
+
+                // Recalcula e garante o tipo_doc ANTES de salvar
+                cliente->tipo_doc = identificar_documento(cliente->cpf_cnpj);
+
                 clientes_memoria[qtd] = *cliente;
-
-                // crio um ponteiro que aponta para o cliente que acabei de salvar
                 Cliente* salvo = &clientes_memoria[qtd];
-
-                qtd++; // aumento o contador de clientes na memória
+                qtd++;
 
                 const char* tipoTexto = (cliente->tipo_doc == TIPO_CPF) ? "CPF" :
-                            (cliente->tipo_doc == TIPO_CNPJ) ? "CNPJ" : "DESCONHECIDO";
-
+                                        (cliente->tipo_doc == TIPO_CNPJ) ? "CNPJ" : "DESCONHECIDO";
                 printf("Cliente %s salvo em MEMORIA! Tipo de documento: %s\n", cliente->nome, tipoTexto);
-                return salvo; // retorno o endereço do cliente salvo
+                return salvo;
             } else {
                 printf("Erro: limite de clientes na memória atingido!\n");
                 return NULL;
             }
         }
 
-        // Caso 2: salvar em arquivo texto
-            case TEXTO: {
-                // Descobre o último id no arquivo
-            FILE* fp = fopen("clientes.txt", "r");
+        // =============================
+        // CASO 2 - ARQUIVO TEXTO
+        // =============================
+         // =============================
+// CASO 2 - ARQUIVO TEXTO
+// =============================
+case TEXTO: {
+    FILE* fp = fopen("clientes.txt", "r");
+    if (fp) {
+        char linha[512];
+        Cliente tmp;
+
+        // lê linha por linha (seguro, não trava)
+        while (fgets(linha, sizeof(linha), fp)) {
+            // tenta ler até 9 campos (último é tipo_doc)
+            int lidos = sscanf(linha, "%d;%49[^;];%d;%99[^;];%19[^;];%11[^;];%49[^;];%49[^;];%d",
+                               &tmp.id, tmp.nome, &tmp.idade,
+                               tmp.endereco_completo, tmp.cpf_cnpj,
+                               tmp.tel, tmp.email, tmp.nome_contato,
+                               (int*)&tmp.tipo_doc);
+
+            if (lidos >= 1) {
+                novo_id = tmp.id + 1;
+            }
+        }
+        fclose(fp);
+    }
+
+    cliente->id = novo_id;
+
+    // Recalcula tipo_doc (garante consistência)
+    cliente->tipo_doc = identificar_documento(cliente->cpf_cnpj);
+
+    // abre o arquivo em modo append
+    fp = fopen("clientes.txt", "a");
+    if (!fp) {
+        perror("Erro ao abrir clientes.txt");
+        return NULL;
+    }
+
+    // grava os dados formatados
+    fprintf(fp, "%d;%s;%d;%s;%s;%s;%s;%s;%d\n",
+        cliente->id,
+        cliente->nome,
+        cliente->idade,
+        cliente->endereco_completo,
+        cliente->cpf_cnpj,
+        cliente->tel,
+        cliente->email,
+        cliente->nome_contato,
+        cliente->tipo_doc
+    );
+
+    fclose(fp);
+
+    const char* tipoTexto = (cliente->tipo_doc == TIPO_CPF) ? "CPF" :
+                            (cliente->tipo_doc == TIPO_CNPJ) ? "CNPJ" : "DESCONHECIDO";
+    printf("Cliente %s salvo em TEXTO! Tipo de documento: %s\n", cliente->nome, tipoTexto);
+    return cliente;
+}
+
+        // =============================
+        // CASO 3 - ARQUIVO BINÁRIO
+        // =============================
+        case BINARIO: {
+            FILE* fp = fopen("clientes.bin", "rb");
             if (fp) {
                 Cliente tmp;
-                while (fscanf(fp, "%d;%49[^;];%d;%99[^;];%11[^;];%11[^;];%49[^;];%49[^;];\n",
-                              &tmp.id, tmp.nome, &tmp.idade,
-                              tmp.endereco_completo, tmp.cpf_cnpj,
-                              tmp.tel, tmp.email, tmp.nome_contato) != EOF) {
-                    novo_id = tmp.id + 1; // sempre fica com o último id lido +1
+                while (fread(&tmp, sizeof(Cliente), 1, fp) == 1) {
+                    novo_id = tmp.id + 1;
                 }
                 fclose(fp);
             }
             cliente->id = novo_id;
 
-                // Abro o arquivo em modo append para não sobrescrever os clientes anteriores
-                 fp = fopen("clientes.txt", "a");
-                if (!fp) {
-                    perror("Erro ao abrir clientes.txt");
-                    return NULL;
-                }
+            // Recalcula tipo_doc ANTES de gravar
+            cliente->tipo_doc = identificar_documento(cliente->cpf_cnpj);
 
-                // Escrevo os dados do cliente no arquivo separados por ponto e vírgula
-                // Uso o limite máximo de caracteres baseado no tamanho do array da struct
-                // Isso garante que o campo não ultrapasse o espaço definido
-                fprintf(fp, "%d;%.49s;%d;%.99s;%.11s;%.11s;%.49s;%.49s\n",
-                    cliente->id,                
-                    cliente->nome,              
-                    cliente->idade,             
-                    cliente->endereco_completo, 
-                    cliente->cpf_cnpj,          
-                    cliente->tel,               
-                    cliente->email,             
-                    cliente->nome_contato       
-                );
+            cliente->cpf_cnpj[sizeof(cliente->cpf_cnpj) - 1] = '\0';
+            cliente->tel[sizeof(cliente->tel) - 1] = '\0';
 
-                fclose(fp); // Fecho o arquivo
-                const char* tipoTexto = (cliente->tipo_doc == TIPO_CPF) ? "CPF" :
-                            (cliente->tipo_doc == TIPO_CNPJ) ? "CNPJ" : "DESCONHECIDO";
-
-                printf("Cliente %s salvo em TEXTO! Tipo de documento: %s\n", cliente->nome, tipoTexto);
-                return cliente; // Retorno o cliente que foi salvo
+            fp = fopen("clientes.bin", "ab");
+            if (!fp) {
+                perror("Erro ao abrir clientes.bin");
+                return NULL;
             }
-        // Caso 3: salvar cliente em arquivo binário
-            case BINARIO: {
-                // Descobre último id no arquivo
-                FILE* fp = fopen("clientes.bin", "rb");
-                if (fp) {
-                    Cliente tmp;
-                    while (fread(&tmp, sizeof(Cliente), 1, fp) == 1) {
-                        novo_id = tmp.id + 1;
-                    }
-                    fclose(fp);
-                }
-                cliente->id = novo_id;
-                // garante que CPF e telefone terminam com '\0'
-                cliente->cpf_cnpj[sizeof(cliente->cpf_cnpj) - 1] = '\0';
-                cliente->tel[sizeof(cliente->tel) - 1] = '\0';
 
-                // abre o arquivo em modo append binário
-                 fp = fopen("clientes.bin", "ab");
-                if (!fp) {
-                    perror("Erro ao abrir clientes.bin");
-                    return NULL;
-                }
-
-                // grava a struct inteira no arquivo
-                if (fwrite(cliente, sizeof(Cliente), 1, fp) != 1) {
-                    perror("Erro ao gravar cliente em clientes.bin");
-                    fclose(fp);
-                    return NULL;
-                }
-
+            if (fwrite(cliente, sizeof(Cliente), 1, fp) != 1) {
+                perror("Erro ao gravar cliente em clientes.bin");
                 fclose(fp);
+                return NULL;
+            }
 
-                const char* tipoTexto = (cliente->tipo_doc == TIPO_CPF) ? "CPF" :
-                            (cliente->tipo_doc == TIPO_CNPJ) ? "CNPJ" : "DESCONHECIDO";
+            fclose(fp);
 
-                printf("Cliente %s salvo em BINÁRIO! Tipo de documento: %s\n", cliente->nome, tipoTexto);
-                return cliente;
-                    }
-
-
-     
+            const char* tipoTexto = (cliente->tipo_doc == TIPO_CPF) ? "CPF" :
+                                    (cliente->tipo_doc == TIPO_CNPJ) ? "CNPJ" : "DESCONHECIDO";
+            printf("Cliente %s salvo em BINÁRIO! Tipo de documento: %s\n", cliente->nome, tipoTexto);
+            return cliente;
+        }
     }
-    return NULL; // Caso inválido
+
+    return NULL;
 }
+
 //-------------------------------------
  // Função que atualiza um cliente de acordo com o tipo escolhido
             // recebe o CPF/CNPJ do cliente que quero atualizar e o tipo de armazenamento
