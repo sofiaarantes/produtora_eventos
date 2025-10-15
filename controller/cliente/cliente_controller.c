@@ -26,7 +26,7 @@ void gerenciar_cliente() {
                 break;
             }
             case 2: { // Atualizar cliente
-                    char cpf_cnpj_busca[12];
+                    char cpf_cnpj_busca[20];
                     ler_string("Digite o CPF/CNPJ do cliente a ser atualizado: ", cpf_cnpj_busca, sizeof(cpf_cnpj_busca));
 
 

@@ -1,6 +1,10 @@
-1;sofiamaria;sofiatxt;456;2;
-2;ana;anamemoria;456;1;
-3;alex;alexbin;456;3;
-4;felipe;felipetxt;456;2;
-5;linda;lindatxt;456;2;
-6;livia;liviatxt;456;2;
+1;sofia;sofiatxt;456;2;
+2;lu;lutxt;456;2;
+3;bin;bin;456;3;
+4;ana;anabin;456;3;
+5;juan;juanmemoria;456;1;
+6;maria;mariz txt;456;2;
+7;lana;lanatxt;456;2;
+8;ru;rubin;456;3;
+9;alu;alutxt;456;2;
+10;gau;gautxt;456;2;
