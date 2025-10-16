@@ -2,6 +2,7 @@
 #include <string.h>
 #include "../../model/operadores_sistema/operadores_sistema.h"
 #include "../../view/operadores_sistema/operadores_sistema_view.h"
+#include "../../model/config_armazenamento/config_armazenamento.h"
 #include "../../controller/config_armazenamento/config_armazenamento_controller.h"
 #include "../../view/main/main_view.h"
 #include "../../model/sessao/sessao.h"
@@ -43,6 +44,7 @@ void gerenciar_login() {
             if (encontrado) {
                 printf("\nLogin realizado com sucesso! Bem-vindo(a), %s.\n", tmp.nome);
                 set_operador_logado(tmp.id); 
+                set_armazenamento(tmp.tipo);
                 return;
             } else {
                 printf("\nCredenciais inválidas! Tente novamente.\n");
@@ -53,6 +55,7 @@ void gerenciar_login() {
             criptografar_senha(novo.senha);
             adicionar_operador(&novo);
             set_operador_logado(novo.id); 
+            set_armazenamento(novo.tipo);
             printf("\nCadastro realizado com sucesso! Bem-vindo(a), %s.\n", novo.usuario);
             return;
         } else if (opcao == 0) {

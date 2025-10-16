@@ -48,7 +48,12 @@ void iniciar_sistema(){
             editar_operador();
             break;
         }
-        
+        // Sair
+        case 0:{
+            gerenciar_login();
+            break;
+        }
+
         default:
             break;
         }

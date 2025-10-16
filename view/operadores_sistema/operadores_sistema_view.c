@@ -38,19 +38,15 @@ Operadores ler_dados_operador_cadastro() {
     switch (opcao) {
         case 1:
             o.tipo = MEMORIA;
-            set_armazenamento(MEMORIA);  // <- aqui
             break;
         case 2:
             o.tipo = TEXTO;
-            set_armazenamento(TEXTO);   // <- aqui
             break;
         case 3:
             o.tipo = BINARIO;
-            set_armazenamento(BINARIO); // <- aqui
             break;
         default:
             o.tipo = MEMORIA;
-            set_armazenamento(MEMORIA); // <- aqui
             break;
     }
 
@@ -94,8 +90,8 @@ int exibir_menu_operadores_editar() {
     printf("----- CONTA -----\n");
     printf("=================\n");
     printf("1 - Editar dados\n");
-    printf("1 - Editar método de armazenamento\n");
-    printf("2 - Deletar conta\n");
+    printf("2 - Editar método de armazenamento\n");
+    printf("3 - Deletar conta\n");
     printf("0 - Sair\n");
     ler_int("Escolha uma opcao: ", &opcao);
     return opcao;

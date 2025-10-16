@@ -1,1 +1,3 @@
 1;felipe;17;rua pq;11144499987;34888999999;felipe@gmail.com;felipe;0
+2;sofia;12;erua;12345678901;12312345678;erty;rtyu;0
+3;ghj;12;e;12345678901;12345;fg;dfgh;0
