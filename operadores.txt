@@ -1,0 +1,4 @@
+1;sofia;sofiatxt;456;2;
+2;sofia;sofiatxt;456;1;
+3;sofia;sofiatexto;456;2;
+4;sofia1;1;vz;3;

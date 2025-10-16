@@ -7,8 +7,26 @@
 Operadores* adicionar_operador(Operadores* operador) {
     if (!operador) return NULL;
 
-    int novo_id = 1;
+    // Verifica se já existe um operador com o mesmo nome de usuário
     FILE* fp = fopen("operadores.txt", "r");
+    if (fp) {
+        Operadores tmp;
+        while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];%d;\n",
+                      &tmp.id, tmp.nome, tmp.usuario, tmp.senha, (int*)&tmp.tipo) != EOF) {
+
+            // Se encontrar um usuário igual, avisa e cancela o cadastro
+            if (strcmp(tmp.usuario, operador->usuario) == 0) {
+                printf("\nErro: Já existe um operador com o usuário '%s'.\n", operador->usuario);
+                fclose(fp);
+                return NULL;
+            }
+        }
+        fclose(fp);
+    }
+
+    // Gera novo ID
+    int novo_id = 1;
+    fp = fopen("operadores.txt", "r");
     if (fp) {
         Operadores tmp;
         while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];%d;\n", 
@@ -18,9 +36,9 @@ Operadores* adicionar_operador(Operadores* operador) {
         }
         fclose(fp);
     }
-
     operador->id = novo_id;
 
+    // Salva o novo operador 
     fp = fopen("operadores.txt", "a");
     if (!fp) {
         perror("Erro ao abrir operadores.txt");
@@ -35,6 +53,7 @@ Operadores* adicionar_operador(Operadores* operador) {
             operador->tipo);
     fclose(fp);
 
+    printf("\nOperador '%s' cadastrado com sucesso!\n", operador->usuario);
     return operador;
 }
 

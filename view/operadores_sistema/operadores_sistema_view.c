@@ -2,6 +2,7 @@
 #include "operadores_sistema/operadores_sistema_view.h"
 #include "main/main_view.h"
 #include "../../model/config_armazenamento/config_armazenamento.h"
+#include "../../controller/main/main_controller.h"
 #include "../../util/util.h"
 
 int exibir_menu_operadores() {
@@ -11,7 +12,7 @@ int exibir_menu_operadores() {
     printf("==================================\n");
     printf("1 - Ja tenho uma conta, quero fazer login\n");
     printf("2 - Ainda não tenho uma conta, quero me registrar\n");
-    printf("3 - Sair\n");
+    printf("0 - Sair\n");
 
     ler_int("Escolha uma opcao: ", &opcao);
     return opcao;
@@ -45,15 +46,20 @@ Operadores ler_dados_operador_cadastro() {
         case 3:
             o.tipo = BINARIO;
             break;
+        case 0:
+            exibir_mensagem("Saindo do cadastro...");
+            // Sinaliza que o cadastro foi cancelado
+            o.tipo = 0;
+            return o;
         default:
-            o.tipo = MEMORIA;
-            break;
+            exibir_mensagem("Opção inválida. Cadastro cancelado.");
+            o.tipo = 0;
+            return o;
     }
 
     exibir_mensagem("Armazenamento configurado!");
-    return o;  // Retorna a struct preenchida
+    return o;
 }
-
 
 void exibir_operador(const Operadores* operador) {
     if (!operador) {

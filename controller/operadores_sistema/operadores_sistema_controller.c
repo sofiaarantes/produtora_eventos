@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "../../model/operadores_sistema/operadores_sistema.h"
 #include "../../view/operadores_sistema/operadores_sistema_view.h"
 #include "../../model/config_armazenamento/config_armazenamento.h"
@@ -49,21 +50,28 @@ void gerenciar_login() {
             } else {
                 printf("\nCredenciais inválidas! Tente novamente.\n");
             }
-
         } else if (opcao == 2) { // Cadastro
             Operadores novo = ler_dados_operador_cadastro();
+            if (novo.tipo == 0) {
+                continue;
+            }
             criptografar_senha(novo.senha);
-            adicionar_operador(&novo);
-            set_operador_logado(novo.id); 
-            set_armazenamento(novo.tipo);
-            printf("\nCadastro realizado com sucesso! Bem-vindo(a), %s.\n", novo.usuario);
+
+            Operadores* cadastrado = adicionar_operador(&novo);
+            if (cadastrado == NULL) {
+                printf("\nFalha no cadastro. Tente novamente.\n");
+                continue; // volta ao menu
+            }
+
+            set_operador_logado(cadastrado->id); 
+            set_armazenamento(cadastrado->tipo);
+            printf("\nCadastro realizado com sucesso! Bem-vindo(a), %s.\n", cadastrado->usuario);
             return;
-        } else if (opcao == 0) {
-            printf("\nSaindo do sistema... Até logo!\n");
-        } else {
+        } else if ((opcao != 0) && (opcao != 1) && (opcao != 2)){
             printf("\nOpção inválida! Tente novamente.\n");
         }
-    } while (opcao != 3);
+    } while (opcao != 0);
+    exit(0);
 }
 
 void editar_operador() {
