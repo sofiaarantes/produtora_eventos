@@ -50,8 +50,8 @@ void iniciar_sistema(){
         }
         // Sair
         case 0:{
-            gerenciar_login();
-            break;
+            exibir_mensagem("\nEncerrando sessão...\n");
+            return; // Volta pro while do main()
         }
 
         default:

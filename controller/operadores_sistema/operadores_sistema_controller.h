@@ -9,7 +9,7 @@
 void criptografar_senha(char* senha);
 
 // Gerencia o login e cadastro de operadores
-void gerenciar_login();
+int gerenciar_login();
 
 // Permite ao operador logado editar seus dados ou deletar sua conta
 void editar_operador();
