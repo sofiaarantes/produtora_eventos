@@ -26,7 +26,7 @@ void gerenciar_cliente() {
                 break;
             }
             case 2: { // Atualizar cliente
-                    char cpf_cnpj_busca[12];
+                    char cpf_cnpj_busca[20];
                     ler_string("Digite o CPF/CNPJ do cliente a ser atualizado: ", cpf_cnpj_busca, sizeof(cpf_cnpj_busca));
 
 
@@ -57,7 +57,7 @@ void gerenciar_cliente() {
 
 
             case 3:{ //exibir cliente
-                char cpf_cnpj_busca[12];
+                char cpf_cnpj_busca[20];
                     ler_string("Digite o CPF/CNPJ do cliente a ser exibido: ", cpf_cnpj_busca, sizeof(cpf_cnpj_busca));
 
                     buscar_e_exibir_cliente(cpf_cnpj_busca, get_armazenamento());
@@ -65,8 +65,8 @@ void gerenciar_cliente() {
 
             }
             case 4:{ //deletar cliente
-                char cpf_cnpj_busca[12];
-                    ler_string("Digite o CPF/CNPJ do cliente a ser atualizado: ", cpf_cnpj_busca, sizeof(cpf_cnpj_busca));
+                char cpf_cnpj_busca[20];
+                    ler_string("Digite o CPF/CNPJ do cliente a ser deletado: ", cpf_cnpj_busca, sizeof(cpf_cnpj_busca));
                     deletar_cliente(cpf_cnpj_busca, get_armazenamento());
                 break;
             }
