@@ -12,3 +12,7 @@
 12;kau;kautxt;456;2;
 13;kuna;kunamemoria;456;1;
 14;davi;davibin;456;3;
+15;fel;fe‡;456;2;
+16;de‡;del;456;2;
+17;qqq;qqq;456;1;
+18;hj;ss;456;3;

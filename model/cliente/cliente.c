@@ -13,7 +13,7 @@ static int qtd = 0; // contador de quantos clientes já estão salvos na memóri
 
 
 Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
-    // Se o ponteiro cliente for nulo, não há como salvar — retorno NULL
+    // Se o ponteiro cliente for nulo, nao há como salvar — retorno NULL
     if (!cliente) return NULL;
 
     // Antes de salvar, garanto que o tipo de documento (CPF ou CNPJ) foi identificado corretamente
@@ -67,7 +67,7 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
                 // Retorno o ponteiro do cliente que acabou de ser salvo
                 return salvo;
             } else {
-                // Caso o vetor esteja cheio, não consigo salvar
+                // Caso o vetor esteja cheio, nao consigo salvar
                 printf("Erro: limite de clientes na memória atingido!\n");
                 return NULL;
             }
@@ -196,7 +196,7 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
         }
     }
 
-    // Caso o tipo de armazenamento não seja reconhecido, retorno NULL
+    // Caso o tipo de armazenamento nao seja reconhecido, retorno NULL
     return NULL;
 }
 
@@ -241,8 +241,8 @@ Cliente* atualizar_cliente(const char* cpf_cnpj_busca, Cliente* novos_dados, Tip
                 }
             }
 
-            // Caso o cliente não seja encontrado
-            printf(" Cliente com CPF/CNPJ %s não encontrado em MEMORIA!\n", cpf_cnpj_busca);
+            // Caso o cliente nao seja encontrado
+            printf(" Cliente com CPF/CNPJ %s nao encontrado em MEMORIA!\n", cpf_cnpj_busca);
             return NULL;
         }
 
@@ -277,7 +277,7 @@ Cliente* atualizar_cliente(const char* cpf_cnpj_busca, Cliente* novos_dados, Tip
                                             &c.id, c.nome, &c.idade, c.endereco_completo,
                                             c.cpf_cnpj, c.tel, c.email, c.nome_contato, (int*)&c.tipo_doc);
 
-                            // Se a linha não tiver o campo tipo_doc (arquivo antigo), forço recalcular
+                            // Se a linha nao tiver o campo tipo_doc (arquivo antigo), forço recalcular
                             if (lidos < 9)
                                 c.tipo_doc = identificar_documento(c.cpf_cnpj);
 
@@ -314,7 +314,7 @@ Cliente* atualizar_cliente(const char* cpf_cnpj_busca, Cliente* novos_dados, Tip
                             printf("Cliente %s atualizado em TEXTO!\n", novos_dados->nome);
                             return novos_dados;
                         } else {
-                            printf("Cliente com CPF/CNPJ %s não encontrado em TEXTO!\n", cpf_cnpj_busca);
+                            printf("Cliente com CPF/CNPJ %s nao encontrado em TEXTO!\n", cpf_cnpj_busca);
                             return NULL;
                         }
                     }
@@ -354,9 +354,9 @@ Cliente* atualizar_cliente(const char* cpf_cnpj_busca, Cliente* novos_dados, Tip
                 }
             }
 
-            // Caso não encontre o cliente
+            // Caso nao encontre o cliente
             fclose(fp);
-            printf(" Cliente com CPF/CNPJ %s não encontrado em BINARIO!\n", cpf_cnpj_busca);
+            printf(" Cliente com CPF/CNPJ %s nao encontrado em BINARIO!\n", cpf_cnpj_busca);
             return NULL;
         }
 
@@ -420,7 +420,7 @@ void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo)
             // Abro o arquivo texto para leitura
             FILE* fp = fopen("clientes.txt", "r");
             if (!fp) {
-                // Se não conseguir abrir, mostro o erro e saio
+                // Se nao conseguir abrir, mostro o erro e saio
                 perror("Erro ao abrir clientes.txt");
                 return;
             }
@@ -455,7 +455,7 @@ void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo)
                 }
             }
 
-            // Se chegar aqui, o cliente não foi encontrado
+            // Se chegar aqui, o cliente nao foi encontrado
             fclose(fp);   // fecho o arquivo
             free(cliente); // libero a memória usada
             cliente = NULL; // deixo o ponteiro nulo
@@ -469,7 +469,7 @@ void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo)
             // Abro o arquivo binário para leitura
             FILE* fp = fopen("clientes.bin", "rb");
             if (!fp) {
-                // Se não conseguir abrir, mostro o erro e saio
+                // Se nao conseguir abrir, mostro o erro e saio
                 perror("Erro ao abrir clientes.bin");
                 return;
             }
@@ -492,14 +492,14 @@ void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo)
                 }
             }
 
-            // Se terminar o arquivo e não encontrar, libero tudo
+            // Se terminar o arquivo e nao encontrar, libero tudo
             fclose(fp);
             free(cliente);
             cliente = NULL;
             break;
         }
 
-        // Caso o tipo de armazenamento não seja reconhecido
+        // Caso o tipo de armazenamento nao seja reconhecido
         default:
             exibir_mensagem("Tipo de armazenamento invalido!\n");
             return;
@@ -508,7 +508,7 @@ void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo)
     // Se nenhum cliente foi encontrado nos casos acima, mostro mensagem padrão
     if (!cliente) {
         printf("+--------------------------+\n");
-        printf("| Cliente não encontrado!  |\n");
+        printf("| Cliente nao encontrado!  |\n");
         printf("+--------------------------+\n");
     }
 }
@@ -544,21 +544,14 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
 
                     // Marco que encontrei o cliente
                     encontrado = 1;
-
-                    printf("Cliente com CPF %c%c%c.%c%c%c.%c%c%c-%c%c deletado em MEMORIA!\n", cpf_cnpj_busca[0], cpf_cnpj_busca[1], cpf_cnpj_busca[2],
-                       cpf_cnpj_busca[3], cpf_cnpj_busca[4], cpf_cnpj_busca[5],
-                       cpf_cnpj_busca[6], cpf_cnpj_busca[7], cpf_cnpj_busca[8],
-                       cpf_cnpj_busca[9], cpf_cnpj_busca[10]);
+                    printf("Cliente %s deletado em MEMORIA!\n", clientes_memoria[i].nome);
                     break; // saio do laço, já deletei
                 }
             }
 
-            // Caso o cliente não tenha sido encontrado, aviso o usuário
+            // Caso o cliente nao tenha sido encontrado, aviso o usuário
             if (!encontrado)
-                 printf("Cliente com CPF %c%c%c.%c%c%c.%c%c%c-%c%c nao encontrado em MEMORIA!\n", cpf_cnpj_busca[0], cpf_cnpj_busca[1], cpf_cnpj_busca[2],
-                       cpf_cnpj_busca[3], cpf_cnpj_busca[4], cpf_cnpj_busca[5],
-                       cpf_cnpj_busca[6], cpf_cnpj_busca[7], cpf_cnpj_busca[8],
-                       cpf_cnpj_busca[9], cpf_cnpj_busca[10]);
+                 printf("Cliente com CPF/CNPJ %s nao encontrado em MEMORIA!\n", cpf_cnpj_busca);
 
             break;
         }
@@ -600,7 +593,7 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
                     cliente.nome_contato
                 );
 
-                // Se o CPF não for o que quero excluir, regravo essa linha no arquivo temporário
+                // Se o CPF nao for o que quero excluir, regravo essa linha no arquivo temporário
                 if (strncmp(cliente.cpf_cnpj, cpf_cnpj_busca, sizeof(cliente.cpf_cnpj)) != 0) {
                     fprintf(temp, "%d;%s;%d;%s;%s;%s;%s;%s\n",
                         cliente.id,
@@ -625,18 +618,12 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
             // Excluo o arquivo antigo e renomeio o temporário como o novo "clientes.txt"
             remove("clientes.txt");
             rename("temp.txt", "clientes.txt");
-
+            
             // Exibo mensagem informando o resultado da operação
             if (deletado)
-                printf("Cliente com CPF %c%c%c.%c%c%c.%c%c%c-%c%c deletado em ARQUIVO TEXTO!\n", cpf_cnpj_busca[0], cpf_cnpj_busca[1], cpf_cnpj_busca[2],
-                       cpf_cnpj_busca[3], cpf_cnpj_busca[4], cpf_cnpj_busca[5],
-                       cpf_cnpj_busca[6], cpf_cnpj_busca[7], cpf_cnpj_busca[8],
-                       cpf_cnpj_busca[9], cpf_cnpj_busca[10]);
+                printf("Cliente %s deletado em ARQUIVO TEXTO!\n", cliente.nome);
             else
-                printf("Cliente com CPF %c%c%c.%c%c%c.%c%c%c-%c%c não encontrado no ARQUIVO TEXTO!\n", cpf_cnpj_busca[0], cpf_cnpj_busca[1], cpf_cnpj_busca[2],
-                       cpf_cnpj_busca[3], cpf_cnpj_busca[4], cpf_cnpj_busca[5],
-                       cpf_cnpj_busca[6], cpf_cnpj_busca[7], cpf_cnpj_busca[8],
-                       cpf_cnpj_busca[9], cpf_cnpj_busca[10]);
+                printf("Cliente com CPF/CNPJ %s nao encontrado no ARQUIVO TEXTO!\n", cpf_cnpj_busca);
 
             break;
         }
@@ -668,7 +655,7 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
                 // Garanto que o CPF termina com '\0' para evitar erro de comparação
                 cliente.cpf_cnpj[sizeof(cliente.cpf_cnpj) - 1] = '\0';
 
-                // Se o CPF não for o que deve ser deletado, gravo esse cliente no arquivo temporário
+                // Se o CPF nao for o que deve ser deletado, gravo esse cliente no arquivo temporário
                 if (strncmp(cliente.cpf_cnpj, cpf_cnpj_busca, sizeof(cliente.cpf_cnpj)) != 0) {
                     fwrite(&cliente, sizeof(Cliente), 1, temp);
                 } else {
@@ -687,15 +674,9 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
 
             // Exibo mensagens de status ao usuário
             if (deletado)
-                 printf("Cliente com CPF %c%c%c.%c%c%c.%c%c%c-%c%c deletado em ARQUIVO BINARIO!\n", cpf_cnpj_busca[0], cpf_cnpj_busca[1], cpf_cnpj_busca[2],
-                       cpf_cnpj_busca[3], cpf_cnpj_busca[4], cpf_cnpj_busca[5],
-                       cpf_cnpj_busca[6], cpf_cnpj_busca[7], cpf_cnpj_busca[8],
-                       cpf_cnpj_busca[9], cpf_cnpj_busca[10]);
+                 printf("Cliente %s deletado em ARQUIVO BINARIO!\n", cliente.nome);
             else
-                printf("Cliente com CPF %c%c%c.%c%c%c.%c%c%c-%c%c não encontrado no ARQUIVO BINARIO!\n", cpf_cnpj_busca[0], cpf_cnpj_busca[1], cpf_cnpj_busca[2],
-                       cpf_cnpj_busca[3], cpf_cnpj_busca[4], cpf_cnpj_busca[5],
-                       cpf_cnpj_busca[6], cpf_cnpj_busca[7], cpf_cnpj_busca[8],
-                       cpf_cnpj_busca[9], cpf_cnpj_busca[10]);
+                printf("Cliente com CPF/CNPJ %s nao encontrado no ARQUIVO BINARIO!\n", cpf_cnpj_busca);
 
             break;
         }
@@ -719,7 +700,7 @@ TipoDocumento identificar_documento(const char *doc) {
         }
     }
 
-    // Garante que não ultrapasse o tamanho máximo esperado
+    // Garante que nao ultrapasse o tamanho máximo esperado
     if (len == 11) {
         return TIPO_CPF;
     } else if (len == 14) {
