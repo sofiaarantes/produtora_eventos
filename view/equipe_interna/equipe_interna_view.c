@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "equipe_interna/equipe_interna_view.h"
 #include "../../util/util.h"
+#include "main/main_view.h"
 
 void exibir_funcionario(const EquipeInterna* equipeInterna) {
     if (!equipeInterna) {
@@ -33,12 +34,11 @@ int exibir_menu_equipe_interna() {
 //O espaço antes do % → ignora quebras de linha e espaços anteriores (evita problemas com entradas seguidas).
 EquipeInterna ler_dados_funcionario() {
     EquipeInterna f;
-    printf("\n==== DADOS DO FUNCIONÁRIO ====\n");
     ler_string("Nome: ", f.nome, sizeof(f.nome));
-    ler_string("CPF: (Cuidado ao inserir esse dado, ele nao podera ser alterado depois)\n", f.cpf, sizeof(f.cpf));
+    ler_string("CPF: ", f.cpf, sizeof(f.cpf));
     ler_string("Função: ", f.funcao, sizeof(f.funcao));
     ler_float("Valor da Diária/hora: ", &f.valor_diaria);
-    return f;  // Retorna a struct preenchida
+    return f;
 }
 
 void ler_dados_atualizados_funcionario(char* nome, char* funcao, float* valor_diaria) {

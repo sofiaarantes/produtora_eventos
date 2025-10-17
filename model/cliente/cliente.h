@@ -23,7 +23,6 @@ typedef struct {
     char email[50];
     char nome_contato[50];
     TipoDocumento tipo_doc;
-   
 } Cliente;
 
 // Funções do modelo (CRUD)

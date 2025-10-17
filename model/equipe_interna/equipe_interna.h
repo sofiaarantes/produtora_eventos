@@ -14,6 +14,7 @@ typedef struct {
     char cpf[20];
     char funcao[100];
     float valor_diaria;
+    int operador_id;
 } EquipeInterna;
 
 // Funções do modelo (CRUD)
@@ -24,7 +25,7 @@ EquipeInterna* adicionar_funcionario(EquipeInterna* funcionario, TipoArmazenamen
 // Atualiza os dados do funcionário existente, recebe a struct a ser atualizada e os novos dados
 
 // Atualizar funcionário em memória
-void atualizar_funcionario_memoria(EquipeInterna* funcionario_mem, const char* nome, const char* funcao, float valor_diaria);
+int atualizar_funcionario_memoria(EquipeInterna* funcionario_mem, const char* nome, const char* funcao, float valor_diaria);
 
 // Atualizar funcionário em texto
 int atualizar_funcionario_texto(const char* cpf, const char* nome, const char* funcao, float valor_diaria);
@@ -32,25 +33,13 @@ int atualizar_funcionario_texto(const char* cpf, const char* nome, const char* f
 // Atualizar funcionário em binário
 int atualizar_funcionario_binario(const char* cpf, const char* nome, const char* funcao, float valor_diaria);
 
-// Deletar funcionário em memória
-int deletar_funcionario_memoria(const char* cpf);
-
-// Deletar funcionário em arquivo texto
-int deletar_funcionario_texto(const char* cpf);
-
-// Deletar funcionário em arquivo binário
-int deletar_funcionario_binario(const char* cpf);
+// Deletar funcionário 
+int deletar_funcionario(const char* cpf, TipoArmazenamento tipo);
 
 // Retorna a quantidade de funcionários na memória
 int get_qtd_funcionarios();
 
-// Busca funcionário por CPF na memória (retorna ponteiro para o funcionário ou NULL se não achar)
-EquipeInterna* buscar_funcionario_por_cpf_memoria(const char* cpf_busca);
-
-// Busca funcionário por CPF em arquivo texto (retorna ponteiro para o funcionário ou NULL se não achar)
-EquipeInterna* buscar_funcionario_por_cpf_texto(const char* cpf_busca);
-
-// Busca funcionário por CPF em arquivo binário (retorna ponteiro para o funcionário ou NULL se não achar)
-EquipeInterna* buscar_funcionario_por_cpf_binario(const char* cpf_busca);
+// Busca funcionário por CPF (retorna ponteiro para o funcionário ou NULL se não achar)
+EquipeInterna* buscar_funcionario_por_cpf(const char* cpf_busca, TipoArmazenamento tipo);
 
 #endif

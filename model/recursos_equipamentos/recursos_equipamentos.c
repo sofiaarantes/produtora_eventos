@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "recursos_equipamentos.h"
+#include "../sessao/sessao.h"
 
 // --- Variáveis para armazenamento em memória ---
 #define MAX_EQUIPAMENTOS 100 // Máximo de equipamentos para memória
@@ -13,6 +14,9 @@ static int qtd = 0; // Contador de quantos equipamentos já estão salvos na mem
 // =============================
 RecursosEquipamentos* adicionar_equipamento(RecursosEquipamentos* equipamento, TipoArmazenamento tipo) {
     if (!equipamento) return NULL; // Se o ponteiro recebido for nulo, quebra o programa
+
+    // Define automaticamente o operador logado como responsável pelo cadastro
+    equipamento->operador_id = get_operador_logado();
 
     int novo_id = 1; // Id começa em 1 por padrão
 

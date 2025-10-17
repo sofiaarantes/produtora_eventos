@@ -15,6 +15,7 @@ typedef struct {
     int qtd_estoque;
     float preco_custo;
     float valor_diaria;
+    int operador_id;
 } RecursosEquipamentos;
 
 // Funções do modelo (CRUD)

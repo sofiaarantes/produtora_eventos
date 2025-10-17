@@ -28,18 +28,16 @@ void gerenciar_funcionario() {
                 // Verifica se existem funcionários no armazenamento atual
                 switch (tipo) {
                     case MEMORIA:
-                        if (get_qtd_funcionarios() > 0) {
+                        if (get_qtd_funcionarios() > 0) 
                             tem_funcionarios = 1;
-                        }
                         break;
 
                     case TEXTO: {
                         FILE* ft = fopen("funcionarios.txt", "r");
                         if (ft) {
                             char linha[300];
-                            if (fgets(linha, sizeof(linha), ft)) {
+                            if (fgets(linha, sizeof(linha), ft)) 
                                 tem_funcionarios = 1;
-                            }
                             fclose(ft);
                         }
                         break;
@@ -49,14 +47,12 @@ void gerenciar_funcionario() {
                         FILE* fb = fopen("funcionarios.bin", "rb");
                         if (fb) {
                             EquipeInterna tmp;
-                            if (fread(&tmp, sizeof(EquipeInterna), 1, fb)) {
+                            if (fread(&tmp, sizeof(EquipeInterna), 1, fb)) 
                                 tem_funcionarios = 1;
-                            }
                             fclose(fb);
                         }
                         break;
                     }
-
                     default:
                         exibir_mensagem("Tipo de armazenamento inválido!");
                         break;
@@ -71,6 +67,12 @@ void gerenciar_funcionario() {
                 char cpf_busca[20];
                 ler_string("Digite o CPF do funcionário que deseja atualizar: ", cpf_busca, sizeof(cpf_busca));
                 
+                // Busca o funcionário (restrito ao operador logado)
+                EquipeInterna* func = buscar_funcionario_por_cpf(cpf_busca, tipo);
+                if (!func) {
+                    exibir_mensagem("Funcionário não encontrado ou sem permissão para editar.");
+                    break;
+                }
 
                 // Variáveis que vão receber os novos dados
                 char nome[50];
@@ -83,16 +85,19 @@ void gerenciar_funcionario() {
                 // Tenta atualizar no tipo de armazenamento configurado
                 switch (tipo) {
                     case MEMORIA: {
-                        EquipeInterna* func = buscar_funcionario_por_cpf_memoria(cpf_busca);
-                        if (func) atualizar_funcionario_memoria(func, nome, funcao, valor_diaria);
+                        atualizar_funcionario_memoria(func, nome, funcao, valor_diaria);
                         break;
                     }
                     case TEXTO: {
-                        atualizar_funcionario_texto(cpf_busca, nome, funcao, valor_diaria);
-                        break;
+                        int sucesso = atualizar_funcionario_texto(cpf_busca, nome, funcao, valor_diaria);
+                        if (!sucesso)
+                            exibir_mensagem("Erro ao atualizar funcionário no arquivo texto.");
+                        break;  
                     }
                     case BINARIO: {
-                        atualizar_funcionario_binario(cpf_busca, nome, funcao, valor_diaria);
+                        int sucesso = atualizar_funcionario_binario(cpf_busca, nome, funcao, valor_diaria);
+                        if (!sucesso)
+                            exibir_mensagem("Erro ao atualizar funcionário no arquivo binário.");
                         break;
                     }
                     default:
@@ -108,24 +113,11 @@ void gerenciar_funcionario() {
                 char cpf_busca[20];
                 ler_string("Digite o CPF do funcionário que deseja exibir: ", cpf_busca, sizeof(cpf_busca));
                 
-                EquipeInterna* func = NULL;
-
-                switch (tipo) {
-                    case MEMORIA:
-                        func = buscar_funcionario_por_cpf_memoria(cpf_busca);
-                        break;
-
-                    case TEXTO:
-                        func = buscar_funcionario_por_cpf_texto(cpf_busca);
-                        break;
-
-                    case BINARIO:
-                        func = buscar_funcionario_por_cpf_binario(cpf_busca);
-                        break;
-
-                    default:
-                        exibir_mensagem("Tipo de armazenamento inválido!");
-                        break;
+                // Busca o funcionário (restrito ao operador logado)
+                EquipeInterna* func = buscar_funcionario_por_cpf(cpf_busca, tipo);
+                if (!func) {
+                    exibir_mensagem("Funcionário não encontrado ou sem permissão para editar.");
+                    break;
                 }
 
                 exibir_funcionario(func);
@@ -140,20 +132,7 @@ void gerenciar_funcionario() {
                 TipoArmazenamento tipo = get_armazenamento();
                 int removido = 0;
 
-                switch (tipo) {
-                    case MEMORIA:
-                        removido = deletar_funcionario_memoria(cpf_busca);
-                        break;
-                    case TEXTO:
-                        removido = deletar_funcionario_texto(cpf_busca);
-                        break;
-                    case BINARIO:
-                        removido = deletar_funcionario_binario(cpf_busca);
-                        break;
-                    default:
-                        exibir_mensagem("Tipo de armazenamento inválido!");
-                        break;
-                }
+                deletar_funcionario(cpf_busca, tipo);
 
                 if (removido) {
                     exibir_mensagem("Funcionário deletado com sucesso!");
