@@ -20,7 +20,7 @@ void gerenciar_funcionario() {
                 adicionar_funcionario(&add, get_armazenamento());
                 break;
             }
-            // Atualizar funcionário
+            // Atualizar Funcionário
             case 2: {
                 int tem_funcionarios = 0;
                 TipoArmazenamento tipo = get_armazenamento();
@@ -28,27 +28,22 @@ void gerenciar_funcionario() {
                 // Verifica se existem funcionários no armazenamento atual
                 switch (tipo) {
                     case MEMORIA:
-                        if (get_qtd_funcionarios() > 0) 
-                            tem_funcionarios = 1;
+                        if (get_qtd_funcionarios() > 0) tem_funcionarios = 1;
                         break;
-
                     case TEXTO: {
                         FILE* ft = fopen("funcionarios.txt", "r");
                         if (ft) {
                             char linha[300];
-                            if (fgets(linha, sizeof(linha), ft)) 
-                                tem_funcionarios = 1;
+                            if (fgets(linha, sizeof(linha), ft)) tem_funcionarios = 1;
                             fclose(ft);
                         }
                         break;
                     }
-
                     case BINARIO: {
                         FILE* fb = fopen("funcionarios.bin", "rb");
                         if (fb) {
                             EquipeInterna tmp;
-                            if (fread(&tmp, sizeof(EquipeInterna), 1, fb)) 
-                                tem_funcionarios = 1;
+                            if (fread(&tmp, sizeof(EquipeInterna), 1, fb)) tem_funcionarios = 1;
                             fclose(fb);
                         }
                         break;
@@ -63,47 +58,23 @@ void gerenciar_funcionario() {
                     break;
                 }
 
-                // Peço para o usuário digitar o CPF do funcionário que ele quer atualizar
+                // Solicita CPF do funcionário a ser atualizado
                 char cpf_busca[20];
                 ler_string("Digite o CPF do funcionário que deseja atualizar: ", cpf_busca, sizeof(cpf_busca));
-                
-                // Busca o funcionário (restrito ao operador logado)
-                EquipeInterna* func = buscar_funcionario_por_cpf(cpf_busca, tipo);
-                if (!func) {
-                    exibir_mensagem("Funcionário não encontrado ou sem permissão para editar.");
-                    break;
+
+                // Struct temporária para armazenar novos dados
+                EquipeInterna novos_dados;
+                ler_dados_atualizados_funcionario(novos_dados.nome, novos_dados.funcao, &novos_dados.valor_diaria);
+
+                // Chama a função unificada de atualização
+                EquipeInterna* atualizado = atualizar_funcionario(cpf_busca, &novos_dados, tipo);
+
+                if (!atualizado) {
+                    exibir_mensagem("Funcionário não encontrado ou sem permissão para atualização!");
+                } else {
+                    exibir_mensagem("Funcionário atualizado com sucesso!");
                 }
 
-                // Variáveis que vão receber os novos dados
-                char nome[50];
-                char funcao[100];
-                float valor_diaria;
-
-                // Lê os novos dados
-                ler_dados_atualizados_funcionario(nome, funcao, &valor_diaria);
-
-                // Tenta atualizar no tipo de armazenamento configurado
-                switch (tipo) {
-                    case MEMORIA: {
-                        atualizar_funcionario_memoria(func, nome, funcao, valor_diaria);
-                        break;
-                    }
-                    case TEXTO: {
-                        int sucesso = atualizar_funcionario_texto(cpf_busca, nome, funcao, valor_diaria);
-                        if (!sucesso)
-                            exibir_mensagem("Erro ao atualizar funcionário no arquivo texto.");
-                        break;  
-                    }
-                    case BINARIO: {
-                        int sucesso = atualizar_funcionario_binario(cpf_busca, nome, funcao, valor_diaria);
-                        if (!sucesso)
-                            exibir_mensagem("Erro ao atualizar funcionário no arquivo binário.");
-                        break;
-                    }
-                    default:
-                        exibir_mensagem("Erro ao atualizar funcionário: tipo de armazenamento inválido!");
-                        break;
-                }
                 break;
             }
             // Exibir funcionário

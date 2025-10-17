@@ -24,14 +24,8 @@ EquipeInterna* adicionar_funcionario(EquipeInterna* funcionario, TipoArmazenamen
 
 // Atualiza os dados do funcionário existente, recebe a struct a ser atualizada e os novos dados
 
-// Atualizar funcionário em memória
-int atualizar_funcionario_memoria(EquipeInterna* funcionario_mem, const char* nome, const char* funcao, float valor_diaria);
-
-// Atualizar funcionário em texto
-int atualizar_funcionario_texto(const char* cpf, const char* nome, const char* funcao, float valor_diaria);
-
-// Atualizar funcionário em binário
-int atualizar_funcionario_binario(const char* cpf, const char* nome, const char* funcao, float valor_diaria);
+// Atualizar funcionário pelo CPF
+int atualizar_funcionario(const char* cpf_busca, EquipeInterna* novos_dados, TipoArmazenamento tipo);
 
 // Deletar funcionário 
 int deletar_funcionario(const char* cpf, TipoArmazenamento tipo);

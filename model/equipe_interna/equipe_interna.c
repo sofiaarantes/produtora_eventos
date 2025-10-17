@@ -139,124 +139,143 @@ EquipeInterna* adicionar_funcionario(EquipeInterna* funcionario, TipoArmazenamen
             return NULL;
     }
 }
+// ============================
+// Atualizar Funcionário (Unificado)
+// ============================
+EquipeInterna* atualizar_funcionario(const char* cpf_busca, EquipeInterna* novos_dados, TipoArmazenamento tipo) {
+    if (!cpf_busca || !novos_dados) return NULL;
 
-// ================================
-// Atualizar funcionário - MEMÓRIA
-// ================================
-int atualizar_funcionario_memoria(EquipeInterna* funcionario_memoria, const char* nome, const char* funcao, float valor_diaria) {
-    // Verifica se o ponteiro não é nulo
-    if (!funcionario_memoria) return 0;
-
-    // Atualiza os dados do funcionario
-    // Usar strncpy para evitar que o nome ultrapasse o tamanho do campo, -1 por causa do '\0'
-    strncpy(funcionario_memoria->nome, nome, sizeof(funcionario_memoria->nome) - 1);
-    funcionario_memoria->nome[sizeof(funcionario_memoria->nome) - 1] = '\0'; 
-
-    strncpy(funcionario_memoria->funcao, funcao, sizeof(funcionario_memoria->funcao) - 1);
-    funcionario_memoria->funcao[sizeof(funcionario_memoria->funcao) - 1] = '\0'; 
-
-    funcionario_memoria->valor_diaria = valor_diaria;
-
-    printf("Funcionário %s atualizado na Memória!\n", funcionario_memoria->nome);
-    return 1;
-}
-
-// ==============================
-// Atualizar Funcionário - TEXTO
-// ==============================
-int atualizar_funcionario_texto(const char* cpf, const char* nome, const char* funcao, float valor_diaria) {
-    // Abre o arquivo original na função de ler(read)
-    FILE* fp = fopen("funcionarios.txt", "r");
-    // Cria um arquivo temporário para escrever os funcionários atualizados (write)
-    FILE* temp = fopen("funcionarios_temp.txt", "w");
-    // Se não conseguir abrir algum dos arquivos, mostra erro e sai
-    if (!fp || !temp) {
-        perror("Erro ao abrir arquivo de funcionarios");
-        if (fp) fclose(fp);
-        if (temp) fclose(temp);
-        return 0; 
-    }
-
-    // Lê cada funcion do arquivo original
-    EquipeInterna f;
-    int atualizado = 0;
     int operador_logado = get_operador_logado();
 
-    // Percorre todos os registros  
-    while (fscanf(fp, "%d;%49[^;];%19[^;];%99[^;];%f;%d;",
-              &f.id, f.nome, f.cpf, f.funcao, &f.valor_diaria, &f.operador_id) == 6) {
-        // Busca no arquivo o funcionário que quero atualizar pelo CPF e verifica se o operador pode atualizá-lo
-        if (strcmp(f.cpf, cpf) == 0 && f.operador_id == operador_logado) {
-            // strncpy(destino, origem, tamanho)
-            strncpy(f.nome, nome, sizeof(f.nome) - 1);
-            f.nome[sizeof(f.nome) - 1] = '\0';
-            strncpy(f.funcao, funcao, sizeof(f.funcao) - 1);
-            f.funcao[sizeof(f.funcao) - 1] = '\0';
-            f.valor_diaria = valor_diaria;
-            atualizado = 1; 
+    switch (tipo) {
+
+        // ==========================
+        // MEMÓRIA
+        // ==========================
+        case MEMORIA: {
+            for (int i = 0; i < qtd; i++) {
+                if (strcmp(funcionarios_memoria[i].cpf, cpf_busca) == 0 &&
+                    funcionarios_memoria[i].operador_id == operador_logado) {
+
+                    // Mantém o ID original e operador_id
+                    int id_original = funcionarios_memoria[i].id;
+                    int operador_original = funcionarios_memoria[i].operador_id;
+
+                    // Substitui os dados
+                    funcionarios_memoria[i] = *novos_dados;
+
+                    // Mantém ID e operador
+                    funcionarios_memoria[i].id = id_original;
+                    funcionarios_memoria[i].operador_id = operador_original;
+
+                    // Mantém o CPF original
+                    strcpy(funcionarios_memoria[i].cpf, cpf_busca);
+
+                    printf("Funcionário %s atualizado em MEMÓRIA!\n", funcionarios_memoria[i].nome);
+                    return &funcionarios_memoria[i];
+                }
+            }
+            printf("Funcionário com CPF %s não encontrado em MEMÓRIA!\n", cpf_busca);
+            return NULL;
         }
 
-        // Escreve o funcionario (atualizado ou não) no arquivo temporário
-        fprintf(temp, "%d;%s;%s;%s;%f;%d;\n",
-            f.id, f.nome, f.cpf, f.funcao, f.valor_diaria, f.operador_id);
-    }
+        // ==========================
+        // TEXTO
+        // ==========================
+        case TEXTO: {
+            FILE* fp = fopen("funcionarios.txt", "r");
+            if (!fp) {
+                perror("Erro ao abrir funcionarios.txt");
+                return NULL;
+            }
+            FILE* temp = fopen("funcionarios_temp.txt", "w");
+            if (!temp) {
+                perror("Erro ao criar funcionarios_temp.txt");
+                fclose(fp);
+                return NULL;
+            }
 
-    // Fecha os arquivos abertos
-    fclose(fp);
-    fclose(temp);
+            EquipeInterna f;
+            int atualizado = 0;
 
-    // Apaga o arquivo original e renomeia o temporário para o nome original
-    remove("funcionarios.txt");
-    rename("funcionarios_temp.txt", "funcionarios.txt");
+            while (fscanf(fp, "%d;%49[^;];%19[^;];%99[^;];%f;%d;\n",
+                          &f.id, f.nome, f.cpf, f.funcao, &f.valor_diaria, &f.operador_id) == 6) {
+                if (strcmp(f.cpf, cpf_busca) == 0 && f.operador_id == operador_logado) {
+                    // Mantém ID, operador_id e CPF originais
+                    int id_original = f.id;
+                    int operador_original = f.operador_id;
+                    strcpy(f.cpf, cpf_busca);
 
-    if (atualizado)
-        printf("Funcionário %s atualizado em arquivo Texto!\n", nome);
-    else
-        printf("\nErro: funcionário não encontrado para este operador.\n");
-    return atualizado;
-}
+                    // Sobrescreve os demais dados
+                    f = *novos_dados;
+                    f.id = id_original;
+                    f.operador_id = operador_original;
+                    strcpy(f.cpf, cpf_busca);
 
-// ==============================
-// Atualizar Funcionário - BINÁRIO
-// ==============================
-int atualizar_funcionario_binario(const char* cpf, const char* nome, const char* funcao, float valor_diaria) {
-    // Abre o arquivo binário para leitura e escrita
-    FILE* fp = fopen("funcionarios.bin", "r+b");
-    if (!fp) {
-        perror("Erro ao abrir funcionarios.bin");
-        return 0;
-    }
+                    atualizado = 1;
+                }
+                fprintf(temp, "%d;%s;%s;%s;%f;%d;\n",
+                        f.id, f.nome, f.cpf, f.funcao, f.valor_diaria, f.operador_id);
+            }
 
-    EquipeInterna f;
-    int atualizado = 0;
-    int operador_logado = get_operador_logado();
+            fclose(fp);
+            fclose(temp);
 
-    // Lê cada funcionário do arquivo binário, 1 por vez e retorna 1 se 'sucesso'
-    while (fread(&f, sizeof(EquipeInterna), 1, fp) == 1) {
-        // Busca no arquivo o funcionário que quero atualizar pelo CPF
-        if (strcmp(f.cpf, cpf) == 0 && f.operador_id == operador_logado) {
-            // Atualiza os campos permitidos
-            strncpy(f.nome, nome, sizeof(f.nome) - 1);
-            f.nome[sizeof(f.nome) - 1] = '\0';
-            strncpy(f.funcao, funcao, sizeof(f.funcao) - 1);
-            f.funcao[sizeof(f.funcao) - 1] = '\0';
-            f.valor_diaria = valor_diaria;
+            remove("funcionarios.txt");
+            rename("funcionarios_temp.txt", "funcionarios.txt");
 
-            // Move o cursor do arquivo para trás exatamente o tamanho de uma struct EquipeInterna
-            fseek(fp, -(long)sizeof(EquipeInterna), SEEK_CUR);
-            fwrite(&f, sizeof(EquipeInterna), 1, fp);
-
-            atualizado = 1;
-            break;
+            if (atualizado) {
+                printf("Funcionário %s atualizado em TEXTO!\n", novos_dados->nome);
+                return novos_dados;
+            } else {
+                printf("Funcionário com CPF %s não encontrado ou sem permissão!\n", cpf_busca);
+                return NULL;
+            }
         }
-    }
 
-    fclose(fp); // Fecha o arquivo
-    if (atualizado)
-        printf("Funcionário %s atualizado em arquivo Binário!\n", nome);
-    else
-        printf("\nErro: funcionário não encontrado para este operador.\n");
-    return atualizado;
+        // ==========================
+        // BINÁRIO
+        // ==========================
+        case BINARIO: {
+            FILE* fp = fopen("funcionarios.bin", "r+b");
+            if (!fp) {
+                perror("Erro ao abrir funcionarios.bin");
+                return NULL;
+            }
+
+            EquipeInterna f;
+            while (fread(&f, sizeof(EquipeInterna), 1, fp) == 1) {
+                if (strcmp(f.cpf, cpf_busca) == 0 && f.operador_id == operador_logado) {
+                    int id_original = f.id;
+                    int operador_original = f.operador_id;
+                    strcpy(f.cpf, cpf_busca);
+
+                    f = *novos_dados;
+                    f.id = id_original;
+                    f.operador_id = operador_original;
+                    strcpy(f.cpf, cpf_busca);
+
+                    fseek(fp, -(long)sizeof(EquipeInterna), SEEK_CUR);
+                    fwrite(&f, sizeof(EquipeInterna), 1, fp);
+
+                    fclose(fp);
+                    printf("Funcionário %s atualizado em BINÁRIO!\n", novos_dados->nome);
+                    return novos_dados;
+                }
+            }
+
+            fclose(fp);
+            printf("Funcionário com CPF %s não encontrado ou sem permissão!\n", cpf_busca);
+            return NULL;
+        }
+
+        // ==========================
+        // DEFAULT
+        // ==========================
+        default:
+            printf("Tipo de armazenamento inválido!\n");
+            return NULL;
+    }
 }
 
 // ====================
