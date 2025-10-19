@@ -15,6 +15,7 @@ typedef struct {
     int qtd_estoque;
     float preco_custo;
     float valor_diaria;
+    int operador_id;
 } RecursosEquipamentos;
 
 // Funções do modelo (CRUD)
@@ -22,39 +23,16 @@ typedef struct {
 // Cria um novo equipamento/recurso e retorna um ponteiro para ele, recebe o tipo armazenamento e a struct a ser adicionada
 RecursosEquipamentos* adicionar_equipamento(RecursosEquipamentos* equipamento, TipoArmazenamento tipo);
 
-// Atualiza os dados do equipamento/recurso existente, recebe a struct a ser atualizada e os novos dados
+// Recebe o id do equipamento/recurso a ser atualizado, a struct a ser atualizada e os novos dados
+RecursosEquipamentos* atualizar_equipamento(int id_busca, RecursosEquipamentos* novos_dados, TipoArmazenamento tipo);
 
-// Atualizar equipamento/recurso em memória
-void atualizar_equipamento_memoria(RecursosEquipamentos* equipamento_mem, const char* descricao, 
-                  const char* categoria, int qtd_estoque, float preco_custo, float valor_diaria);
-
-// Atualizar equipamento/recurso em texto
-int atualizar_equipamento_texto(int id, const char* descricao, const char* categoria, 
-                    int qtd_estoque, float preco_custo, float valor_diaria);
-
-// Atualizar equipamento/recurso em binário
-int atualizar_equipamento_binario(int id, const char* descricao, const char* categoria, 
-                    int qtd_estoque, float preco_custo, float valor_diaria);
-
-// Deletar equipamento/recurso em memória
-int deletar_equipamento_memoria(int id);
-
-// Deletar equipamento/recurso em arquivo texto
-int deletar_equipamento_texto(int id);
-
-// Deletar equipamento/recurso em arquivo binário
-int deletar_equipamento_binario(int id);
+// Deletar equipamento/recurso
+int deletar_equipamento(int id_busca, TipoArmazenamento tipo);
 
 // Retorna a quantidade de equipamento/recursos na memória
 int get_qtd_equipamentos();
 
-// Busca equipamento/recurso por id na memória (retorna ponteiro para o equipamento/recurso ou NULL se não achar)
-RecursosEquipamentos* buscar_equipamento_por_id_memoria(int id_busca);
-
-// Busca equipamento/recurso por id em arquivo texto (retorna ponteiro para o equipamento/recurso ou NULL se não achar)
-RecursosEquipamentos* buscar_equipamento_por_id_texto(int id_busca);
-
-// Busca equipamento/recurso por id em arquivo binário (retorna ponteiro para o equipamento/recurso ou NULL se não achar)
-RecursosEquipamentos* buscar_equipamento_por_id_binario(int id_busca);
+// Busca equipamento/recurso por id (retorna ponteiro para o equipamento/recurso ou NULL se não achar)
+RecursosEquipamentos* buscar_equipamento_por_id(int id_busca, TipoArmazenamento tipo);
 
 #endif

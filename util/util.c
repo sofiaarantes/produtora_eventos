@@ -119,6 +119,11 @@ void ler_float(const char *mensagem, float *destino) {
         // Removo o '\n' ou '\r' que podem vir no final da string (compatível com Windows e Linux)
         buffer[strcspn(buffer, "\r\n")] = '\0';
 
+        // Substituo vírgula por ponto
+        for (char *p = buffer; *p; p++) {
+            if (*p == ',') *p = '.';
+        }
+
         // Preparo para a conversão usando strtof (string para float)
         errno = 0;
         valor = strtof(buffer, &endptr);

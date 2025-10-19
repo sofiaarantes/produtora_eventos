@@ -39,10 +39,6 @@ void iniciar_sistema(){
             gerenciar_fornecedor_parceiro();
             break;
         }
-        // Menu Operadores do Sistema
-        case 6:{
-            break;
-        }
         // Editar conta
         case 7:{ 
             editar_operador();
@@ -50,11 +46,12 @@ void iniciar_sistema(){
         }
         // Sair
         case 0:{
-            gerenciar_login();
-            break;
+            exibir_mensagem("\nEncerrando sessão...\n");
+            return; // Volta pro while do main()
         }
 
         default:
+            exibir_mensagem("Opção inválida. Tente novamente.\n");
             break;
         }
     } while (opcao != 0);

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "../../model/operadores_sistema/operadores_sistema.h"
 #include "../../view/operadores_sistema/operadores_sistema_view.h"
 #include "../../model/config_armazenamento/config_armazenamento.h"
@@ -25,7 +26,7 @@ void gerenciar_login() {
 
             FILE* fp = fopen("operadores.txt", "r");
             if (!fp) {
-                printf("\nNenhum operador cadastrado ainda. Tente novamente com outras credenciais.\n");
+                printf("\nErro! Tente novamente com outras credenciais.\n");
                 continue; // volta ao menu inicial
             }
 
@@ -48,23 +49,30 @@ void gerenciar_login() {
                 set_armazenamento(tmp.tipo);
                 return;
             } else {
-                printf("\nCredenciais inválidas! Tente novamente.\n");
+                printf("\nErro: Credenciais inválidas! Tente novamente.\n");
             }
-
         } else if (opcao == 2) { // Cadastro
             Operadores novo = ler_dados_operador_cadastro();
+            if (novo.tipo == 0) {
+                continue;
+            }
             criptografar_senha(novo.senha);
-            adicionar_operador(&novo);
-            set_operador_logado(novo.id); 
-            set_armazenamento(novo.tipo);
-            printf("\nCadastro realizado com sucesso! Bem-vindo(a), %s.\n", novo.usuario);
+
+            Operadores* cadastrado = adicionar_operador(&novo);
+            if (cadastrado == NULL) {
+                printf("\nErro: Falha no cadastro. Tente novamente.\n");
+                continue; // volta ao menu
+            }
+
+            set_operador_logado(cadastrado->id); 
+            set_armazenamento(cadastrado->tipo);
+            printf("\nCadastro realizado com sucesso! Bem-vindo(a), %s.\n", cadastrado->usuario);
             return;
-        } else if (opcao == 0) {
-            printf("\nSaindo do sistema... Até logo!\n");
-        } else {
-            printf("\nOpção inválida! Tente novamente.\n");
+        } else if ((opcao != 0) && (opcao != 1) && (opcao != 2)){
+            printf("\nErro: Opção inválida! Tente novamente.\n");
         }
-    } while (opcao != 3);
+    } while (opcao != 0);
+    exit(0);
 }
 
 void editar_operador() {
@@ -72,7 +80,7 @@ void editar_operador() {
     int id_logado = get_operador_logado();
     // Se o id recebido for -1, significa que houve um erro e não há operador logado
     if (id_logado == -1) {
-        printf("\nNenhum operador logado!\n");
+        printf("\nErro: Nenhum operador logado!\n");
         return;
     }
 
@@ -99,7 +107,7 @@ void editar_operador() {
     fclose(fp);
 
     if (!encontrado) {
-        printf("\nOperador não encontrado.\n");
+        printf("\nErro: Operador não encontrado.\n");
         return;
     }
 
@@ -150,7 +158,7 @@ void editar_operador() {
 
             int novo_tipo = mostrar_menu_configuracao(); // Mostra o menu e recebe o novo tipo
             if (novo_tipo == 0) {
-                printf("\nOperação cancelada.\n");
+                printf("\nErro: Operação cancelada.\n");
                 return;
             }
 
@@ -203,7 +211,7 @@ void editar_operador() {
         } else if (opcao == 0) {
             printf("\nVoltando ao menu principal...\n");
         } else {
-            printf("\nOpção inválida!\n");
+            printf("\nErro: Opção inválida!\n");
         }
     } while (opcao != 0);
 }
