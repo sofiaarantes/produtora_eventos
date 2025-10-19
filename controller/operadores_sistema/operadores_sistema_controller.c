@@ -42,7 +42,8 @@ void gerenciar_login() {
             fclose(fp);
 
             if (encontrado) {
-                printf("\nLogin realizado com sucesso! Bem-vindo(a), %s.\n", tmp.nome);
+                printf("\nLogin realizado com sucesso! Bem-vindo(a), %s. Armazenando dados em %s\n", tmp.nome, 
+                       tmp.tipo == 1 ? "Memória" : tmp.tipo == 2 ? "Arquivo Texto" : tmp.tipo == 3 ? "Binario" : "Desconhecido");
                 set_operador_logado(tmp.id); 
                 set_armazenamento(tmp.tipo);
                 return;

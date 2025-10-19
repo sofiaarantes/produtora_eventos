@@ -5,6 +5,7 @@
 #include "cliente.h"
 #include "../../view/cliente/cliente_view.h"
 #include "../../view/main/main_view.h"
+#include "../../model/sessao/sessao.h"
 
 
 #define MAX_CLIENTES 100
@@ -29,8 +30,11 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
     // Começo o ID em 1. Caso haja clientes anteriores, ele será atualizado mais abaixo
     int novo_id = 1;
 
+    cliente->id_logado = get_operador_logado(); // Associo o cliente ao operador logado
+
     // Escolho o tipo de armazenamento que o sistema está usando (memória, texto ou binário)
     switch (tipo) {
+        
 
         // ============================================
         // CASO 1 - SALVAR CLIENTE NA MEMORIA
@@ -54,6 +58,8 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
 
                 // Crio um ponteiro que aponta para o cliente recém-salvo
                 Cliente* salvo = &clientes_memoria[qtd];
+
+                cliente->id_logado = get_operador_logado(); // garante que está atualizado
 
                 // Incremento a contagem total de clientes
                 qtd++;
@@ -88,11 +94,11 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
                 while (fgets(linha, sizeof(linha), fp)) {
                     // Tenta ler até 9 campos formatados por ponto e vírgula
                     // %[^;] significa “ler até encontrar um ponto e vírgula”
-                    int lidos = sscanf(linha, "%d;%49[^;];%d;%99[^;];%19[^;];%11[^;];%49[^;];%49[^;];%d",
+                    int lidos = sscanf(linha, "%d;%49[^;];%d;%99[^;];%19[^;];%11[^;];%49[^;];%49[^;];%d;%d",
                                         &tmp.id, tmp.nome, &tmp.idade,
                                         tmp.endereco_completo, tmp.cpf_cnpj,
                                         tmp.tel, tmp.email, tmp.nome_contato,
-                                        (int*)&tmp.tipo_doc);
+                                        (int*)&tmp.tipo_doc,&tmp.id_logado);
 
                     // Se conseguiu ler pelo menos o ID, atualiza o próximo id
                     if (lidos >= 1) {
@@ -109,6 +115,8 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
             // Recalcula o tipo de documento por segurança
             cliente->tipo_doc = identificar_documento(cliente->cpf_cnpj);
 
+            cliente->id_logado = get_operador_logado(); // Associo o cliente ao operador logado
+
             // Agora abre o arquivo em modo append (“a”) para adicionar o novo cliente no final
             fp = fopen("clientes.txt", "a");
             if (!fp) {
@@ -117,7 +125,7 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
             }
 
             // Grava os dados do cliente em uma linha formatada, separados por ponto e vírgula
-            fprintf(fp, "%d;%s;%d;%s;%s;%s;%s;%s;%d\n",
+            fprintf(fp, "%d;%s;%d;%s;%s;%s;%s;%s;%d;%d\n",
                 cliente->id,
                 cliente->nome,
                 cliente->idade,
@@ -126,7 +134,8 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
                 cliente->tel,
                 cliente->email,
                 cliente->nome_contato,
-                cliente->tipo_doc
+                cliente->tipo_doc,
+                cliente->id_logado
             );
 
             // Fecha o arquivo após a escrita
@@ -164,6 +173,7 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
             // Recalcula o tipo de documento antes de salvar
             cliente->tipo_doc = identificar_documento(cliente->cpf_cnpj);
 
+            cliente->id_logado = get_operador_logado(); // Associo o cliente ao operador logado
             // Garante que os campos string terminam com '\0'
             cliente->cpf_cnpj[sizeof(cliente->cpf_cnpj) - 1] = '\0';
             cliente->tel[sizeof(cliente->tel) - 1] = '\0';
@@ -206,124 +216,147 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
 // Pode atualizar tanto em memória, quanto em arquivo texto ou binário
 Cliente* atualizar_cliente(const char* cpf_cnpj_busca, Cliente* novos_dados, TipoArmazenamento tipo) {
 
-    // Verifica se os parâmetros são válidos
+    // Verifico se os parâmetros passados são válidos antes de qualquer coisa
     if (!cpf_cnpj_busca || !novos_dados) return NULL;
 
-    // Escolhe o tipo de armazenamento que será atualizado
+    // Pego o ID do operador que está logado no momento (para verificar permissões)
+    int operador_atual = get_operador_logado();
+
+    // Uso um switch para tratar de acordo com o tipo de armazenamento escolhido
     switch (tipo) {
 
-        // ==========================
-        // CASO 1: CLIENTES EM MEMORIA
-        // ==========================
+        // =======================================================
+        // CASO 1: Atualização de cliente armazenado na MEMÓRIA
+        // =======================================================
         case MEMORIA: {
-            // Percorro todos os clientes armazenados em memória
+            // Percorro todos os clientes armazenados na memória
             for (int i = 0; i < qtd; i++) {
-                // Comparo o CPF/CNPJ do cliente atual com o que estou buscando
+                // Comparo o CPF/CNPJ atual com o que foi informado pelo usuário
                 if (strcmp(clientes_memoria[i].cpf_cnpj, cpf_cnpj_busca) == 0) {
 
-                    // Guardo o tipo de documento original (CPF ou CNPJ)
+                    // Verifico se o operador logado é o mesmo que criou esse cliente
+                    if (clientes_memoria[i].id_logado != operador_atual) {
+                        printf("Erro: voce nao tem permissao para atualizar este cliente \n");
+                        return NULL; // se não for o mesmo, não permito a atualização
+                    }
+
+                    // Guardo o tipo de documento e o id_logado original
                     TipoDocumento tipo_doc_original = clientes_memoria[i].tipo_doc;
+                    int id_logado_original = clientes_memoria[i].id_logado;
 
                     // Substituo o cliente antigo pelos novos dados
                     clientes_memoria[i] = *novos_dados;
 
-                    // Mantenho o CPF/CNPJ original (pois esse é o identificador)
+                    // Mas garanto que o CPF/CNPJ, tipo_doc e id_logado originais não sejam alterados
                     strcpy(clientes_memoria[i].cpf_cnpj, cpf_cnpj_busca);
-
-                    // Restaura o tipo de documento original
                     clientes_memoria[i].tipo_doc = tipo_doc_original;
+                    clientes_memoria[i].id_logado = id_logado_original;
 
-                    // Mensagem de sucesso
-                    printf(" Cliente %s atualizado em MEMORIA!\n", clientes_memoria[i].nome);
+                    // Aviso que o cliente foi atualizado
+                    printf("Cliente %s atualizado em MEMORIA!\n", clientes_memoria[i].nome);
 
-                    // Retorna o endereço do cliente atualizado
+                    // Retorno o ponteiro para o cliente atualizado
                     return &clientes_memoria[i];
                 }
             }
 
-            // Caso o cliente nao seja encontrado
-            printf(" Cliente com CPF/CNPJ %s nao encontrado em MEMORIA!\n", cpf_cnpj_busca);
+            // Se chegar aqui, é porque o CPF/CNPJ não foi encontrado
+            printf("Cliente com CPF/CNPJ %s nao encontrado em MEMORIA!\n", cpf_cnpj_busca);
             return NULL;
         }
 
-        // ==========================
-        // CASO 2: ARQUIVO TEXTO
-        // ==========================
+        // =======================================================
+        // CASO 2: Atualização de cliente armazenado em ARQUIVO TEXTO
+        // =======================================================
         case TEXTO: {
-                        // Abre o arquivo de clientes no modo leitura
-                        FILE* fp = fopen("clientes.txt", "r");
-                        if (!fp) {
-                            perror("Erro ao abrir clientes.txt");
-                            return NULL;
-                        }
+            // Abro o arquivo original de clientes em modo leitura
+            FILE* fp = fopen("clientes.txt", "r");
+            if (!fp) {
+                perror("Erro ao abrir clientes.txt");
+                return NULL;
+            }
 
-                        // Cria um arquivo temporário onde salvará as alterações
-                        FILE* temp = fopen("clientes_tmp.txt", "w");
-                        if (!temp) {
-                            perror("Erro ao criar clientes_tmp.txt");
-                            fclose(fp);
-                            return NULL;
-                        }
+            // Crio um arquivo temporário onde vou escrever as atualizações
+            FILE* temp = fopen("clientes_tmp.txt", "w");
+            if (!temp) {
+                perror("Erro ao criar clientes_tmp.txt");
+                fclose(fp);
+                return NULL;
+            }
 
-                        char linha[400];
-                        int atualizado = 0; // flag para verificar se houve atualização
+            char linha[400];
+            int atualizado = 0; // flag para indicar se algum cliente foi atualizado
 
-                        // Lê o arquivo linha por linha
-                        while (fgets(linha, sizeof(linha), fp)) {
-                            Cliente c = {0};
+            // Leio o arquivo linha por linha
+            while (fgets(linha, sizeof(linha), fp)) {
+                Cliente c = {0};
 
-                           
-                            int lidos = sscanf(linha, "%d;%49[^;];%d;%99[^;];%19[^;];%14[^;];%49[^;];%49[^;];%d",
-                                            &c.id, c.nome, &c.idade, c.endereco_completo,
-                                            c.cpf_cnpj, c.tel, c.email, c.nome_contato, (int*)&c.tipo_doc);
+                // Quebro a linha em campos separados por ';'
+                int lidos = sscanf(linha, "%d;%49[^;];%d;%99[^;];%19[^;];%14[^;];%49[^;];%49[^;];%d;%d",
+                                   &c.id, c.nome, &c.idade, c.endereco_completo,
+                                   c.cpf_cnpj, c.tel, c.email, c.nome_contato,
+                                   (int*)&c.tipo_doc, (int*)&c.id_logado);
 
-                            // Se a linha nao tiver o campo tipo_doc (arquivo antigo), forço recalcular
-                            if (lidos < 9)
-                                c.tipo_doc = identificar_documento(c.cpf_cnpj);
+                // Caso o tipo_doc não tenha sido lido corretamente, calculo de novo
+                if (lidos < 9)
+                    c.tipo_doc = identificar_documento(c.cpf_cnpj);
 
-                            // Se o CPF/CNPJ for o que deve ser atualizado
-                            if (strcmp(c.cpf_cnpj, cpf_cnpj_busca) == 0) {
-                                // Sobrescreve a linha com os novos dados, mantendo ID, CPF/CNPJ e tipo_doc original
-                                fprintf(temp, "%d;%s;%d;%s;%s;%s;%s;%s;%d\n",
-                                        c.id, //mantem o id original
-                                        novos_dados->nome,
-                                        novos_dados->idade,
-                                        novos_dados->endereco_completo,
-                                        c.cpf_cnpj,            // mantém o CPF/CNPJ original
-                                        novos_dados->tel,
-                                        novos_dados->email,
-                                        novos_dados->nome_contato,
-                                        c.tipo_doc);           // mantém o tipo_doc original
+                // Comparo o CPF/CNPJ lido com o buscado
+                if (strcmp(c.cpf_cnpj, cpf_cnpj_busca) == 0) {
 
-                                atualizado = 1;
-                            } else {
-                                // Copia a linha como está
-                                fputs(linha, temp);
-                            }
-                        }
-
+                    // Confiro se o operador logado tem permissão para atualizar esse cliente
+                    if (c.id_logado != operador_atual) {
+                        printf("Erro: voce nao tem permissao para atualizar este cliente\n");
                         fclose(fp);
                         fclose(temp);
-
-                        // Substitui o arquivo antigo pelo novo atualizado
-                        remove("clientes.txt");
-                        rename("clientes_tmp.txt", "clientes.txt");
-
-                        // Exibe mensagem de resultado
-                        if (atualizado) {
-                            printf("Cliente %s atualizado em TEXTO!\n", novos_dados->nome);
-                            return novos_dados;
-                        } else {
-                            printf("Cliente com CPF/CNPJ %s nao encontrado em TEXTO!\n", cpf_cnpj_busca);
-                            return NULL;
-                        }
+                        remove("clientes_tmp.txt"); // removo o arquivo temporário, já que deu erro
+                        return NULL; // e saio direto
                     }
 
-        // ==========================
-        // CASO 3: ARQUIVO BINARIO
-        // ==========================
+                    // Aqui sobrescrevo a linha do cliente com os novos dados
+                    // mantendo CPF/CNPJ, tipo_doc e id_logado originais
+                    fprintf(temp, "%d;%s;%d;%s;%s;%s;%s;%s;%d;%d\n",
+                            c.id,
+                            novos_dados->nome,
+                            novos_dados->idade,
+                            novos_dados->endereco_completo,
+                            c.cpf_cnpj,
+                            novos_dados->tel,
+                            novos_dados->email,
+                            novos_dados->nome_contato,
+                            c.tipo_doc,
+                            c.id_logado);
+
+                    atualizado = 1; // marco que o cliente foi atualizado
+                } else {
+                    // Se não for o cliente buscado, só copio a linha normalmente
+                    fputs(linha, temp);
+                }
+            }
+
+            // Fecho os dois arquivos
+            fclose(fp);
+            fclose(temp);
+
+            // Substituo o arquivo original pelo novo com as atualizações
+            remove("clientes.txt");
+            rename("clientes_tmp.txt", "clientes.txt");
+
+            // Exibo mensagem de acordo com o resultado
+            if (atualizado) {
+                printf("Cliente %s atualizado em TEXTO!\n", novos_dados->nome);
+                return novos_dados;
+            } else {
+                printf("Cliente com CPF/CNPJ %s nao encontrado em TEXTO!\n", cpf_cnpj_busca);
+                return NULL;
+            }
+        }
+
+        // =======================================================
+        // CASO 3: Atualização de cliente armazenado em ARQUIVO BINÁRIO
+        // =======================================================
         case BINARIO: {
-            // Abro o arquivo binário no modo leitura/escrita
+            // Abro o arquivo binário para leitura e escrita
             FILE* fp = fopen("clientes.bin", "rb+");
             if (!fp) {
                 perror("Erro ao abrir clientes.bin");
@@ -331,43 +364,67 @@ Cliente* atualizar_cliente(const char* cpf_cnpj_busca, Cliente* novos_dados, Tip
             }
 
             Cliente c;
-            // Leio cada cliente do arquivo
-            while (fread(&c, sizeof(Cliente), 1, fp)) {
-                // Comparo o CPF/CNPJ
+            int encontrado = 0; // flag para marcar se encontrei o cliente
+
+            // Leio cliente por cliente no arquivo
+            while (fread(&c, sizeof(Cliente), 1, fp) == 1) {
+                // Garante que o CPF/CNPJ está terminado corretamente com '\0'
+                c.cpf_cnpj[sizeof(c.cpf_cnpj) - 1] = '\0';
+
+                // Comparo o CPF/CNPJ lido com o buscado
                 if (strcmp(c.cpf_cnpj, cpf_cnpj_busca) == 0) {
-                    // Volto o ponteiro do arquivo para sobrescrever o registro atual
+                    encontrado = 1;
+
+                    // Verifico se o operador logado é o mesmo que criou o cliente
+                    if (c.id_logado != operador_atual) {
+                        printf("Erro: voce nao tem permissao para atualizar este cliente\n");
+                        fclose(fp);
+                        return NULL; // retorno imediatamente, sem exibir "não encontrado"
+                    }
+
+                    // Volto o cursor do arquivo para reescrever esse mesmo cliente
                     fseek(fp, -(long)sizeof(Cliente), SEEK_CUR);
 
-                    // Mantenho o CPF/CNPJ original
-                    strcpy(novos_dados->cpf_cnpj, cpf_cnpj_busca);
-
-                    // Também preservo o tipo de documento (CPF/CNPJ)
+                    // Copio os dados fixos que não podem ser alterados
+                    novos_dados->id = c.id;
+                    strcpy(novos_dados->cpf_cnpj, c.cpf_cnpj);
                     novos_dados->tipo_doc = c.tipo_doc;
+                    novos_dados->id_logado = c.id_logado;
 
-                    // Sobrescrevo os dados do cliente
-                    fwrite(novos_dados, sizeof(Cliente), 1, fp);
+                    // Gravo os novos dados no arquivo (sobrescrevendo o cliente antigo)
+                    if (fwrite(novos_dados, sizeof(Cliente), 1, fp) != 1) {
+                        perror("Erro ao escrever cliente atualizado em clientes.bin");
+                        fclose(fp);
+                        return NULL;
+                    }
 
-                    // Fecho o arquivo e retorno
+                    // Fecho o arquivo e informo o sucesso
                     fclose(fp);
                     printf("Cliente %s atualizado em BINARIO!\n", novos_dados->nome);
                     return novos_dados;
                 }
             }
 
-            // Caso nao encontre o cliente
+            // Fecho o arquivo caso o cliente não tenha sido encontrado
             fclose(fp);
-            printf(" Cliente com CPF/CNPJ %s nao encontrado em BINARIO!\n", cpf_cnpj_busca);
+
+            // Se não encontrei o cliente, aviso o usuário
+            if (!encontrado) {
+                printf("Cliente com CPF/CNPJ %s nao encontrado em BINARIO!\n", cpf_cnpj_busca);
+            }
+
             return NULL;
         }
 
-        // ==========================
-        // CASO INVÁLIDO
-        // ==========================
+        // =======================================================
+        // Caso padrão — tipo de armazenamento inválido
+        // =======================================================
         default:
             printf("Tipo de armazenamento invalido!\n");
             return NULL;
     }
 }
+
 
 
 

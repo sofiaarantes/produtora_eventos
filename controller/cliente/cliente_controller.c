@@ -46,11 +46,9 @@ void gerenciar_cliente() {
 
 
                     // Chamo a função genérica de atualizar
-                    Cliente* atualizado = atualizar_cliente(cpf_cnpj_busca, &novos_dados, get_armazenamento());
+                   atualizar_cliente(cpf_cnpj_busca, &novos_dados, get_armazenamento());
 
-                    if (!atualizado) {
-                        exibir_mensagem("Cliente não encontrado para atualização!");
-                    }
+                
 
                     break;
                 }
