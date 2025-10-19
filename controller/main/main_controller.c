@@ -55,6 +55,7 @@ void iniciar_sistema(){
         }
 
         default:
+            exibir_mensagem("Opção inválida. Tente novamente.\n");
             break;
         }
     } while (opcao != 0);

@@ -23,7 +23,7 @@ EquipeInterna* adicionar_funcionario(EquipeInterna* funcionario, TipoArmazenamen
     switch (tipo) {
         case MEMORIA: {
             if (qtd < MAX_FUNCIONARIOS) {
-                // Se houver dados na memória, ele continua com o novo_id = 1, caso contrário, resgatará o
+                // Se não houver dados na memória, ele continua com o novo_id = 1, caso contrário, resgatará o
                 // último id e somará mais 1
                 if (qtd > 0) 
                     novo_id = funcionarios_memoria[qtd - 1].id + 1;
@@ -84,19 +84,14 @@ EquipeInterna* adicionar_funcionario(EquipeInterna* funcionario, TipoArmazenamen
                 return NULL;
             }
 
-            // Escreve os dados do funcion no arquivo separados por ponto e vírgula
-            fprintf(fp, "%d;%s;%s;%s;%f;%d;\n",
-                funcionario->id,
-                funcionario->nome,
-                funcionario->cpf,
-                funcionario->funcao,
-                funcionario->valor_diaria,
-                funcionario->operador_id
-            );
+            // Escreve os dados do funcionario no arquivo separados por ponto e vírgula
+            fprintf(fp, "%d;%s;%s;%s;%f;%d;\n", funcionario->id, funcionario->nome,
+                funcionario->cpf, funcionario->funcao, funcionario->valor_diaria, 
+                funcionario->operador_id);
 
             fclose(fp); // Fecha o arquivo
             printf("Funcionario %s salvo em arquivo Texto!\n", funcionario->nome);
-            return funcionario; // Retorna o funcion que foi salvo
+            return funcionario; // Retorna o funcionario que foi salvo
         }
 
         case BINARIO: {
@@ -130,17 +125,17 @@ EquipeInterna* adicionar_funcionario(EquipeInterna* funcionario, TipoArmazenamen
 
             fclose(fp); // Fecha o arquivo
             printf("Funcionario %s salvo em Binário!\n", funcionario->nome);
-            return funcionario; // retorno o funcion que foi salvo
+            return funcionario; // retorno o funcionario que foi salvo
         }
 
         // Caso inválido
         default:
-            printf("Tipo de armazenamento inválido!\n");
+            printf("Erro: Tipo de armazenamento inválido!\n");
             return NULL;
     }
 }
 // ============================
-// Atualizar Funcionário (Unificado)
+// Atualizar Funcionário 
 // ============================
 EquipeInterna* atualizar_funcionario(const char* cpf_busca, EquipeInterna* novos_dados, TipoArmazenamento tipo) {
     if (!cpf_busca || !novos_dados) return NULL;
@@ -148,7 +143,6 @@ EquipeInterna* atualizar_funcionario(const char* cpf_busca, EquipeInterna* novos
     int operador_logado = get_operador_logado();
 
     switch (tipo) {
-
         // ==========================
         // MEMÓRIA
         // ==========================
@@ -175,7 +169,7 @@ EquipeInterna* atualizar_funcionario(const char* cpf_busca, EquipeInterna* novos
                     return &funcionarios_memoria[i];
                 }
             }
-            printf("Funcionário com CPF %s não encontrado em MEMÓRIA!\n", cpf_busca);
+            printf("Erro: Funcionário com CPF %s não encontrado!\n", cpf_busca);
             return NULL;
         }
 
@@ -225,10 +219,10 @@ EquipeInterna* atualizar_funcionario(const char* cpf_busca, EquipeInterna* novos
             rename("funcionarios_temp.txt", "funcionarios.txt");
 
             if (atualizado) {
-                printf("Funcionário %s atualizado em TEXTO!\n", novos_dados->nome);
+                printf("Funcionário %s atualizado em arquivo Texto!\n", novos_dados->nome);
                 return novos_dados;
             } else {
-                printf("Funcionário com CPF %s não encontrado ou sem permissão!\n", cpf_busca);
+                printf("Erro: Funcionário com CPF %s não encontrado ou sem permissão!\n", cpf_busca);
                 return NULL;
             }
         }
@@ -244,29 +238,33 @@ EquipeInterna* atualizar_funcionario(const char* cpf_busca, EquipeInterna* novos
             }
 
             EquipeInterna f;
+            int atualizado = 0;
             while (fread(&f, sizeof(EquipeInterna), 1, fp) == 1) {
                 if (strcmp(f.cpf, cpf_busca) == 0 && f.operador_id == operador_logado) {
                     int id_original = f.id;
-                    int operador_original = f.operador_id;
                     strcpy(f.cpf, cpf_busca);
 
                     f = *novos_dados;
                     f.id = id_original;
-                    f.operador_id = operador_original;
+                    f.operador_id = operador_logado;
                     strcpy(f.cpf, cpf_busca);
 
                     fseek(fp, -(long)sizeof(EquipeInterna), SEEK_CUR);
                     fwrite(&f, sizeof(EquipeInterna), 1, fp);
-
-                    fclose(fp);
-                    printf("Funcionário %s atualizado em BINÁRIO!\n", novos_dados->nome);
-                    return novos_dados;
+                    atualizado = 1;
+                    break;
                 }
             }
 
             fclose(fp);
-            printf("Funcionário com CPF %s não encontrado ou sem permissão!\n", cpf_busca);
-            return NULL;
+
+            if (atualizado) {
+                printf("Funcionário %s atualizado em BINÁRIO!\n", novos_dados->nome);
+                return novos_dados;
+            } else {
+                printf("Erro: Funcionário com CPF %s não encontrado ou sem permissão!\n", cpf_busca);
+                return NULL;
+            }
         }
 
         // ==========================
@@ -287,14 +285,14 @@ int deletar_funcionario(const char* cpf, TipoArmazenamento tipo) {
 
     switch (tipo) {
         // ============================
-        // Armazenamento em MEMÓRIA
+        // MEMÓRIA
         // ============================
         case MEMORIA: {
             for (int i = 0; i < qtd; i++) {
                 // Verifica CPF e se pertence ao operador logado
                 if (strcmp(funcionarios_memoria[i].cpf, cpf) == 0 &&
                     funcionarios_memoria[i].operador_id == operador_logado) {
-                    // Move todos os funcionários após ele uma posição para trás
+                    // Move todos os funcionários após ele para uma posição para trás
                     for (int j = i; j < qtd - 1; j++) {
                         funcionarios_memoria[j] = funcionarios_memoria[j + 1];
                     }
@@ -307,7 +305,7 @@ int deletar_funcionario(const char* cpf, TipoArmazenamento tipo) {
         }
 
         // ============================
-        // Armazenamento em TEXTO
+        // TEXTO
         // ============================
         case TEXTO: {
             FILE* fp = fopen("funcionarios.txt", "r");
@@ -341,7 +339,7 @@ int deletar_funcionario(const char* cpf, TipoArmazenamento tipo) {
         }
 
         // ============================
-        // Armazenamento em BINÁRIO
+        // BINÁRIO
         // ============================
         case BINARIO: {
             FILE* fp = fopen("funcionarios.bin", "rb");
@@ -401,7 +399,7 @@ EquipeInterna* buscar_funcionario_por_cpf(const char* cpf_busca, TipoArmazenamen
 
     switch (tipo) {
         // ======================
-        // Caso 1: Memória
+        // Memória
         // ======================
         case MEMORIA: {
             for (int i = 0; i < get_qtd_funcionarios(); i++) {
@@ -414,7 +412,7 @@ EquipeInterna* buscar_funcionario_por_cpf(const char* cpf_busca, TipoArmazenamen
         }
 
         // ======================
-        // Caso 2: Texto
+        // Texto
         // ======================
         case TEXTO: {
             FILE* fp = fopen("funcionarios.txt", "r");
@@ -440,7 +438,7 @@ EquipeInterna* buscar_funcionario_por_cpf(const char* cpf_busca, TipoArmazenamen
         }
 
         // ======================
-        // Caso 3: Binário
+        // Binário
         // ======================
         case BINARIO: {
             FILE* fp = fopen("funcionarios.bin", "rb");
@@ -462,7 +460,7 @@ EquipeInterna* buscar_funcionario_por_cpf(const char* cpf_busca, TipoArmazenamen
         }
 
         default:
-            printf("Tipo de armazenamento inválido!");
+            printf("Erro: Tipo de armazenamento inválido!");
             break;
     }
 

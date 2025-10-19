@@ -4,3 +4,4 @@
 4;sofiabin2;sofiabin2;456;3;
 5;sofiamem1;sofiamem;456;1;
 6;sofiamem2;sofiamem2;456;1;
+7;1;1;4;2;

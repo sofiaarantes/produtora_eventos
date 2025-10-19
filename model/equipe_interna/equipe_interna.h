@@ -22,10 +22,8 @@ typedef struct {
 // Cria um novo funcionário e retorna um ponteiro para ele, recebe o tipo armazenamento e a struct a ser adicionada
 EquipeInterna* adicionar_funcionario(EquipeInterna* funcionario, TipoArmazenamento tipo);
 
-// Atualiza os dados do funcionário existente, recebe a struct a ser atualizada e os novos dados
-
-// Atualizar funcionário pelo CPF
-int atualizar_funcionario(const char* cpf_busca, EquipeInterna* novos_dados, TipoArmazenamento tipo);
+// Recebe o cpf a ser atualizado, os novos dados e o tipo do armazenamento
+EquipeInterna* atualizar_funcionario(const char* cpf_busca, EquipeInterna* novos_dados, TipoArmazenamento tipo);
 
 // Deletar funcionário 
 int deletar_funcionario(const char* cpf, TipoArmazenamento tipo);
