@@ -35,14 +35,14 @@ void gerenciar_cliente() {
 
                     // Preencho com os novos dados (menos o CPF que não muda)
                     ler_dados_atualizados_cliente(
-                        novos_dados.nome, sizeof(novos_dados.nome),
+                        novos_dados.nome,   
                         &novos_dados.idade,
-                        novos_dados.endereco_completo, sizeof(novos_dados.endereco_completo),
-                        novos_dados.tel, sizeof(novos_dados.tel),
-                        novos_dados.email, sizeof(novos_dados.email),
-                        novos_dados.nome_contato, sizeof(novos_dados.nome_contato)
+                        novos_dados.endereco_completo,
+                        novos_dados.tel,
+                        novos_dados.email,
+                        novos_dados.nome_contato
                     );
-                    //passar tambm o tamanho dos arrays para a funçao ler_string para saber ate onde pode ler
+                        
 
 
                     // Chamo a função genérica de atualizar

@@ -35,17 +35,17 @@ void gerenciar_produtora() {
 
                     // Preencho com os novos dados (menos o CPF que não muda)
                     ler_dados_atualizados_produtora(
-                        novos_dados.nome_fantasia, sizeof(novos_dados.nome_fantasia),
-                        novos_dados.razao_social, sizeof(novos_dados.razao_social),
-                        novos_dados.inscricao_estadual, sizeof(novos_dados.inscricao_estadual),
-                        novos_dados.endereco_completo, sizeof(novos_dados.endereco_completo),
-                        novos_dados.tel, sizeof(novos_dados.tel),
-                        novos_dados.email, sizeof(novos_dados.email),
-                        novos_dados.nome_resp, sizeof(novos_dados.nome_resp),
-                        novos_dados.tel_resp, sizeof(novos_dados.tel_resp),
+                        novos_dados.nome_fantasia,  
+                        novos_dados.razao_social,
+                        novos_dados.inscricao_estadual,
+                        novos_dados.endereco_completo,
+                        novos_dados.tel,
+                        novos_dados.email,
+                        novos_dados.nome_resp,
+                        novos_dados.tel_resp,
                         &novos_dados.lucro
                     );
-                    //passar tambm o tamanho dos arrays para a funçao ler_string saber ate onde pode ler
+                        
 
 
                     // Chamo a função genérica de atualizar

@@ -51,43 +51,53 @@ void ver_cliente(const Cliente* cliente) {
 
 int menu_cliente() {
     int opcao;
-    printf("\n==== MENU CLIENTE ====\n");
-    printf("1 - Criar cliente\n");
-    printf("2 - Atualizar cliente\n");
-    printf("3 - Exibir cliente\n");
-    printf("4 - Deletar cliente\n");
-    printf("0 - Sair\n");
+    printf("\n===================================================================\n");
+    printf("|                   Menu Cliente                                   |\n");
+    printf("===================================================================\n");
+    printf("|  1 - Adicionar novo cliente                                     |\n");
+    printf("|  2 - Atualizar cliente                                          |\n");
+    printf("|  3 - Exibir cliente                                             |\n");
+    printf("|  4 - Deletar cliente                                            |\n");
+    printf("|  0 - Voltar ao menu anterior                                    |\n");
+    printf("+ --------------------------------------------------------------- +\n");
     ler_int("Escolha uma opcao: ", &opcao);
     return opcao;
 }
 
 Cliente ler_dados_cliente() {
     Cliente c;
-    printf("\n==== DADOS DO CLIENTE ====\n");
-    ler_string("Nome: ", c.nome, sizeof(c.nome));
-    ler_int("Idade: ", &c.idade);
-    ler_string("Endereco completo: ", c.endereco_completo, sizeof(c.endereco_completo));
-    ler_string("CPF/CNPJ (atencao ao inserir esse dado,ele nao podera ser alterado depois): ", c.cpf_cnpj, sizeof(c.cpf_cnpj));
-    ler_string("Telefone: ", c.tel, sizeof(c.tel));
-    ler_string("Email: ", c.email, sizeof(c.email));
-    ler_string("Nome do contato: ", c.nome_contato, sizeof(c.nome_contato));
+    printf("+ --------------------------------------------------------------- +\n");
+    printf("|                     Novo Cliente                                 |\n");
+    printf("+ --------------------------------------------------------------- +\n");
+    ler_string("|  Nome: ", c.nome, sizeof(c.nome));
+    ler_int("|  Idade: ", &c.idade);
+    ler_string("|  Endereco completo: ", c.endereco_completo, sizeof(c.endereco_completo));
+    ler_string("|  CPF/CNPJ (atencao ao inserir esse dado,ele nao podera ser alterado depois): ", c.cpf_cnpj, sizeof(c.cpf_cnpj));
+    ler_string("|  Telefone: ", c.tel, sizeof(c.tel));
+    ler_string("|  Email: ", c.email, sizeof(c.email));
+    ler_string("|  Nome do contato: ", c.nome_contato, sizeof(c.nome_contato));
+    printf("+ --------------------------------------------------------------- +\n");
     
     return c;  // retorna a struct preenchida
 }
 
 void ler_dados_atualizados_cliente(
-    char* nome, size_t tam_nome,
+    char* nome,
     int* idade,
-    char* endereco_completo, size_t tam_endereco,
-    char* tel, size_t tam_tel,
-    char* email, size_t tam_email,
-    char* nome_contato, size_t tam_nome_contato
+    char* endereco_completo,
+    char* tel,
+    char* email,
+    char* nome_contato
     //passar tambem o tamanho dos arrays para a funçao ler_string saber ate onde pode ler
 ) {
-    ler_string("Novo nome: ", nome, tam_nome);
-    ler_int("Nova idade: ", idade);
-    ler_string("Novo endereco completo: ", endereco_completo, tam_endereco);
-    ler_string("Novo telefone: ", tel, tam_tel);
-    ler_string("Novo email: ", email, tam_email);
-    ler_string("Novo nome do contato: ", nome_contato, tam_nome_contato);
+    printf("+ --------------------------------------------------------------- +\n");
+    printf("|                  Atualizar Cliente                               |\n");
+    printf("+ --------------------------------------------------------------- +\n");
+    ler_string("|  Novo nome: ", nome, sizeof(nome));
+    ler_int("|  Nova idade: ", idade);
+    ler_string("|  Novo endereco completo: ", endereco_completo, sizeof(endereco_completo));
+    ler_string("|  Novo telefone: ", tel, sizeof(tel));
+    ler_string("|  Novo email: ", email, sizeof(email));
+    ler_string("|  Novo nome do contato: ", nome_contato, sizeof(nome_contato));
+    printf("+ --------------------------------------------------------------- +\n");
 }

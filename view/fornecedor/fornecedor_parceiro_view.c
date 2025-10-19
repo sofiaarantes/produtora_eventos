@@ -4,22 +4,26 @@
 #include "../../view/main/main_view.h"
 
 int menu_fornecedor() {
-    int opcao;
-    printf("\n==== MENU FORNECEDOR/PARCEIRO ====\n");
-    printf("1 - Criar fornecedor/parceiro\n");
-    printf("2 - Atualizar fornecedor/parceiro\n");
-    printf("3 - Exibir fornecedor/parceiro\n");
-    printf("4 - Deletar fornecedor/parceiro\n");
-    printf("0 - Sair\n");
+    
+     int opcao;
+    printf("\n===================================================================\n");
+    printf("|                   Menu Fornecedor/Parceiro                     |\n");
+    printf("===================================================================\n");
+    printf("|  1 - Adicionar novo fornecedor/parceiro                        |\n");
+    printf("|  2 - Atualizar fornecedor/parceiro                               |\n");
+    printf("|  3 - Exibir fornecedor/parceiro                                  |\n");
+    printf("|  4 - Deletar fornecedor/parceiro                                 |\n");
+    printf("|  0 - Voltar ao menu anterior                                    |\n");
+    printf("+ --------------------------------------------------------------- +\n");
     ler_int("Escolha uma opcao: ", &opcao);
     return opcao;
 }
 
 void ver_fornecedor_parceiro(const Fornecedor_parceiro* fornecedor_parceiro) {
     if (!fornecedor_parceiro) {
-        printf("+--------------------------+\n");
+        printf("+------------------------------------+\n");
         printf("| Fornecedor/Parceiro inexistente!     |\n");
-        printf("+--------------------------+\n");
+        printf("+------------------------------------+\n");
         return;
     }
     printf("+---------------------------------------------------------------------+\n");
@@ -44,29 +48,35 @@ void ver_fornecedor_parceiro(const Fornecedor_parceiro* fornecedor_parceiro) {
 Fornecedor_parceiro ler_dados_fornecedor_parceiro() {
     Fornecedor_parceiro fp;
 
-    printf("\n==== DADOS DO FORNECEDOR/PARCEIRO ====\n");
-    ler_string("Nome Fantasia: ", fp.nome_fantasia, sizeof(fp.nome_fantasia));
-    ler_string("Razao Social: ", fp.razao_social, sizeof(fp.razao_social));
-    ler_string("Endereco completo: ", fp.endereco_completo, sizeof(fp.endereco_completo));
-    ler_string("CNPJ (atencao ao inserir esse dado,ele nao podera ser alterado depois): ", fp.cnpj, sizeof(fp.cnpj));
-    ler_string("Telefone: ", fp.tel, sizeof(fp.tel));
-    ler_string("Tipo de servico: ", fp.tipo_servico, sizeof(fp.tipo_servico));
-
+   printf("+ --------------------------------------------------------------- +\n");
+    printf("|                     Novo Fornecedor/Parceiro                   |\n");
+    printf("+ --------------------------------------------------------------- +\n");
+    ler_string("|  Nome Fantasia: ", fp.nome_fantasia, sizeof(fp.nome_fantasia));
+    ler_string("|  Razao Social: ", fp.razao_social, sizeof(fp.razao_social));
+    ler_string("|  Endereco completo: ", fp.endereco_completo, sizeof(fp.endereco_completo));
+    ler_string("|  CNPJ (atencao ao inserir esse dado,ele nao podera ser alterado depois): ", fp.cnpj, sizeof(fp.cnpj));
+    ler_string("|  Telefone: ", fp.tel, sizeof(fp.tel));
+    ler_string("|  Tipo de servico: ", fp.tipo_servico, sizeof(fp.tipo_servico));
+    printf("+ --------------------------------------------------------------- +\n");
     return fp;  // retorna a struct preenchida
 }
 void ler_dados_atualizados_fornecedor_parceiro(
-    char* nome_fantasia, size_t tam_nome_fantasia,
-    char* razao_social, size_t tam_razao_social,
-    char* endereco_completo, size_t tam_endereco,
-    char* tel, size_t tam_tel,
-    char* tipo_servico, size_t tam_tipo_servico
+    char* nome_fantasia,
+    char* razao_social,
+    char* endereco_completo,
+    char* tel,
+    char* tipo_servico
     //passar tambem o tamanho dos arrays para a funçao ler_stringsaber ate onde pode ler
 ) {
-    ler_string("Novo nome fantasia: ", nome_fantasia, tam_nome_fantasia);
-    ler_string("Nova razao social: ", razao_social, tam_razao_social);
-    ler_string("Novo endereco completo: ", endereco_completo, tam_endereco);
-    ler_string("Novo telefone: ", tel, tam_tel);
-    ler_string("Novo tipo de servico: ", tipo_servico, tam_tipo_servico);
+   printf("+ --------------------------------------------------------------- +\n");
+    printf("|                  Atualizar Fornecedor/Parceiro                  |\n");
+    printf("+ --------------------------------------------------------------- +\n");
+    ler_string("|  Novo nome fantasia: ", nome_fantasia, sizeof(nome_fantasia));
+    ler_string("|  Nova razao social: ", razao_social, sizeof(razao_social));
+    ler_string("|  Novo endereco completo: ", endereco_completo, sizeof(endereco_completo));
+    ler_string("|  Novo telefone: ", tel, sizeof(tel));
+    ler_string("|  Novo tipo de servico: ", tipo_servico, sizeof(tipo_servico));
+    printf("+ --------------------------------------------------------------- +\n");
 }
     //passar tambem o tamanho dos arrays para a funçao ler_stringsaber ate onde pode ler
 

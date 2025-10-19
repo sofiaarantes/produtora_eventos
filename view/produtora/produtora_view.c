@@ -5,12 +5,15 @@
 
 int menu_produtora() {
     int opcao;
-    printf("\n==== MENU PRODUTORA ====\n");
-    printf("1 - Criar produtora\n");
-    printf("2 - Atualizar produtora\n");
-    printf("3 - Exibir produtora\n");
-    printf("4 - Deletar produtora\n");
-    printf("0 - Sair\n");
+    printf("\n===================================================================\n");
+    printf("|                   Menu Produtora                                 |\n");
+    printf("===================================================================\n");
+    printf("|  1 - Adicionar novo produtora                                     |\n");
+    printf("|  2 - Atualizar produtora                                          |\n");
+    printf("|  3 - Exibir produtora                                             |\n");
+    printf("|  4 - Deletar produtora                                            |\n");
+    printf("|  0 - Voltar ao menu anterior                                    |\n");
+    printf("+ --------------------------------------------------------------- +\n");
     ler_int("Escolha uma opcao: ", &opcao);
     return opcao;
 }
@@ -53,41 +56,51 @@ void ver_produtora(const Produtora* produtora) {
 
 Produtora ler_dados_produtora() {
     Produtora p;
-    printf("\n==== DADOS DA PRODUTORA ====\n");
-    ler_string("Nome Fantasia: ", p.nome_fantasia, sizeof(p.nome_fantasia));
-    ler_string("Razao Social: ", p.razao_social, sizeof(p.razao_social));
-    ler_string("Inscricao Estadual: ", p.inscricao_estadual, sizeof(p.inscricao_estadual));
-    ler_string("Endereco completo: ", p.endereco_completo, sizeof(p.endereco_completo));
-    ler_string("CNPJ (atencao ao inserir esse dado,ele nao podera ser alterado depois): ", p.cnpj, sizeof(p.cnpj));
-    ler_string("Telefone: ", p.tel, sizeof(p.tel));
-    ler_string("Email: ", p.email, sizeof(p.email));
-    ler_string("Nome do responsavel: ", p.nome_resp, sizeof(p.nome_resp));
-    ler_string("Telefone do responsavel: ", p.tel_resp, sizeof(p.tel_resp));
-    ler_float("Margem de lucro padrao (apenas número, ex: 15.5): ", &p.lucro);
+     printf("+ --------------------------------------------------------------- +\n");
+    printf("|                     Nova Produtora                                 |\n");
+    printf("+ --------------------------------------------------------------- +\n");
+    ler_string("|  Nome Fantasia: ", p.nome_fantasia, sizeof(p.nome_fantasia));
+    ler_string("|  Razao Social: ", p.razao_social, sizeof(p.razao_social));
+    ler_string("|  Inscricao Estadual: ", p.inscricao_estadual, sizeof(p.inscricao_estadual));
+    ler_string("|  Endereco completo: ", p.endereco_completo, sizeof(p.endereco_completo));
+    ler_string("|  CNPJ (atencao ao inserir esse dado,ele nao podera ser alterado depois): ", p.cnpj, sizeof(p.cnpj));
+    ler_string("|  Telefone: ", p.tel, sizeof(p.tel));
+    ler_string("|  Email: ", p.email, sizeof(p.email));
+    ler_string("|  Nome do responsavel: ", p.nome_resp, sizeof(p.nome_resp));
+    ler_string("|  Telefone do responsavel: ", p.tel_resp, sizeof(p.tel_resp));
+    ler_float("|  Margem de lucro padrao (apenas número, ex: 15.5): ", &p.lucro);
+    printf("+ --------------------------------------------------------------- +\n");
+    
     return p;  // retorna a struct preenchida
 }
+
 void ler_dados_atualizados_produtora(
-    char* nome_fantasia, size_t tam_nome_fantasia,
-    char* razao_social, size_t tam_razao_social,
-    char* inscricao_estadual, size_t tam_inscricao_estadual,
-    char* endereco_completo, size_t tam_endereco,
-    char* tel, size_t tam_tel,
-    char* email, size_t tam_email,
-    char* nome_resp, size_t tam_nome_resp,
-    char* tel_resp, size_t tam_tel_resp,
+    char* nome_fantasia,    
+    char* razao_social,
+    char* inscricao_estadual,
+    char* endereco_completo,
+    char* tel,
+    char* email,
+    char* nome_resp,
+    char* tel_resp,
     float* lucro)
     //passar tambem o tamanho dos arrays para a funçao ler_stringsaber ate onde pode ler
 
 {
-    ler_string("Novo nome fantasia: ", nome_fantasia, tam_nome_fantasia);
-    ler_string("Nova razao social: ", razao_social, tam_razao_social);
-    ler_string("Nova inscricao estadual: ", inscricao_estadual, tam_inscricao_estadual);
-    ler_string("Novo endereco completo: ", endereco_completo, tam_endereco);
-    ler_string("Novo telefone: ", tel, tam_tel);
-    ler_string("Novo email: ", email, tam_email);
-    ler_string("Novo nome do responsavel: ", nome_resp, tam_nome_resp);
-    ler_string("Novo telefone do responsavel: ", tel_resp, tam_tel_resp);
-    ler_float("Nova margem de lucro padrao (apenas numero, ex: 15.5): ", lucro);
+    printf("+ --------------------------------------------------------------- +\n");
+    printf("|                  Atualizar Produtora                            |\n");
+    printf("+ --------------------------------------------------------------- +\n");
+    ler_string("| Novo nome fantasia: ", nome_fantasia, sizeof(nome_fantasia));
+    ler_string("| Nova razao social: ", razao_social, sizeof(razao_social));
+    ler_string("| Nova inscricao estadual: ", inscricao_estadual, sizeof(inscricao_estadual));
+    ler_string("| Novo endereco completo: ", endereco_completo, sizeof(endereco_completo));
+    ler_string("| Novo telefone: ", tel, sizeof(tel));
+    ler_string("| Novo email: ", email, sizeof(email));
+    ler_string("| Novo nome do responsavel: ", nome_resp, sizeof(nome_resp));
+    ler_string("| Novo telefone do responsavel: ", tel_resp, sizeof(tel_resp));
+    ler_float("| Nova margem de lucro padrao (apenas numero, ex: 15.5): ", lucro);
+
+    printf("+ --------------------------------------------------------------- +\n");
 }
     //passar tambem o tamanho dos arrays para a funçao ler_stringsaber ate onde pode ler
 

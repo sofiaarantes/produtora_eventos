@@ -14,13 +14,13 @@ Cliente ler_dados_cliente();
 
 // Pega dados atualizados de cliente (mantemos por referência para comparar)
 void ler_dados_atualizados_cliente(
-    char* nome, size_t tam_nome,
+    char* nome,     
     int* idade,
-    char* endereco_completo, size_t tam_endereco,
-    char* tel, size_t tam_tel,
-    char* email, size_t tam_email,
-    char* nome_contato, size_t tam_nome_contato
-    //passar tambem o tamanho dos arrays para a funçao ler_string para saber ate onde pode ler
+    char* endereco_completo,
+    char* tel,
+    char* email,
+    char* nome_contato
+        
 );
 
 

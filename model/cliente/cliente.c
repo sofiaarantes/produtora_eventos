@@ -426,45 +426,39 @@ Cliente* atualizar_cliente(const char* cpf_cnpj_busca, Cliente* novos_dados, Tip
 }
 
 
-
-
-
-//------------------------------------
-
-// Retorna quantos clientes já estão salvos em memória
-// Aqui eu só quero saber a quantidade de clientes que já cadastrei na memória
-int get_qtd_clientes() { 
-    return qtd; // retorno o valor do contador, que tá sendo incrementado toda vez que salvo um cliente
-} 
 //-----------------------------
 // Função para buscar e exibir diretamente um cliente pelo CPF/CNPJ
 void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
-    // Verifico se o CPF/CNPJ passado é nulo (invalido)
+    // Verifica se o CPF/CNPJ passado é válido
     if (!cpf_cnpj_busca) {
         exibir_mensagem("+--------------------------+\n");
         exibir_mensagem("| CPF/CNPJ invalido!       |\n");
         exibir_mensagem("+--------------------------+\n");
-        return; // se for invalido, saio da função
+        return;
     }
 
-    Cliente* cliente = NULL; // Ponteiro que vai armazenar o cliente encontrado, se existir
+    int operador_atual = get_operador_logado(); // obtém o ID do operador atualmente logado
+    Cliente* cliente = NULL; // ponteiro que armazenará o cliente encontrado
 
-    // Escolho o tipo de armazenamento usado
+    // Escolhe o tipo de armazenamento
     switch (tipo) {
 
         // =========================
         // Caso 1: busca em memória
         // =========================
         case MEMORIA: {
-            // Percorro o array de clientes em memória
             for (int i = 0; i < qtd; i++) {
-                // Comparo o CPF/CNPJ de cada cliente com o CPF/CNPJ digitado
-                if (strncmp(clientes_memoria[i].cpf_cnpj, cpf_cnpj_busca, sizeof(clientes_memoria[i].cpf_cnpj)) == 0) {
-                    // Se encontrar, guardo o endereço do cliente encontrado
-                    cliente = &clientes_memoria[i];
-                    // Exibo as informações desse cliente
-                    ver_cliente(cliente);
-                    break; // paro o loop, pois já encontrei o cliente
+                // Compara o CPF/CNPJ com o buscado
+                if (strcmp(clientes_memoria[i].cpf_cnpj, cpf_cnpj_busca) == 0) {
+                    // Verifica se o cliente pertence ao operador logado
+                    if (clientes_memoria[i].id_logado != operador_atual) {
+                        printf("Erro: voce nao tem permissao para visualizar este cliente.\n");
+                        return; // sai sem exibir nada
+                    }
+
+                    // Se o operador for o mesmo, exibe os dados do cliente
+                    ver_cliente(&clientes_memoria[i]);
+                    return;
                 }
             }
             break;
@@ -474,101 +468,106 @@ void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo)
         // Caso 2: busca em arquivo texto
         // ==============================
         case TEXTO: {
-            // Abro o arquivo texto para leitura
             FILE* fp = fopen("clientes.txt", "r");
             if (!fp) {
-                // Se nao conseguir abrir, mostro o erro e saio
                 perror("Erro ao abrir clientes.txt");
                 return;
             }
 
-            // Aloco memória para armazenar temporariamente um cliente
             cliente = malloc(sizeof(Cliente));
-            char linha[512]; // buffer para armazenar cada linha do arquivo
+            char linha[512];
 
-            // Leio o arquivo linha por linha
             while (fgets(linha, sizeof(linha), fp)) {
-                // Extraio os campos separados por ponto e vírgula
-                sscanf(linha, "%d;%49[^;];%d;%99[^;];%19[^;];%11[^;];%49[^;];%49[^;];%d",
-                    &cliente->id,
-                    cliente->nome,
-                    &cliente->idade,
-                    cliente->endereco_completo,
-                    cliente->cpf_cnpj,
-                    cliente->tel,
-                    cliente->email,
-                    cliente->nome_contato,
-                    (int*)&cliente->tipo_doc   // <-- adiciona esta leitura!
-                );
+                // Lê todos os campos, incluindo o id_logado no final
+                sscanf(linha, "%d;%49[^;];%d;%99[^;];%19[^;];%14[^;];%49[^;];%49[^;];%d;%d",
+                       &cliente->id,
+                       cliente->nome,
+                       &cliente->idade,
+                       cliente->endereco_completo,
+                       cliente->cpf_cnpj,
+                       cliente->tel,
+                       cliente->email,
+                       cliente->nome_contato,
+                       (int*)&cliente->tipo_doc,
+                       &cliente->id_logado);
 
+                // Compara CPF/CNPJ
+                if (strcmp(cliente->cpf_cnpj, cpf_cnpj_busca) == 0) {
+                    // Verifica se o operador atual é o dono do cliente
+                    if (cliente->id_logado != operador_atual) {
+                        printf("Erro: voce nao tem permissao para visualizar este cliente.\n");
+                        fclose(fp);
+                        free(cliente);
+                        return;
+                    }
 
-                // Comparo o CPF lido com o CPF buscado
-                if (strncmp(cliente->cpf_cnpj, cpf_cnpj_busca, sizeof(cliente->cpf_cnpj)) == 0) {
-                    // Se encontrar, fecho o arquivo e exibo o cliente
-                    fclose(fp);
+                    // Exibe os dados do cliente permitido
                     ver_cliente(cliente);
-                    free(cliente); // libero a memória alocada
-                    return; // retorno, pois já encontrei o cliente
+                    fclose(fp);
+                    free(cliente);
+                    return;
                 }
             }
 
-            // Se chegar aqui, o cliente nao foi encontrado
-            fclose(fp);   // fecho o arquivo
-            free(cliente); // libero a memória usada
-            cliente = NULL; // deixo o ponteiro nulo
-            break;
-        }
-
-        // =================================
-        // Caso 3: busca em arquivo binário
-        // =================================
-        case BINARIO: {
-            // Abro o arquivo binário para leitura
-            FILE* fp = fopen("clientes.bin", "rb");
-            if (!fp) {
-                // Se nao conseguir abrir, mostro o erro e saio
-                perror("Erro ao abrir clientes.bin");
-                return;
-            }
-
-            // Aloco memória para armazenar temporariamente um cliente
-            cliente = malloc(sizeof(Cliente));
-
-            // Leio o arquivo binário cliente por cliente
-            while (fread(cliente, sizeof(Cliente), 1, fp) == 1) {
-                // Garante que a string do CPF termina em '\0'
-                cliente->cpf_cnpj[sizeof(cliente->cpf_cnpj)-1] = '\0';
-
-                // Comparo o CPF lido com o CPF buscado
-                if (strncmp(cliente->cpf_cnpj, cpf_cnpj_busca, sizeof(cliente->cpf_cnpj)) == 0) {
-                    // Se encontrar, fecho o arquivo e exibo as informações
-                    fclose(fp);
-                    ver_cliente(cliente);
-                    free(cliente); // libero a memória alocada
-                    return; // retorno, pois já encontrei o cliente
-                }
-            }
-
-            // Se terminar o arquivo e nao encontrar, libero tudo
             fclose(fp);
             free(cliente);
             cliente = NULL;
             break;
         }
 
-        // Caso o tipo de armazenamento nao seja reconhecido
+        // ==================================
+        // Caso 3: busca em arquivo binário
+        // ==================================
+        case BINARIO: {
+            FILE* fp = fopen("clientes.bin", "rb");
+            if (!fp) {
+                perror("Erro ao abrir clientes.bin");
+                return;
+            }
+
+            cliente = malloc(sizeof(Cliente));
+
+            // Lê cliente por cliente do arquivo binário
+            while (fread(cliente, sizeof(Cliente), 1, fp) == 1) {
+                cliente->cpf_cnpj[sizeof(cliente->cpf_cnpj) - 1] = '\0';
+
+                // Compara CPF/CNPJ
+                if (strcmp(cliente->cpf_cnpj, cpf_cnpj_busca) == 0) {
+                    // Verifica se o operador atual é o dono do cliente
+                    if (cliente->id_logado != operador_atual) {
+                        printf("Erro: voce nao tem permissao para visualizar este cliente.\n");
+                        fclose(fp);
+                        free(cliente);
+                        return;
+                    }
+
+                    // Exibe o cliente encontrado
+                    ver_cliente(cliente);
+                    fclose(fp);
+                    free(cliente);
+                    return;
+                }
+            }
+
+            fclose(fp);
+            free(cliente);
+            cliente = NULL;
+            break;
+        }
+
         default:
             exibir_mensagem("Tipo de armazenamento invalido!\n");
             return;
     }
 
-    // Se nenhum cliente foi encontrado nos casos acima, mostro mensagem padrão
+    // Caso o cliente não seja encontrado
     if (!cliente) {
         printf("+--------------------------+\n");
         printf("| Cliente nao encontrado!  |\n");
         printf("+--------------------------+\n");
     }
 }
+
 // Função para deletar um cliente a partir do CPF/CNPJ e do tipo de armazenamento
 void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
     // Verifico se o parâmetro cpf_cnpj_busca é nulo antes de continuar

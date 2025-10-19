@@ -35,14 +35,13 @@ void gerenciar_fornecedor_parceiro() {
 
                     // Preencho com os novos dados (menos o CPF que não muda)
                     ler_dados_atualizados_fornecedor_parceiro(
-                        novos_dados.nome_fantasia, sizeof(novos_dados.nome_fantasia),
-                        novos_dados.razao_social, sizeof(novos_dados.razao_social),
-                        novos_dados.endereco_completo, sizeof(novos_dados.endereco_completo),
-                        novos_dados.tel, sizeof(novos_dados.tel),
-                        novos_dados.tipo_servico, sizeof(novos_dados.tipo_servico)
+                        novos_dados.nome_fantasia,  
+                        novos_dados.razao_social,
+                        novos_dados.endereco_completo,
+                        novos_dados.tel,
+                        novos_dados.tipo_servico
                     );
-                    //passar tambem o tamanho dos arrays para a funçao ler_string para saber ate onde pode ler
-
+                    
 
                     // Chamo a função genérica de atualizar
                     Fornecedor_parceiro* atualizado = atualizar_fornecedor_parceiro(cnpj_busca, &novos_dados, get_armazenamento());

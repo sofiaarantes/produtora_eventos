@@ -33,9 +33,6 @@ Cliente* criar_cliente(Cliente* cliente,TipoArmazenamento tipo);
 // Função para exibir os dados de um cliente buscados pelo cpf/cnpj
 void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo);
 
-// Retorna o número de clientes na memória
-int get_qtd_clientes();
-
 
 // Função que atualiza um cliente de acordo com o tipo escolhido
 // recebe o CPF/CNPJ do cliente que quero atualizar e o tipo de armazenamento
