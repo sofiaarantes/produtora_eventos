@@ -39,10 +39,6 @@ void iniciar_sistema(){
             gerenciar_fornecedor_parceiro();
             break;
         }
-        // Menu Operadores do Sistema
-        case 6:{
-            break;
-        }
         // Editar conta
         case 7:{ 
             editar_operador();
