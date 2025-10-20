@@ -71,7 +71,7 @@ void ler_int(const char *mensagem, int *destino) {
 
         // 1) Verifico se foi lido ao menos um dígito
         if (endptr == buffer) {
-            printf("Entrada inválida (não é número). Tente novamente.\n");
+            printf("Entrada invalida (não e numero). Tente novamente.\n");
             continue;
         }
 
@@ -80,15 +80,9 @@ void ler_int(const char *mensagem, int *destino) {
 
         // 3) Se tiver qualquer outro caractere, rejeito (ex: "12abc")
         if (*endptr != '\0') {
-            printf("Entrada inválida (caracteres extras). Tente novamente.\n");
+            printf("Entrada invalida (caracteres extras). Tente novamente.\n");
             continue;
         }
-
-        // // 4) Verifico overflow/underflow do strtol
-        // if (errno == ERANGE || valor < INT_MIN || valor > INT_MAX) {
-        //     printf("Número fora do intervalo. Tente novamente.\n");
-        //     continue;
-        // }
 
         // Se cheguei aqui, está tudo certo — guardo no destino e retorno
         *destino = (int)valor;
@@ -130,7 +124,7 @@ void ler_float(const char *mensagem, float *destino) {
 
         // 1) Verifico se o usuário digitou algo que é número
         if (endptr == buffer) {
-            printf("Entrada inválida (não é número). Tente novamente.\n");
+            printf("Entrada invalida (não é numero). Tente novamente.\n");
             continue;
         }
 
@@ -139,7 +133,7 @@ void ler_float(const char *mensagem, float *destino) {
 
         // 3) Se ainda sobrou algum caractere diferente de '\0', rejeito (ex: '9.5abc')
         if (*endptr != '\0') {
-            printf("Entrada inválida (caracteres extras). Tente novamente.\n");
+            printf("Entrada invalida (caracteres extras). Tente novamente.\n");
             continue;
         }
 

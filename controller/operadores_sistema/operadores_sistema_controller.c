@@ -44,12 +44,12 @@ void gerenciar_login() {
 
             if (encontrado) {
                 printf("\nLogin realizado com sucesso! Bem-vindo(a), %s. Armazenando dados em %s\n", tmp.nome, 
-                       tmp.tipo == 1 ? "Memória" : tmp.tipo == 2 ? "Arquivo Texto" : tmp.tipo == 3 ? "Binario" : "Desconhecido");
+                       tmp.tipo == 1 ? "Memoria" : tmp.tipo == 2 ? "Arquivo Texto" : tmp.tipo == 3 ? "Binario" : "Desconhecido");
                 set_operador_logado(tmp.id); 
                 set_armazenamento(tmp.tipo);
                 return;
             } else {
-                printf("\nErro: Credenciais inválidas! Tente novamente.\n");
+                printf("\nErro: Credenciais invalidas! Tente novamente.\n");
             }
         } else if (opcao == 2) { // Cadastro
             Operadores novo = ler_dados_operador_cadastro();
@@ -69,7 +69,7 @@ void gerenciar_login() {
             printf("\nCadastro realizado com sucesso! Bem-vindo(a), %s.\n", cadastrado->usuario);
             return;
         } else if ((opcao != 0) && (opcao != 1) && (opcao != 2)){
-            printf("\nErro: Opção inválida! Tente novamente.\n");
+            printf("\nErro: Opção invalida! Tente novamente.\n");
         }
     } while (opcao != 0);
     exit(0);
@@ -200,18 +200,18 @@ void editar_operador() {
         } else if (opcao == 3) {
             // Deletar conta
             int confirmar;
-           ler_int("\nTem certeza que deseja deletar sua conta? (1-Sim / 0-Não): ", &confirmar);
+           ler_int("\nTem certeza que deseja deletar sua conta? (1-Sim / 0-Nao): ", &confirmar);
             if (confirmar == 1) {
                 deletar_operador(id_logado);
                 limpar_sessao();
-                printf("\nConta deletada com sucesso! Encerrando sessão...\n");
+                printf("\nConta deletada com sucesso! Encerrando sessao...\n");
                 gerenciar_login();
                 return;
             }
         } else if (opcao == 0) {
             printf("\nVoltando ao menu principal...\n");
         } else {
-            printf("\nErro: Opção inválida!\n");
+            printf("\nErro: Opção invalida!\n");
         }
     } while (opcao != 0);
 }

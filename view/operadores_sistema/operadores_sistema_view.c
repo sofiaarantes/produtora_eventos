@@ -11,7 +11,7 @@ int exibir_menu_operadores() {
     printf("------------------- BEM VINDO AO NOSSO SISTEMA --------------------\n");
     printf("===================================================================\n");
     printf("|  1 - Ja tenho uma conta, quero fazer login!                     |\n");
-    printf("|  2 - Ainda não tenho uma conta, quero me registrar!             |\n");
+    printf("|  2 - Ainda nao tenho uma conta, quero me registrar!             |\n");
     printf("|  0 - Sair                                                       |\n");
     printf("+ --------------------------------------------------------------- +\n");
     ler_int("Escolha uma opcao: ", &opcao);
@@ -21,7 +21,7 @@ int exibir_menu_operadores() {
 Operadores ler_dados_operador_login() {
     Operadores o;
     printf("============================== Login ==============================\n");
-    ler_string("|  Usuário: ", o.usuario, sizeof(o.usuario));
+    ler_string("|  Usuario: ", o.usuario, sizeof(o.usuario));
     ler_string("|  Senha: ", o.senha, sizeof(o.senha));
     printf("===================================================================\n");
     return o;  // Retorna a struct preenchida
@@ -32,7 +32,7 @@ Operadores ler_dados_operador_cadastro() {
     Operadores o;
     printf("\n============================ Cadastro =============================\n");
     ler_string("|  Nome: ", o.nome, sizeof(o.nome));
-    ler_string("|  Usuário: ", o.usuario, sizeof(o.usuario));
+    ler_string("|  Usuario: ", o.usuario, sizeof(o.usuario));
     ler_string("|  Senha: ", o.senha, sizeof(o.senha));
     printf("+ --------------------------------------------------------------- +\n");
     int opcao = mostrar_menu_configuracao();
@@ -52,7 +52,7 @@ Operadores ler_dados_operador_cadastro() {
             o.tipo = 0;
             return o;
         default:
-            exibir_mensagem("Opção inválida. Cadastro cancelado.");
+            exibir_mensagem("Opção invalida. Cadastro cancelado.");
             o.tipo = 0;
             return o;
     }
@@ -70,13 +70,13 @@ void exibir_operador(const Operadores* operador) {
     const char* tipo_str;
     switch (operador->tipo) {
         case MEMORIA:
-            tipo_str = "Memória";
+            tipo_str = "Memoria";
             break;
         case TEXTO:
             tipo_str = "Texto";
             break;
         case BINARIO:
-            tipo_str = "Binário";
+            tipo_str = "Binario";
             break;
         default:
             tipo_str = "Desconhecido";
@@ -84,7 +84,7 @@ void exibir_operador(const Operadores* operador) {
     }
     printf("+ --------------------------------------------------------------- +\n");
     printf("| Nome: %s\n", operador->nome);
-    printf("| Usuário: %s\n", operador->usuario);
+    printf("| Usuario: %s\n", operador->usuario);
     printf("| Armazenamento: %s\n", tipo_str);
     printf("+ --------------------------------------------------------------- +\n");
 }
@@ -95,7 +95,7 @@ int exibir_menu_operadores_editar() {
     printf("|                           Minha Conta                           |\n");
     printf("===================================================================\n");
     printf("|  1 - Editar dados                                               |\n");
-    printf("|  2 - Editar método de armazenamento                             |\n");
+    printf("|  2 - Editar metodo de armazenamento                             |\n");
     printf("|  3 - Deletar conta                                              |\n");
     printf("|  0 - Sair                                                       |\n");
     printf("+ --------------------------------------------------------------- +\n");
@@ -108,6 +108,6 @@ void ler_dados_atualizados_operador(char* nome, char* usuario) {
     printf("|                           Editar Dados                          |\n");
     printf("+ --------------------------------------------------------------- +\n");
     ler_string("|  Novo nome: ", nome, sizeof(nome));
-    ler_string("|  Novo usuário: ", usuario,sizeof(usuario));
+    ler_string("|  Novo usuario: ", usuario,sizeof(usuario));
     printf("+ --------------------------------------------------------------- +\n");
 }

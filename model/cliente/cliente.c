@@ -644,7 +644,7 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
             // Leio o arquivo linha por linha
             while (fgets(linha, sizeof(linha), fp)) {
                 // Tento extrair todos os campos, incluindo tipo_doc e id_logado
-                int lidos = sscanf(linha, "%d;%49[^;];%d;%99[^;];%19[^;];%14[^;];%49[^;];%49[^;];%d;%d",
+                 sscanf(linha, "%d;%49[^;];%d;%99[^;];%19[^;];%14[^;];%49[^;];%49[^;];%d;%d",
                                    &cliente.id,
                                    cliente.nome,
                                    &cliente.idade,

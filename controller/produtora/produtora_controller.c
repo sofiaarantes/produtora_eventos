@@ -21,7 +21,6 @@ void gerenciar_produtora() {
                     exibir_mensagem("Já existe uma produtora. Delete-a antes de criar outra.");
                 } else {
                      criar_produtora(&temp, get_armazenamento());
-                    exibir_mensagem("Produtora criada com sucesso!");
                 }
                 break;
             }
@@ -46,14 +45,8 @@ void gerenciar_produtora() {
                         &novos_dados.lucro
                     );
                         
-
-
                     // Chamo a função genérica de atualizar
-                    Produtora* atualizado = atualizar_produtora(cnpj_busca, &novos_dados, get_armazenamento());
-
-                    if (!atualizado) {
-                        exibir_mensagem("Produtora não encontrada para atualização!");
-                    }
+                     atualizar_produtora(cnpj_busca, &novos_dados, get_armazenamento());
 
                     break;
                 }

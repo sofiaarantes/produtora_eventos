@@ -14,6 +14,7 @@ typedef struct{
     char nome_resp[50];
     char tel_resp[12];
     float lucro;
+    int id_logado;
 }Produtora;
 
 // Função que cria e salva uma produtora de acordo com o tipo escolhido
@@ -25,9 +26,6 @@ Produtora* atualizar_produtora(const char* cnpj_busca, Produtora* novos_dados, T
 
 // Função para buscar e exibir diretamente uma produtora pelo CNPJ e tipo de armazenamento
 void buscar_e_exibir_produtora(const char* cnpj_busca, TipoArmazenamento tipo);
-
-//função que retorna a quantidade de produtoras salvas na memória
-int get_qtd_produtoras();
 
 // Função para deletar uma produtora a partir do CNPJ e do tipo de armazenamento
 void deletar_produtora(const char* cnpj_busca, TipoArmazenamento tipo);
