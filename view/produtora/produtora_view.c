@@ -8,7 +8,7 @@ int menu_produtora() {
     printf("\n===================================================================\n");
     printf("|                   Menu Produtora                                 |\n");
     printf("===================================================================\n");
-    printf("|  1 - Adicionar novo produtora                                     |\n");
+    printf("|  1 - Adicionar nova produtora                                     |\n");
     printf("|  2 - Atualizar produtora                                          |\n");
     printf("|  3 - Exibir produtora                                             |\n");
     printf("|  4 - Deletar produtora                                            |\n");

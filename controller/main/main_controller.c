@@ -46,12 +46,12 @@ void iniciar_sistema(){
         }
         // Sair
         case 0:{
-            exibir_mensagem("\nEncerrando sessão...\n");
+            exibir_mensagem("\nEncerrando sessao...\n");
             return; // Volta pro while do main()
         }
 
         default:
-            exibir_mensagem("Opção inválida. Tente novamente.\n");
+            exibir_mensagem("Opção invalida. Tente novamente.\n");
             break;
         }
     } while (opcao != 0);

@@ -45,7 +45,7 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
                 // Retorno o ponteiro do produtora que acabou de ser salvo
                 return salvo;
             } else {
-                // Caso o vetor esteja cheio, nao consigo salvar
+                // Caso o vetor estaja cheio, nao consigo salvar
                 printf("Erro: limite de produtoras na memória atingido!\n");
                 return NULL;
             }
@@ -157,7 +157,7 @@ Produtora* atualizar_produtora(const char* cnpj_busca, Produtora* novos_dados, T
 
                     // Verifico se o operador logado é o mesmo que criou essa produtora
                     if (produtoras_memoria[i].id_logado != operador_atual) {
-                        printf("Erro: voce nao tem permissao para atualizar este produtora \n");
+                        printf("Erro: voce nao tem permissao para atualizar esta produtora \n");
                         return NULL; // se não for o mesmo, não permito a atualização
                     }
 
@@ -256,7 +256,7 @@ Produtora* atualizar_produtora(const char* cnpj_busca, Produtora* novos_dados, T
                         if (pro.id_logado != operador_atual) {
                             // Se forem diferentes, o usuário atual não cadastrou essa produtora
                             
-                            printf("Erro: voce nao tem permissao para atualizar este produtora\n");
+                            printf("Erro: voce nao tem permissao para atualizar esta produtora\n");
 
                             // Fecho os arquivos abertos
                             fclose(fp);
@@ -281,7 +281,8 @@ Produtora* atualizar_produtora(const char* cnpj_busca, Produtora* novos_dados, T
                             pro.cnpj,                     // Mantém o CNPJ original
                             novos_dados->endereco_completo, 
                             novos_dados->tel,             
-                            novos_dados->email,           
+                            novos_dados->email,  
+                            novos_dados->nome_resp,         
                             novos_dados->tel_resp,        
                             novos_dados->lucro,           
                             pro.id_logado                 // Mantém o ID do operador que cadastrou
@@ -430,35 +431,42 @@ Produtora* atualizar_produtora(const char* cnpj_busca, Produtora* novos_dados, T
             // Retorno NULL para indicar que não houve atualização (ou não foi encontrada).
             return NULL;
         }
+    }
+    return NULL;
+}
 
-//funçao para buscar e exibir diretamente uma produtora pelo CNPJ e tipo de armazenamento
+
 void buscar_e_exibir_produtora(const char* cnpj_busca, TipoArmazenamento tipo) {
-    // Verifico se o CNPJ passado é nulo (inválido)
+    // Verifica se o CPF/CNPJ passado é válido
     if (!cnpj_busca) {
         exibir_mensagem("+--------------------------+\n");
-        exibir_mensagem("| CNPJ inválido!       |\n");
+        exibir_mensagem("| CNPJ invalido!       |\n");
         exibir_mensagem("+--------------------------+\n");
-        return; // se for inválido, saio da função
+        return;
     }
 
-    Produtora* produtora = NULL; // Ponteiro que vai armazenar a produtora encontrada, se existir
+    int operador_atual = get_operador_logado(); // obtém o ID do operador atualmente logado
+    Produtora* produtora = NULL; // ponteiro que armazenará a proddutora encontrado
 
-    // Escolho o tipo de armazenamento usado
+    // Escolhe o tipo de armazenamento
     switch (tipo) {
 
         // =========================
         // Caso 1: busca em memória
         // =========================
         case MEMORIA: {
-            // Percorro o array de produtoras em memória
             for (int i = 0; i < qtd; i++) {
-                // Comparo o CNPJ de cada produtora com o CNPJ digitado
-                if (strncmp(produtoras_memoria[i].cnpj, cnpj_busca, sizeof(produtoras_memoria[i].cnpj)) == 0) {
-                    // Se encontrar, guardo o endereço da produtora encontrada
-                    produtora = &produtoras_memoria[i];
-                    // Exibo as informações dessa produtora
-                    ver_produtora(produtora);
-                    break; // paro o loop, pois já encontrei a produtora
+                // Compara o CNPJ com o buscado
+                if (strcmp(produtoras_memoria[i].cnpj, cnpj_busca) == 0) {
+                    // Verifica se o produtora pertence ao operador logado
+                    if (produtoras_memoria[i].id_logado != operador_atual) {
+                        printf("Erro: voce nao tem permissao para visualizar esta produtora.\n");
+                        return; // sai sem exibir nada
+                    }
+
+                    // Se o operador for o mesmo, exibe os dados do produtora com a funçao do view
+                    ver_produtora(&produtoras_memoria[i]);
+                    return;
                 }
             }
             break;
@@ -468,101 +476,242 @@ void buscar_e_exibir_produtora(const char* cnpj_busca, TipoArmazenamento tipo) {
         // Caso 2: busca em arquivo texto
         // ==============================
         case TEXTO: {
-            // Abro o arquivo texto para leitura
             FILE* fp = fopen("produtoras.txt", "r");
             if (!fp) {
-                // Se não conseguir abrir, mostro o erro e saio
                 perror("Erro ao abrir produtoras.txt");
                 return;
             }
 
-            // Aloco memória para armazenar temporariamente uma produtora
             produtora = malloc(sizeof(Produtora));
-            char linha[512]; // buffer para armazenar cada linha do arquivo
+            char linha[512];
 
-            // Leio o arquivo linha por linha
             while (fgets(linha, sizeof(linha), fp)) {
-                // Extraio os campos separados por ponto e vírgula
-                sscanf(linha, "%49[^;];%99[^;];%13[^;];%14[^;];%99[^;];%11[^;];%49[^;];%49[^;];%11[^;];%f",
-                    produtora->nome_fantasia,
-                    produtora->razao_social,
-                    produtora->inscricao_estadual,
-                    produtora->cnpj,
-                    produtora->endereco_completo,
-                    produtora->tel,
-                    produtora->email,
-                    produtora->nome_resp,
-                    produtora->tel_resp,
-                    &produtora->lucro
-                );
+                // Lê todos os campos, incluindo o id_logado no final
+                sscanf(
+                        linha,
+                        "%49[^;];%49[^;];%14[^;];%19[^;];%99[^;];%14[^;];%49[^;];%49[^;];%14[^;];%f;%d",
+                        produtora->nome_fantasia,        
+                        produtora->razao_social,         
+                        produtora->inscricao_estadual,   
+                        produtora->cnpj,                 
+                        produtora->endereco_completo,    
+                        produtora->tel,                  
+                        produtora->email,                
+                        produtora->nome_resp,            
+                        produtora->tel_resp,             
+                        &produtora->lucro,               
+                        &produtora->id_logado            
+                    ); 
 
-                // Comparo o CNPJ lido com o CNPJ buscado
-                if (strncmp(produtora->cnpj, cnpj_busca, sizeof(produtora->cnpj)) == 0) {
-                    // Se encontrar, fecho o arquivo e exibo a produtora
-                    fclose(fp);
+                // Compara CNPJ
+                if (strcmp(produtora->cnpj, cnpj_busca) == 0) {
+                    // Verifica se o operador atual é o dono do produtora
+                    if (produtora->id_logado != operador_atual) {
+                        printf("Erro: voce nao tem permissao para visualizar esta produtora.\n");
+                        fclose(fp);
+                        free(produtora);
+                        return;
+                    }
+
+                    // Exibe os dados da produtora permitido atraves da funçao do view
                     ver_produtora(produtora);
-                    free(produtora); // libero a memória alocada
-                    return; // retorno, pois já encontrei a produtora
+                    fclose(fp);
+                    free(produtora);
+                    return;
                 }
             }
 
-            // Se chegar aqui, a produtora não foi encontrada
-            fclose(fp);   // fecho o arquivo
-            free(produtora); // libero a memória usada
-            produtora = NULL; // deixo o ponteiro nulo
-            break;
-        }
-
-        // =================================
-        // Caso 3: busca em arquivo binário
-        // =================================
-        case BINARIO: {
-            // Abro o arquivo binário para leitura
-            FILE* fp = fopen("produtoras.bin", "rb");
-            if (!fp) {
-                // Se não conseguir abrir, mostro o erro e saio
-                perror("Erro ao abrir produtoras.bin");
-                return;
-            }
-
-            // Aloco memória para armazenar temporariamente uma produtora
-            produtora = malloc(sizeof(Produtora));
-
-            // Leio o arquivo binário produtora por produtora
-            while (fread(produtora, sizeof(Produtora), 1, fp) == 1) {
-                // Garante que a string do CNPJ termina em '\0'
-                produtora->cnpj[sizeof(produtora->cnpj)-1] = '\0';
-
-                // Comparo o CNPJ lido com o CNPJ buscado
-                if (strncmp(produtora->cnpj, cnpj_busca, sizeof(produtora->cnpj)) == 0) {
-                    // Se encontrar, fecho o arquivo e exibo as informações
-                    fclose(fp);
-                    ver_produtora(produtora);
-                    free(produtora); // libero a memória alocada
-                    return; // retorno, pois já encontrei a produtora
-                }
-            }
-
-            // Se terminar o arquivo e não encontrar, libero tudo
             fclose(fp);
             free(produtora);
             produtora = NULL;
             break;
         }
 
-        // Caso o tipo de armazenamento não seja reconhecido
-        default:
-            exibir_mensagem("Tipo de armazenamento inválido!\n");
-            return;
-    }
+        // ==================================
+        // Caso 3: busca em arquivo binário
+        // ==================================
+        case BINARIO: {
+            FILE* fp = fopen("produtoras.bin", "rb");
+            if (!fp) {
+                perror("Erro ao abrir produtoras.bin");
+                return;
+            }
 
-    // Se nenhum produtora foi encontrado nos casos acima, mostro mensagem padrão
+            produtora = malloc(sizeof(Produtora));
+
+            // Lê produtora por produtora do arquivo binário
+            while (fread(produtora, sizeof(Produtora), 1, fp) == 1) {
+                produtora->cnpj[sizeof(produtora->cnpj) - 1] = '\0';
+
+                // Compara CPF/CNPJ
+                if (strcmp(produtora->cnpj, cnpj_busca) == 0) {
+                    // Verifica se o operador atual é o dono do produtora
+                    if (produtora->id_logado != operador_atual) {
+                        printf("Erro: voce nao tem permissao para visualizar esta produtora.\n");
+                        fclose(fp);
+                        free(produtora);
+                        return;
+                    }
+
+                    // Exibe o produtora encontrado
+                    ver_produtora(produtora);
+                    fclose(fp);
+                    free(produtora);
+                    return;
+                }
+            }
+
+            fclose(fp);
+            free(produtora);
+            produtora = NULL;
+            break;
+        }
+
+        default:
+            exibir_mensagem("Tipo de armazenamento invalido!\n");
+            return;
+    
+
+    // Caso o produtora não seja encontrado
     if (!produtora) {
         printf("+--------------------------+\n");
-        printf("| Produtora não encontrada!  |\n");
+        printf("| Produtora nao encontrado!  |\n");
         printf("+--------------------------+\n");
     }
 }
+}
+//funçao para buscar e exibir diretamente uma produtora pelo CNPJ e tipo de armazenamento
+// void buscar_e_exibir_produtora(const char* cnpj_busca, TipoArmazenamento tipo) {
+//     // Verifico se o CNPJ passado é nulo (inválido)
+//     if (!cnpj_busca) {
+//         exibir_mensagem("+--------------------------+\n");
+//         exibir_mensagem("| CNPJ inválido!       |\n");
+//         exibir_mensagem("+--------------------------+\n");
+//         return; // se for inválido, saio da função
+//     }
+
+//     Produtora* produtora = NULL; // Ponteiro que vai armazenar a produtora encontrada, se existir
+
+//     // Escolho o tipo de armazenamento usado
+//     switch (tipo) {
+
+//         // =========================
+//         // Caso 1: busca em memória
+//         // =========================
+//         case MEMORIA: {
+//             // Percorro o array de produtoras em memória
+//             for (int i = 0; i < qtd; i++) {
+//                 // Comparo o CNPJ de cada produtora com o CNPJ digitado
+//                 if (strncmp(produtoras_memoria[i].cnpj, cnpj_busca, sizeof(produtoras_memoria[i].cnpj)) == 0) {
+//                     // Se encontrar, guardo o endereço da produtora encontrada
+//                     produtora = &produtoras_memoria[i];
+//                     // Exibo as informações dessa produtora
+//                     ver_produtora(produtora);
+//                     break; // paro o loop, pois já encontrei a produtora
+//                 }
+//             }
+//             break;
+//         }
+
+//         // ==============================
+//         // Caso 2: busca em arquivo texto
+//         // ==============================
+//         case TEXTO: {
+//             // Abro o arquivo texto para leitura
+//             FILE* fp = fopen("produtoras.txt", "r");
+//             if (!fp) {
+//                 // Se não conseguir abrir, mostro o erro e saio
+//                 perror("Erro ao abrir produtoras.txt");
+//                 return;
+//             }
+
+//             // Aloco memória para armazenar temporariamente uma produtora
+//             produtora = malloc(sizeof(Produtora));
+//             char linha[512]; // buffer para armazenar cada linha do arquivo
+
+//             // Leio o arquivo linha por linha
+//             while (fgets(linha, sizeof(linha), fp)) {
+//                 // Extraio os campos separados por ponto e vírgula
+//                 sscanf(linha, "%49[^;];%99[^;];%13[^;];%14[^;];%99[^;];%11[^;];%49[^;];%49[^;];%11[^;];%f",
+//                     produtora->nome_fantasia,
+//                     produtora->razao_social,
+//                     produtora->inscricao_estadual,
+//                     produtora->cnpj,
+//                     produtora->endereco_completo,
+//                     produtora->tel,
+//                     produtora->email,
+//                     produtora->nome_resp,
+//                     produtora->tel_resp,
+//                     &produtora->lucro
+//                 );
+
+//                 // Comparo o CNPJ lido com o CNPJ buscado
+//                 if (strncmp(produtora->cnpj, cnpj_busca, sizeof(produtora->cnpj)) == 0) {
+//                     // Se encontrar, fecho o arquivo e exibo a produtora
+//                     fclose(fp);
+//                     ver_produtora(produtora);
+//                     free(produtora); // libero a memória alocada
+//                     return; // retorno, pois já encontrei a produtora
+//                 }
+//             }
+
+//             // Se chegar aqui, a produtora não foi encontrada
+//             fclose(fp);   // fecho o arquivo
+//             free(produtora); // libero a memória usada
+//             produtora = NULL; // deixo o ponteiro nulo
+//             break;
+//         }
+
+//         // =================================
+//         // Caso 3: busca em arquivo binário
+//         // =================================
+//         case BINARIO: {
+//             // Abro o arquivo binário para leitura
+//             FILE* fp = fopen("produtoras.bin", "rb");
+//             if (!fp) {
+//                 // Se não conseguir abrir, mostro o erro e saio
+//                 perror("Erro ao abrir produtoras.bin");
+//                 return;
+//             }
+
+//             // Aloco memória para armazenar temporariamente uma produtora
+//             produtora = malloc(sizeof(Produtora));
+
+//             // Leio o arquivo binário produtora por produtora
+//             while (fread(produtora, sizeof(Produtora), 1, fp) == 1) {
+//                 // Garante que a string do CNPJ termina em '\0'
+//                 produtora->cnpj[sizeof(produtora->cnpj)-1] = '\0';
+
+//                 // Comparo o CNPJ lido com o CNPJ buscado
+//                 if (strncmp(produtora->cnpj, cnpj_busca, sizeof(produtora->cnpj)) == 0) {
+//                     // Se encontrar, fecho o arquivo e exibo as informações
+//                     fclose(fp);
+//                     ver_produtora(produtora);
+//                     free(produtora); // libero a memória alocada
+//                     return; // retorno, pois já encontrei a produtora
+//                 }
+//             }
+
+//             // Se terminar o arquivo e não encontrar, libero tudo
+//             fclose(fp);
+//             free(produtora);
+//             produtora = NULL;
+//             break;
+//         }
+
+//         // Caso o tipo de armazenamento não seja reconhecido
+//         default:
+//             exibir_mensagem("Tipo de armazenamento inválido!\n");
+//             return;
+//     }
+
+//     // Se nenhum produtora foi encontrado nos casos acima, mostro mensagem padrão
+//     if (!produtora) {
+//         printf("+--------------------------+\n");
+//         printf("| Produtora não encontrada!  |\n");
+//         printf("+--------------------------+\n");
+//     }
+// }
 
 
 // Função para deletar uma produtora a partir do CNPJ e do tipo de armazenamento
