@@ -461,6 +461,11 @@ void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo)
                     return;
                 }
             }
+            //se nao encontrar apenas saio 
+            printf("+--------------------------+\n");
+            printf("| Cliente nao encontrado!  |\n");
+            printf("+--------------------------+\n");
+
             break;
         }
 
@@ -512,6 +517,10 @@ void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo)
             fclose(fp);
             free(cliente);
             cliente = NULL;
+            printf("+--------------------------+\n");
+            printf("| Cliente nao encontrado!  |\n");
+            printf("+--------------------------+\n");
+
             break;
         }
 
@@ -552,6 +561,10 @@ void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo)
             fclose(fp);
             free(cliente);
             cliente = NULL;
+            printf("+--------------------------+\n");
+            printf("| Cliente nao encontrado!  |\n");
+            printf("+--------------------------+\n");
+
             break;
         }
 
@@ -560,12 +573,7 @@ void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo)
             return;
     }
 
-    // Caso o cliente não seja encontrado
-    if (!cliente) {
-        printf("+--------------------------+\n");
-        printf("| Cliente nao encontrado!  |\n");
-        printf("+--------------------------+\n");
-    }
+
 }
 
 // Função para deletar um cliente a partir do CPF/CNPJ e do tipo de armazenamento
@@ -608,13 +616,13 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
                     qtd--;
 
                     // Exibo mensagem de sucesso e saio da função
-                    printf("Cliente deletado em MEMORIA!\n");
+                    printf("Cliente %s deletado em MEMORIA!\n",clientes_memoria[i].nome);
                     return;
                 }
             }
 
             // Se cheguei até aqui, o CPF/CNPJ não foi encontrado
-            printf("Cliente com CPF/CNPJ %s nao encontrado!\n", cpf_cnpj_busca);
+            printf("Cliente com CPF/CNPJ %s nao encontrado em MEMORIA!\n", cpf_cnpj_busca);
             return;
         }
 
@@ -688,10 +696,10 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
 
             // Se o cliente foi encontrado e deletado, exibo sucesso
             if (deletado) {
-                printf("Cliente deletado em ARQUIVO TEXTO!\n");
+                printf("Cliente %s deletado em ARQUIVO TEXTO!\n",cliente.nome);
             } else {
                 // Caso contrário, o cliente não existia
-                printf("Cliente com CPF/CNPJ %s nao encontrado!\n", cpf_cnpj_busca);
+                printf("Cliente com CPF/CNPJ %s nao encontrado em TEXTO!\n", cpf_cnpj_busca);
             }
             return;
         }
@@ -754,9 +762,9 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
 
             // Exibo a mensagem final apropriada
             if (deletado)
-                printf("Cliente deletado em ARQUIVO BINARIO!\n");
+                printf("Cliente %s deletado em ARQUIVO BINARIO!\n",cliente.nome);
             else
-                printf("Cliente com CPF/CNPJ %s nao encontrado!\n", cpf_cnpj_busca);
+                printf("Cliente com CPF/CNPJ %s nao encontrado em BINARIO!\n", cpf_cnpj_busca);
 
             return;
         }
