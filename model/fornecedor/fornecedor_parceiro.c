@@ -394,3 +394,182 @@ Fornecedor_parceiro* atualizar_fornecedor_parceiro(const char* cnpj_busca, Forne
     }
 }
 
+void buscar_e_exibir_fornecedor_parceiro(const char* cnpj_busca, TipoArmazenamento tipo) {
+
+    // --------------------------------------------------------
+    // Primeiro, verifico se o parâmetro CNPJ é válido.
+    // Se for NULL (nulo), nao adianta prosseguir — o usuário
+    // provavelmente esqueceu de digitar o documento.
+    // --------------------------------------------------------
+    if (!cnpj_busca) {
+        exibir_mensagem("+--------------------------+\n");
+        exibir_mensagem("| CNPJ invalido!       |\n");
+        exibir_mensagem("+--------------------------+\n");
+        return; // interrompo a função aqui
+    }
+
+    // --------------------------------------------------------
+    // Capturo o ID do operador logado (quem está usando o sistema)
+    // para controlar as permissões de visualização.
+    // Só pode visualizar o fornecedor quem o criou (id_logado igual).
+    // --------------------------------------------------------
+    int operador_atual = get_operador_logado();
+
+    // --------------------------------------------------------
+    // Crio um ponteiro para Forncedor_parceiro que usarei conforme o tipo
+    // de armazenamento (pode ser carregado da memória, texto ou binário).
+    // --------------------------------------------------------
+    Fornecedor_parceiro* fornecedor = NULL;
+
+    switch (tipo) {
+
+        // =====================================================
+        // Caso 1: Busca em memória (dados já carregados no vetor)
+        // =====================================================
+        case MEMORIA: {
+            // Percorro o vetor global 'fornecedores_memoria' até a quantidade cadastrada
+            for (int i = 0; i < qtd; i++) {
+                // Comparo o CNPJ de cada fornecedor com o que foi buscado
+                if (strcmp(fornecedores_memoria[i].cnpj, cnpj_busca) == 0) {
+
+                    // Se encontrar o fornecedor, verifico se pertence ao operador logado
+                    if (fornecedores_memoria[i].id_logado != operador_atual) {
+                        // Se for de outro operador, nao pode visualizar
+                        printf("Erro: voce nao tem permissao para visualizar este fornecedor.\n");
+                        return; // Encerro imediatamente
+                    }
+
+                    // Se o operador for o dono, exibo os dados
+                    ver_fornecedor_parceiro(&fornecedores_memoria[i]);
+                    return; // Saio da função pois já encontrei
+                }
+            }
+
+            // Se percorrer todo o vetor e nao encontrar o fornecedoe, informo isso
+            printf("+--------------------------------------+\n");
+            printf("| Fornecedor/Parceiro nao encontrado!  |\n");
+            printf("+--------------------------------------+\n");
+            break; // Termina o case MEMORIA
+        }
+
+        // =====================================================
+        // Caso 2: Busca em arquivo texto (fornecedores.txt)
+        // =====================================================
+        case TEXTO: {
+            // Tento abrir o arquivo texto para leitura
+            FILE* fp = fopen("fornecedores.txt", "r");
+            if (!fp) {
+                // Se nao conseguir abrir, mostro erro do sistema (perror)
+                perror("Erro ao abrir fornecedores.txt");
+                return;
+            }
+
+            // Aloco memória temporária para armazenar os dados lidos do arquivo
+            fornecedor = malloc(sizeof(Fornecedor_parceiro));
+            char linha[512]; // buffer para ler cada linha do arquivo
+
+            // Leio o arquivo linha por linha
+            while (fgets(linha, sizeof(linha), fp)) {
+                // Cada linha contém os dados separados por ';'
+                // Uso sscanf para extrair os campos para a estrutura fornecedor
+                sscanf(linha, "%d;%49[^;];%49[^;];%99[^;];%14[^;];%11[^;];%49[^;];%d",
+                       &fornecedor->id,
+                       fornecedor->nome_fantasia,
+                       fornecedor->razao_social,
+                       fornecedor->endereco_completo,
+                       fornecedor->cnpj,
+                       fornecedor->tel,
+                       fornecedor->tipo_servico,
+                       &fornecedor->id_logado);
+
+                // Comparo o CNPJ lido com o buscado
+                if (strcmp(fornecedor->cnpj, cnpj_busca) == 0) {
+
+                    // Verifico se o operador logado é o dono do fornecedor
+                    if (fornecedor->id_logado != operador_atual) {
+                        // Se nao for, o sistema bloqueia a visualização
+                        printf("Erro: voce nao tem permissao para visualizar este fornecedor.\n");
+                        fclose(fp);
+                        free(fornecedor);
+                        return;
+                    }
+
+                    // Se tiver permissão, exibo os dados do fornecedor
+                    ver_fornecedor_parceiro(fornecedor);
+                    fclose(fp);
+                    free(fornecedor);
+                    return; // Já encontrei, então retorno
+                }
+            }
+
+            // Se chegou aqui, é porque leu o arquivo todo e nao achou o CNPJ
+            fclose(fp);
+            free(fornecedor);
+            fornecedor = NULL; // segurança: aponto para NULL após liberar memória
+            //msg para informar o usuario
+            printf("+--------------------------------------+\n");
+            printf("| Fornecedor/Parceiro nao encontrado!  |\n");
+            printf("+--------------------------------------+\n");
+
+            break;
+        }
+
+        // =====================================================
+        // Caso 3: Busca em arquivo binário (fornecedores.bin)
+        // =====================================================
+        case BINARIO: {
+            // Tento abrir o arquivo binário em modo leitura
+            FILE* fp = fopen("fornecedores.bin", "rb");
+            if (!fp) {
+                perror("Erro ao abrir fornecedores.bin");
+                return;
+            }
+
+            // Aloco um fornecedor temporário para armazenar os dados lidos do binário
+            fornecedor = malloc(sizeof(Fornecedor_parceiro));
+
+            // Leio o arquivo fornecedor por fornecedor
+            while (fread(fornecedor, sizeof(Fornecedor_parceiro), 1, fp) == 1) {
+                // Garante que a string CNPJ termina com '\0'
+                fornecedor->cnpj[sizeof(fornecedor->cnpj) - 1] = '\0';
+
+                // Comparo com o CPF/CNPJ buscado
+                if (strcmp(fornecedor->cnpj, cnpj_busca) == 0) {
+
+                    // Verifico se o operador logado é o dono do fornecedor
+                    if (fornecedor->id_logado != operador_atual) {
+                        // Se nao for, mostro erro e nao permito exibir
+                        printf("Erro: voce nao tem permissao para visualizar este fornecedor.\n");
+                        fclose(fp);
+                        free(fornecedor);
+                        return;
+                    }
+
+                    // Se o operador for o dono, exibo os dados normalmente
+                    ver_fornecedor_parceiro(fornecedor);
+                    fclose(fp);
+                    free(fornecedor);
+                    return;
+                }
+            }
+
+            // Se o loop terminou e nao encontrou o fornecedor, aviso o usuário
+            fclose(fp);
+            free(fornecedor); //libero a memoria temporaria
+            fornecedor = NULL;
+
+            printf("+--------------------------------------+\n");
+            printf("| Fornecedor/Parceiro nao encontrado!  |\n");
+            printf("+--------------------------------------+\n");
+
+            break;
+        }
+
+        // =====================================================
+        // Caso padrão (tipo de armazenamento inválido)
+        // =====================================================
+        default:
+            exibir_mensagem("Tipo de armazenamento invalido!\n");
+            return;
+    }
+}

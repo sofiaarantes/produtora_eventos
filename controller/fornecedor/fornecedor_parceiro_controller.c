@@ -52,8 +52,7 @@ void gerenciar_fornecedor_parceiro() {
             case 3:{ //exibir fornecedor/parceiro
                 char cnpj_busca[15];
                     ler_string("Digite o CNPJ do fornecedor/parceiro a ser exibido: ", cnpj_busca, sizeof(cnpj_busca));
-
-                   // buscar_e_exibir_fornecedor_parceiro(cnpj_busca, get_armazenamento());
+                     buscar_e_exibir_fornecedor_parceiro(cnpj_busca, get_armazenamento());
                 break;
 
             }

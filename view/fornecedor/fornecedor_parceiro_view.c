@@ -33,7 +33,7 @@ void ver_fornecedor_parceiro(const Fornecedor_parceiro* fornecedor_parceiro) {
     printf("| Telefone: (%c%c) %c%c%c%c%c-%c%c%c%c\n",
        fornecedor_parceiro->tel[0], fornecedor_parceiro->tel[1],    // DDD
        fornecedor_parceiro->tel[2], fornecedor_parceiro->tel[3], fornecedor_parceiro->tel[4], fornecedor_parceiro->tel[5], fornecedor_parceiro->tel[6], // primeiros 5
-       fornecedor_parceiro->tel[7], fornecedor_parceiro->tel[8], fornecedor_parceiro->tel[9], fornecedor_parceiro->tel[10]); // últimos 4
+       fornecedor_parceiro->tel[7], fornecedor_parceiro->tel[8], fornecedor_parceiro->tel[9], fornecedor_parceiro->tel[10]);
     printf("| Endereco : %s\n", fornecedor_parceiro->endereco_completo);
     printf("| CNPJ %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c\n", fornecedor_parceiro->cnpj[0], fornecedor_parceiro->cnpj[1], fornecedor_parceiro->cnpj[2],
                                         fornecedor_parceiro->cnpj[3], fornecedor_parceiro->cnpj[4], fornecedor_parceiro->cnpj[5],
