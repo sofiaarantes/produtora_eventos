@@ -68,7 +68,7 @@ Produtora ler_dados_produtora() {
     ler_string("|  Email: ", p.email, sizeof(p.email));
     ler_string("|  Nome do responsavel: ", p.nome_resp, sizeof(p.nome_resp));
     ler_string("|  Telefone do responsavel: ", p.tel_resp, sizeof(p.tel_resp));
-    ler_float("|  Margem de lucro padrao (apenas número, ex: 15.5): ", &p.lucro);
+    ler_float("|  Margem de lucro padrao (apenas numero, ex: 15.5): ", &p.lucro);
     printf("+ --------------------------------------------------------------- +\n");
     
     return p;  // retorna a struct preenchida

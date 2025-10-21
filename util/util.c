@@ -11,7 +11,7 @@
 // ----------------------------------------------------
 // Função genérica para ler strings de forma segura
 // ----------------------------------------------------
-// Eu criei essa função porque o scanf("%s") não funciona
+// Eu criei essa função porque o scanf("%s") nao funciona
 // bem para textos que têm espaços (por exemplo, "Rua A, 123").
 // Além disso, o fgets evita problemas de estouro de buffer.
 // Essa função pede uma mensagem, o destino (onde guardar o texto)
@@ -29,11 +29,11 @@ void ler_string(const char *mensagem, char *destino, size_t tamanho) {
                 buffer[len - 1] = '\0';
             }
 
-            // Copia no destino garantindo que não ultrapasse o tamanho
+            // Copia no destino garantindo que nao ultrapasse o tamanho
             strncpy(destino, buffer, tamanho - 1);
             destino[tamanho - 1] = '\0'; // garante finalização segura
 
-            // Se não estiver vazio, saída
+            // Se nao estiver vazio, saída
             if (destino[0] != '\0') return;
             printf("Entrada vazia. Tente novamente.\n");
         }
@@ -71,7 +71,7 @@ void ler_int(const char *mensagem, int *destino) {
 
         // 1) Verifico se foi lido ao menos um dígito
         if (endptr == buffer) {
-            printf("Entrada invalida (não e numero). Tente novamente.\n");
+            printf("Entrada invalida (nao e numero). Tente novamente.\n");
             continue;
         }
 
@@ -124,7 +124,7 @@ void ler_float(const char *mensagem, float *destino) {
 
         // 1) Verifico se o usuário digitou algo que é número
         if (endptr == buffer) {
-            printf("Entrada invalida (não é numero). Tente novamente.\n");
+            printf("Entrada invalida (nao é numero). Tente novamente.\n");
             continue;
         }
 
