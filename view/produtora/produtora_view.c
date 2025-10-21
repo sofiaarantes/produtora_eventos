@@ -5,15 +5,15 @@
 
 int menu_produtora() {
     int opcao;
-    printf("\n===================================================================\n");
-    printf("|                   Menu Produtora                                 |\n");
-    printf("===================================================================\n");
-    printf("|  1 - Adicionar nova produtora                                     |\n");
-    printf("|  2 - Atualizar produtora                                          |\n");
-    printf("|  3 - Exibir produtora                                             |\n");
-    printf("|  4 - Deletar produtora                                            |\n");
-    printf("|  0 - Voltar ao menu anterior                                    |\n");
-    printf("+ --------------------------------------------------------------- +\n");
+    printf("====================================================================\n");
+    printf("|                         Menu Produtora                           |\n");
+    printf("====================================================================\n");
+    printf("|  1 - Adicionar nova produtora                                    |\n");
+    printf("|  2 - Atualizar produtora                                         |\n");
+    printf("|  3 - Exibir produtora                                            |\n");
+    printf("|  4 - Deletar produtora                                           |\n");
+    printf("|  0 - Voltar ao menu anterior                                     |\n");
+    printf("+ ---------------------------------------------------------------- +\n");
     ler_int("Escolha uma opcao: ", &opcao);
     return opcao;
 }

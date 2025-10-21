@@ -284,7 +284,7 @@ Cliente* atualizar_cliente(const char* cpf_cnpj_busca, Cliente* novos_dados, Tip
                 return NULL;
             }
 
-            char linha[400];
+            char linha[400]; // buffer para ler as linhas do arquivo
             int atualizado = 0; // flag para indicar se algum cliente foi atualizado
 
             // Leio o arquivo linha por linha
@@ -461,7 +461,7 @@ void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo)
                     return;
                 }
             }
-            //se nao encontrar apenas saio 
+            //se nao encontrar apenas saio do loop e exibo a msg
             printf("+--------------------------+\n");
             printf("| Cliente nao encontrado!  |\n");
             printf("+--------------------------+\n");

@@ -51,8 +51,8 @@ void ver_cliente(const Cliente* cliente) {
 
 int menu_cliente() {
     int opcao;
-    printf("\n===================================================================\n");
-    printf("|                   Menu Cliente                                   |\n");
+    printf("\n==================================================================\n");
+    printf("|                   Menu Cliente                                  |\n");
     printf("===================================================================\n");
     printf("|  1 - Adicionar novo cliente                                     |\n");
     printf("|  2 - Atualizar cliente                                          |\n");
@@ -67,7 +67,7 @@ int menu_cliente() {
 Cliente ler_dados_cliente() {
     Cliente c;
     printf("+ --------------------------------------------------------------- +\n");
-    printf("|                     Novo Cliente                                 |\n");
+    printf("|                     Novo Cliente                                |\n");
     printf("+ --------------------------------------------------------------- +\n");
     ler_string("|  Nome: ", c.nome, sizeof(c.nome));
     ler_int("|  Idade: ", &c.idade);

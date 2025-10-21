@@ -4,6 +4,8 @@
 #include "fornecedor_parceiro.h"
 #include "../../view/fornecedor/fornecedor_parceiro_view.h"
 #include "../../view/main/main_view.h"
+#include "../../view/main/main_view.h"
+#include "../../model/sessao/sessao.h"
 
 
 #define MAX_FORNECEDORES 100
@@ -12,119 +14,281 @@ static int qtd = 0; // contador de quantos fornecedores/parceiros já estão sal
 
 int novo_id = 1; // Id começa em 1 por padrão
 
-// Função que cria e salva um fornecedor/parceiro de acordo com o tipo escolhido
-Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor_parceiro, TipoArmazenamento tipo) {
-    if (!fornecedor_parceiro) return NULL; // se o ponteiro for nulo, não posso salvar
+Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor, TipoArmazenamento tipo) {
+    // Se o ponteiro fornecedor for nulo, nao há como salvar — retorno NULL
+    if (!fornecedor) return NULL;
 
+    // Começo o ID em 1. Caso haja fornecedores anteriores, ele será atualizado mais abaixo
+    int novo_id = 1;
+
+    fornecedor->id_logado = get_operador_logado(); // Associo o fornecedor ao operador logado
+
+    // Escolho o tipo de armazenamento que o sistema está usando (memória, texto ou binário)
     switch (tipo) {
+        
 
-                // Caso 1: salvar na memória
-                case MEMORIA: {
-                    if (qtd < MAX_FORNECEDORES) {
-                        // Se houver dados na memória, ele continua com o novo_id = 1, caso contrário, resgatará o
-                        // último id e somará mais 1
-                        if (qtd > 0) 
-                            novo_id = fornecedores_memoria[qtd - 1].id + 1;
+        // ============================================
+        // CASO 1 - SALVAR NA MEMORIA
+        // ============================================
+        case MEMORIA: {
+            // Verifico se ainda há espaço no array de fornecedors em memória
+            if (qtd < MAX_FORNECEDORES) {
 
-                        fornecedor_parceiro->id = novo_id;
-                        // copio todos os dados do fornecedor/parceiro passado para o array de memória
-                        fornecedores_memoria[qtd] = *fornecedor_parceiro;
+                // Se já existir pelo menos um fornecedor, pego o último ID e incremento
+                if (qtd > 0)
+                    novo_id = fornecedores_memoria[qtd - 1].id + 1;
 
-                        // crio um ponteiro que aponta para o fornecedor/parceiro que acabei de salvar
-                        Fornecedor_parceiro* salvo = &fornecedores_memoria[qtd];
+                // Atribuo o novo ID ao fornecedor atual
+                fornecedor->id = novo_id;
 
-                        qtd++; // aumento o contador de fornecedores/parceiros na memória
+                // Salvo o fornecedor no vetor em memória
+                fornecedores_memoria[qtd] = *fornecedor;
 
-                        printf("Fornecedor/Parceiro %s salvo em MEMÓRIA!\n", salvo->nome_fantasia);
-                        return salvo; // retorno o endereço do fornecedor/parceiro salvo
-                    } else {
-                        printf("Erro: limite de fornecedores/parceiros na memória atingido!\n");
-                        return NULL;
+                // Crio um ponteiro que aponta para o fornecedor recém-salvo
+                Fornecedor_parceiro* salvo = &fornecedores_memoria[qtd];
+
+                fornecedor->id_logado = get_operador_logado(); // garante que está atualizado
+
+                // Incremento a contagem total de fornecedors
+                qtd++;
+
+                printf("Fornecedor/Parceiro %s salvo em MEMORIA! Tipo de documento: %d\n",fornecedor->nome_fantasia,fornecedor->id_logado );
+
+                // Retorno o ponteiro do fornecedores que acabou de ser salvo
+                return salvo;
+            } else {
+                // Caso o vetor esteja cheio, nao consigo salvar
+                printf("Erro: limite de fornedores/parceiros na memória atingido!\n");
+                return NULL;
+            }
+        }
+
+
+        // ============================================
+        // CASO 2 - SALVAR EM ARQUIVO TEXTO
+        // ============================================
+        case TEXTO: {
+            // Abro o arquivo de texto para leitura, para descobrir o último ID usado
+            FILE* fp = fopen("fornecedores.txt", "r");
+            if (fp) {
+                char linha[512];  // buffer para armazenar cada linha lida
+                Fornecedor_parceiro tmp;      // struct temporária para ler os dados do arquivo
+
+                // Lê o arquivo linha por linha de forma segura (fgets evita travamentos)
+                while (fgets(linha, sizeof(linha), fp)) {
+                    // Tenta ler até os campos formatados por ponto e vírgula
+                    // %[^;] significa “ler até encontrar um ponto e vírgula”
+                    int lidos = sscanf(linha, "%d;%49[^;];%49[^;];%14[^;];%99[^;];%11[^;];%49[^;];%d",
+                                        &tmp.id, tmp.nome_fantasia, tmp.razao_social,
+                                        tmp.cnpj, tmp.endereco_completo,
+                                        tmp.tel, tmp.tipo_servico, &tmp.id_logado);
+
+                    // Se conseguiu ler pelo menos o ID, atualiza o próximo id
+                    if (lidos >= 1) {
+                        novo_id = tmp.id + 1;
                     }
                 }
+                // Fecha o arquivo após ler todas as linhas
+                fclose(fp);
+            }
 
-            
-            case TEXTO: {
-                // Descobre o último id no arquivo
-                FILE* fp = fopen("fornecedores.txt", "r");
-                if (fp) {
-                    Fornecedor_parceiro tmp;
-                    while (fscanf(fp, "%d;%49[^;];%49[^;];%14[^;];%99[^;];%11[^;];%49[^;];\n",
-                                  &tmp.id, tmp.nome_fantasia, tmp.razao_social, tmp.cnpj,
-                                  tmp.endereco_completo,
-                                  tmp.tel, tmp.tipo_servico) != EOF) {
-                        novo_id = tmp.id + 1; // sempre fica com o último id lido +1
-                    }
-                    fclose(fp);
-                }
-                fornecedor_parceiro->id = novo_id;
+            // Define o novo ID no fornecedor que será inserido
+            fornecedor->id = novo_id;
 
-                // Abro o arquivo em modo append para não sobrescrever os fornecedores/parceiros anteriores
-                 fp = fopen("fornecedores.txt", "a");
-                if (!fp) {
-                    perror("Erro ao abrir fornecedores.txt");
-                    return NULL;
-                }
+            fornecedor->id_logado = get_operador_logado(); // Associo o fornecedor ao operador logado
 
-                // Escrevo os dados do fornecedor/parceiro no arquivo separados por ponto e vírgula
-                // Uso o limite máximo de caracteres baseado no tamanho do array da struct
-                // Isso garante que o campo não ultrapasse o espaço definido
-                fprintf(fp, "%d;%.49s;%.49s;%.99s;%.14s;%.11s;%.49s\n",
-                    fornecedor_parceiro->id,
-                    fornecedor_parceiro->nome_fantasia,
-                    fornecedor_parceiro->razao_social,
-                    fornecedor_parceiro->endereco_completo,
-                    fornecedor_parceiro->cnpj,
-                    fornecedor_parceiro->tel,
-                    fornecedor_parceiro->tipo_servico
+            // Agora abre o arquivo em modo append (“a”) para adicionar o novo fornecedor no final
+            fp = fopen("fornecedores.txt", "a");
+            if (!fp) {
+                perror("Erro ao abrir fornecedores.txt");
+                return NULL;
+            }
+
+            // Grava os dados do fornecedor em uma linha formatada, separados por ponto e vírgula
+            fprintf(fp, "%d;%s;%s;%s;%s;%s;%s;%d\n",
+                    fornecedor->id,
+                    fornecedor->nome_fantasia,
+                    fornecedor->razao_social,
+                    fornecedor->endereco_completo,
+                    fornecedor->cnpj,
+                    fornecedor->tel,
+                    fornecedor->tipo_servico,
+                    fornecedor->id_logado
                 );
 
-                fclose(fp); // Fecho o arquivo
-                printf("Fornecedor/Parceiro %s salvo em TEXTO!\n", fornecedor_parceiro->nome_fantasia);
-                return fornecedor_parceiro; // Retorno o fornecedor/parceiro que foi salvo
-            }
-            // Caso 3: salvar fornecedor/parceiro em arquivo binário
-                case BINARIO: {
-                     // Descobre último id no arquivo
-                        FILE* fp = fopen("fornecedores.bin", "rb");
-                        if (fp) {
-                            Fornecedor_parceiro tmp;
-                            while (fread(&tmp, sizeof(Fornecedor_parceiro), 1, fp) == 1) {
-                                novo_id = tmp.id + 1;
-                            }
-                            fclose(fp);
-                        }
-                        fornecedor_parceiro->id = novo_id;
+            // Fecha o arquivo após a escrita
+            fclose(fp);
 
-                    // garante que CNPJ e telefone terminam com '\0'
-                    fornecedor_parceiro->cnpj[sizeof(fornecedor_parceiro->cnpj) - 1] = '\0';
-                    fornecedor_parceiro->tel[sizeof(fornecedor_parceiro->tel) - 1] = '\0';
+            printf("Fornecedor/Parceiro %s salvo em TEXTO! id logado: %d\n", fornecedor->nome_fantasia,fornecedor->id_logado);
 
-                    // abre o arquivo em modo append binário
-                     fp = fopen("fornecedores.bin", "ab");
-                    if (!fp) {
-                        perror("Erro ao abrir fornecedores.bin");
-                        return NULL;
-                    }
+            // Retorna o ponteiro para o fornecedor criado
+            return fornecedor;
+        }
 
-                    // grava a struct inteira no arquivo
-                    if (fwrite(fornecedor_parceiro, sizeof(Fornecedor_parceiro), 1, fp) != 1) {
-                        perror("Erro ao gravar fornecedor/parceiro em fornecedores.bin");
-                        fclose(fp);
-                        return NULL;
-                    }
 
-                    fclose(fp);
-
-                    printf("Fornecedor/Parceiro %s salvo em BINÁRIO!\n", fornecedor_parceiro->nome_fantasia);
-                    return fornecedor_parceiro; // Retorno o fornecedor/parceiro que foi salvo
+        // ============================================
+        // CASO 3 - SALVAR EM ARQUIVO BINARIO
+        // ============================================
+        case BINARIO: {
+            // Abre o arquivo binário em modo leitura ("rb") para descobrir o último ID
+            FILE* fp = fopen("fornecedores.bin", "rb");
+            if (fp) {
+                Fornecedor_parceiro tmp;
+                // Lê fornecedor por fornecedor até o final do arquivo
+                while (fread(&tmp, sizeof(Fornecedor_parceiro), 1, fp) == 1) {
+                    novo_id = tmp.id + 1; // sempre pega o último ID e soma 1
                 }
+                fclose(fp);
+            }
+
+            // Define o novo ID para o fornecedor atual
+            fornecedor->id = novo_id;
+
+            fornecedor->id_logado = get_operador_logado(); // Associo o fornecedor ao operador logado
+            // Garante que os campos string terminam com '\0'
+            fornecedor->cnpj[sizeof(fornecedor->cnpj) - 1] = '\0';
+            fornecedor->tel[sizeof(fornecedor->tel) - 1] = '\0';
+
+            // Abre o arquivo binário em modo append binário ("ab")
+            fp = fopen("fornecedores.bin", "ab");
+            if (!fp) {
+                perror("Erro ao abrir fornecedores.bin");
+                return NULL;
+            }
+
+            // Escreve o fornecedor no arquivo em formato binário
+            if (fwrite(fornecedor, sizeof(Fornecedor_parceiro), 1, fp) != 1) {
+                perror("Erro ao gravar fornecedor em fornecedors.bin");
+                fclose(fp);
+                return NULL;
+            }
+
+            // Fecha o arquivo após gravar
+            fclose(fp);
+
+            printf("Cliente %s salvo em BINARIO! id logado: %d\n", fornecedor->nome_fantasia,fornecedor->id_logado);
+
+            // Retorna o ponteiro do fornecedor que foi salvo
+            return fornecedor;
+        }
+    }
+
+    // Caso o tipo de armazenamento nao seja reconhecido, retorno NULL
+    return NULL;
+}
+// Função que cria e salva um fornecedor/parceiro de acordo com o tipo escolhido
+// Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor_parceiro, TipoArmazenamento tipo) {
+//     if (!fornecedor_parceiro) return NULL; // se o ponteiro for nulo, não posso salvar
+
+//     switch (tipo) {
+
+//                 // Caso 1: salvar na memória
+//                 case MEMORIA: {
+//                     if (qtd < MAX_FORNECEDORES) {
+//                         // Se houver dados na memória, ele continua com o novo_id = 1, caso contrário, resgatará o
+//                         // último id e somará mais 1
+//                         if (qtd > 0) 
+//                             novo_id = fornecedores_memoria[qtd - 1].id + 1;
+
+//                         fornecedor_parceiro->id = novo_id;
+//                         // copio todos os dados do fornecedor/parceiro passado para o array de memória
+//                         fornecedores_memoria[qtd] = *fornecedor_parceiro;
+
+//                         // crio um ponteiro que aponta para o fornecedor/parceiro que acabei de salvar
+//                         Fornecedor_parceiro* salvo = &fornecedores_memoria[qtd];
+
+//                         qtd++; // aumento o contador de fornecedores/parceiros na memória
+
+//                         printf("Fornecedor/Parceiro %s salvo em MEMÓRIA!\n", salvo->nome_fantasia);
+//                         return salvo; // retorno o endereço do fornecedor/parceiro salvo
+//                     } else {
+//                         printf("Erro: limite de fornecedores/parceiros na memória atingido!\n");
+//                         return NULL;
+//                     }
+//                 }
+
+            
+//             case TEXTO: {
+//                 // Descobre o último id no arquivo
+//                 FILE* fp = fopen("fornecedores.txt", "r");
+                // if (fp) {
+                //     Fornecedor_parceiro tmp;
+                //     while (fscanf(fp, "%d;%49[^;];%49[^;];%14[^;];%99[^;];%11[^;];%49[^;];\n",
+                //                   &tmp.id, tmp.nome_fantasia, tmp.razao_social, tmp.cnpj,
+                //                   tmp.endereco_completo,
+                //                   tmp.tel, tmp.tipo_servico) != EOF) {
+                //         novo_id = tmp.id + 1; // sempre fica com o último id lido +1
+                //     }
+                //     fclose(fp);
+                // }
+                // fornecedor_parceiro->id = novo_id;
+
+//                 // Abro o arquivo em modo append para não sobrescrever os fornecedores/parceiros anteriores
+//                  fp = fopen("fornecedores.txt", "a");
+//                 if (!fp) {
+//                     perror("Erro ao abrir fornecedores.txt");
+//                     return NULL;
+//                 }
+
+//                 // Escrevo os dados do fornecedor/parceiro no arquivo separados por ponto e vírgula
+//                 // Uso o limite máximo de caracteres baseado no tamanho do array da struct
+//                 // Isso garante que o campo não ultrapasse o espaço definido
+//                 fprintf(fp, "%d;%.49s;%.49s;%.99s;%.14s;%.11s;%.49s\n",
+//                     fornecedor_parceiro->id,
+//                     fornecedor_parceiro->nome_fantasia,
+//                     fornecedor_parceiro->razao_social,
+//                     fornecedor_parceiro->endereco_completo,
+//                     fornecedor_parceiro->cnpj,
+//                     fornecedor_parceiro->tel,
+//                     fornecedor_parceiro->tipo_servico
+//                 );
+
+//                 fclose(fp); // Fecho o arquivo
+//                 printf("Fornecedor/Parceiro %s salvo em TEXTO!\n", fornecedor_parceiro->nome_fantasia);
+//                 return fornecedor_parceiro; // Retorno o fornecedor/parceiro que foi salvo
+//             }
+//             // Caso 3: salvar fornecedor/parceiro em arquivo binário
+//                 case BINARIO: {
+//                      // Descobre último id no arquivo
+//                         FILE* fp = fopen("fornecedores.bin", "rb");
+//                         if (fp) {
+//                             Fornecedor_parceiro tmp;
+//                             while (fread(&tmp, sizeof(Fornecedor_parceiro), 1, fp) == 1) {
+//                                 novo_id = tmp.id + 1;
+//                             }
+//                             fclose(fp);
+//                         }
+//                         fornecedor_parceiro->id = novo_id;
+
+//                     // garante que CNPJ e telefone terminam com '\0'
+//                     fornecedor_parceiro->cnpj[sizeof(fornecedor_parceiro->cnpj) - 1] = '\0';
+//                     fornecedor_parceiro->tel[sizeof(fornecedor_parceiro->tel) - 1] = '\0';
+
+//                     // abre o arquivo em modo append binário
+//                      fp = fopen("fornecedores.bin", "ab");
+//                     if (!fp) {
+//                         perror("Erro ao abrir fornecedores.bin");
+//                         return NULL;
+//                     }
+
+//                     // grava a struct inteira no arquivo
+//                     if (fwrite(fornecedor_parceiro, sizeof(Fornecedor_parceiro), 1, fp) != 1) {
+//                         perror("Erro ao gravar fornecedor/parceiro em fornecedores.bin");
+//                         fclose(fp);
+//                         return NULL;
+//                     }
+
+//                     fclose(fp);
+
+//                     printf("Fornecedor/Parceiro %s salvo em BINÁRIO!\n", fornecedor_parceiro->nome_fantasia);
+//                     return fornecedor_parceiro; // Retorno o fornecedor/parceiro que foi salvo
+//                 }
 
     
      
-    }
-    return NULL; // Caso inválido
-} 
+//     }
+//     return NULL; // Caso inválido
+// } 
 
 
 // Função que atualiza um fornecedor/parceiro de acordo com o tipo escolhido
@@ -538,7 +702,7 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor_p
                         fclose(fp);
                         fclose(temp);
 
-                        // Excluo o arquivo antigo e renomeio o temporário como o novo "clientes.txt"
+                        // Excluo o arquivo antigo e renomeio o temporário como o novo "fornecedores.txt"
                         remove("fornecedores.txt");
                         rename("fp_temp.txt", "fornecedores.txt");
 

@@ -6,15 +6,15 @@
 int menu_fornecedor() {
     
      int opcao;
-    printf("\n===================================================================\n");
-    printf("|                   Menu Fornecedor/Parceiro                     |\n");
-    printf("===================================================================\n");
-    printf("|  1 - Adicionar novo fornecedor/parceiro                        |\n");
+    printf("====================================================================\n");
+    printf("|                   Menu Fornecedor/Parceiro                       |\n");
+    printf("====================================================================\n");
+    printf("|  1 - Adicionar novo fornecedor/parceiro                          |\n");
     printf("|  2 - Atualizar fornecedor/parceiro                               |\n");
     printf("|  3 - Exibir fornecedor/parceiro                                  |\n");
     printf("|  4 - Deletar fornecedor/parceiro                                 |\n");
-    printf("|  0 - Voltar ao menu anterior                                    |\n");
-    printf("+ --------------------------------------------------------------- +\n");
+    printf("|  0 - Voltar ao menu anterior                                     |\n");
+    printf("+ ---------------------------------------------------------------- +\n");
     ler_int("Escolha uma opcao: ", &opcao);
     return opcao;
 }
