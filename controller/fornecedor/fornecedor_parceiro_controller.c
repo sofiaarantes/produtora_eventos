@@ -59,7 +59,7 @@ void gerenciar_fornecedor_parceiro() {
             case 4:{ //deletar fornecedor/parceiro
                 char cnpj_busca[15];
                     ler_string("Digite o CNPJ do fornecedor/parceiro a ser deletado: ", cnpj_busca, sizeof(cnpj_busca));
-                    //deletar_fornecedor_parceiro(cnpj_busca, get_armazenamento());
+                    deletar_fornecedor_parceiro(cnpj_busca, get_armazenamento());
                 break;
             }
             case 0:{

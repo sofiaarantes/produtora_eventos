@@ -816,8 +816,6 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
 }
 
 
-
-
 TipoDocumento identificar_documento(const char *doc) {
     int len = 0;
 

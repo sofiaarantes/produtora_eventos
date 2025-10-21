@@ -199,7 +199,7 @@ Fornecedor_parceiro* atualizar_fornecedor_parceiro(const char* cnpj_busca, Forne
 
                     // Verifico se o operador logado é o mesmo que criou esse fornecedor
                     if (fornecedores_memoria[i].id_logado != operador_atual) {
-                        printf("Erro: voce nao tem permissao para atualizar este fornecedor \n");
+                        printf("Erro: voce nao tem permissao para atualizar este fornecedor/parceiro \n");
                         return NULL; // se nao for o mesmo, nao permito a atualização
                     }
 
@@ -268,7 +268,7 @@ Fornecedor_parceiro* atualizar_fornecedor_parceiro(const char* cnpj_busca, Forne
 
                     // Confiro se o operador logado tem permissão para atualizar esse fornecedor
                     if (f.id_logado != operador_atual) {
-                        printf("Erro: voce nao tem permissao para atualizar este fornecedor\n");
+                        printf("Erro: voce nao tem permissao para atualizar este fornecedor/parceiro\n");
                         fclose(fp);
                         fclose(temp);
                         remove("fornecedores_tmp.txt"); // removo o arquivo temporário, já que deu erro
@@ -343,7 +343,7 @@ Fornecedor_parceiro* atualizar_fornecedor_parceiro(const char* cnpj_busca, Forne
 
                     // Verifico se o operador logado é o mesmo que criou o fornecedor
                     if (f.id_logado != operador_atual) {
-                        printf("Erro: voce nao tem permissao para atualizar este fornecedor\n");
+                        printf("Erro: voce nao tem permissao para atualizar este fornecedor/parceiro\n");
                         fclose(fp);
                         return NULL; // retorno imediatamente, sem exibir "nao encontrado"
                     }
@@ -402,9 +402,9 @@ void buscar_e_exibir_fornecedor_parceiro(const char* cnpj_busca, TipoArmazenamen
     // provavelmente esqueceu de digitar o documento.
     // --------------------------------------------------------
     if (!cnpj_busca) {
-        exibir_mensagem("+--------------------------+\n");
-        exibir_mensagem("| CNPJ invalido!       |\n");
-        exibir_mensagem("+--------------------------+\n");
+        printf("+--------------------------+\n");
+        printf("| CNPJ invalido!       |\n");
+        printf("+--------------------------+\n");
         return; // interrompo a função aqui
     }
 
@@ -569,7 +569,219 @@ void buscar_e_exibir_fornecedor_parceiro(const char* cnpj_busca, TipoArmazenamen
         // Caso padrão (tipo de armazenamento inválido)
         // =====================================================
         default:
-            exibir_mensagem("Tipo de armazenamento invalido!\n");
+            printf("Tipo de armazenamento invalido!\n");
+            return;
+    }
+}
+
+void deletar_fornecedor_parceiro(const char* cnpj_busca, TipoArmazenamento tipo) {
+    // Primeiro verifico se o parâmetro CNPJ recebido é válido
+    // Se for nulo, já mostro uma mensagem de erro e saio da função.
+    if (!cnpj_busca) {
+        printf("+--------------------------+\n");
+        printf("|     CNPJ invalido!       |\n");
+        printf("+--------------------------+\n");
+        return; // interrompo a função aqui
+    }
+
+    // Pego o ID do operador atualmente logado (para checar permissões)
+    int operador_atual = get_operador_logado();
+
+    // Uso o switch para tratar cada tipo de armazenamento (memória, texto ou binário)
+    switch (tipo) {
+
+        // =====================================================
+        // Caso 1 — Deletar fornecedor armazenado em MEMÓRIA
+        // =====================================================
+        case MEMORIA: {
+            // Percorro o vetor global de fornecedores armazenados em memória
+            for (int i = 0; i < qtd; i++) {
+                // Comparo o CNPJ digitado com o do fornecedor atual
+                if (strcmp(fornecedores_memoria[i].cnpj, cnpj_busca) == 0) {
+                    // Achei o fornecedor, agora verifico se o operador atual tem permissão
+                    if (fornecedores_memoria[i].id_logado != operador_atual) {
+                        // Se o ID logado for diferente, mostro a mensagem e saio da função
+                        printf("Erro: voce nao tem permissao para deletar esse fornecedor/parceiro.\n");
+                        return;
+                    }
+
+                    // Se tiver permissão, preciso remover o fornecedor do vetor
+                    // Para isso, desloco todos os próximos elementos uma posição para trás
+                    for (int j = i; j < qtd - 1; j++) {
+                        fornecedores_memoria[j] = fornecedores_memoria[j + 1];
+                    }
+
+                    // Reduzo a contagem total de fornecedors em memória
+                    qtd--;
+
+                    // Exibo mensagem de sucesso e saio da função
+                    printf("Fornecedor/Parceiro %s deletado em MEMORIA!\n",fornecedores_memoria[i].nome_fantasia);
+                    return;
+                }
+            }
+
+            // Se cheguei até aqui, o CNPJ não foi encontrado
+            printf("Fornecedor/Parceiro com CNPJ %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c nao encontrada em MEMORIA!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
+                        cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
+                        cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
+                        cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
+                        cnpj_busca[13]);
+            return;
+        }
+
+        // =====================================================
+        // Caso 2 — Deletar fornecedor em ARQUIVO TEXTO (.txt)
+        // =====================================================
+        case TEXTO: {
+            // Abro o arquivo de fornecedors em modo leitura
+            FILE* fp = fopen("fornecedores.txt", "r");
+            if (!fp) {
+                perror("Erro ao abrir fornecedores.txt");
+                return;
+            }
+
+            // Crio um arquivo temporário onde vou regravar apenas os fornecedores válidos
+            FILE* temp = fopen("temp.txt", "w");
+            if (!temp) {
+                perror("Erro ao criar temp.txt");
+                fclose(fp);
+                return;
+            }
+
+            char linha[512];    // Buffer usado para ler cada linha do arquivo
+            Fornecedor_parceiro fornecedor;    // Struct temporária para armazenar os dados lidos
+            int deletado = 0;   // Variável de controle para saber se excluí algum fornecedor
+
+            // Leio o arquivo linha por linha
+            while (fgets(linha, sizeof(linha), fp)) {
+                // Tento extrair todos os campos, incluindo tipo_doc e id_logado
+                 sscanf(linha, "%d;%49[^;];%49[^;];%99[^;];%14[^;];%11[^;];%49[^;];%d",
+                                   &fornecedor.id,
+                                   fornecedor.nome_fantasia,
+                                   fornecedor.razao_social,
+                                   fornecedor.endereco_completo,
+                                   fornecedor.cnpj,
+                                   fornecedor.tel,
+                                   fornecedor.tipo_servico,
+                                   &fornecedor.id_logado);
+
+                // Verifico se esta linha pertence ao fornecedor que quero deletar
+                if (strcmp(fornecedor.cnpj, cnpj_busca) == 0) {
+                    // Se achei o fornecedor, verifico a permissão
+                    if (fornecedor.id_logado != operador_atual) {
+                        // Sem permissão: apago o arquivo temporário e retorno imediatamente
+                        printf("Erro: voce nao tem permissao para deletar esse fornecedor/parceiro.\n");
+                        fclose(fp);
+                        fclose(temp);
+                        remove("temp.txt");
+                        return;
+                    } else {
+                        // Se tiver permissão, simplesmente não escrevo essa linha no arquivo temporário
+                        // Isso faz com que o fornecedor seja removido
+                        deletado = 1;
+                        continue; // Pulo para a próxima linha
+                    }
+                }
+
+                // Caso não seja o fornecedor que quero excluir, regravo a linha normalmente
+                fputs(linha, temp);
+            }
+
+            // Fecho os arquivos originais e temporários
+            fclose(fp);
+            fclose(temp);
+
+            // Substituo o arquivo original pelo novo (sem o fornecedor deletado)
+            remove("fornecedores.txt");
+            rename("temp.txt", "fornecedores.txt");
+
+            // Se o fornecedor foi encontrado e deletado, exibo sucesso
+            if (deletado) {
+                printf("Fornecedor/Parceiro %s deletado em ARQUIVO TEXTO!\n",fornecedor.nome_fantasia);
+            } else {
+                // Caso contrário, o fornecedor não existia
+                printf("Fornecedor/Parceiro com CNPJ %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c nao encontrada em TEXTO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
+                        cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
+                        cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
+                        cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
+                        cnpj_busca[13]);
+            }
+            return;
+        }
+
+        // =====================================================
+        // Caso 3 — Deletar fornecedor em ARQUIVO BINÁRIO (.bin)
+        // =====================================================
+        case BINARIO: {
+            // Abro o arquivo binário original em modo leitura
+            FILE* fp = fopen("fornecedores.bin", "rb");
+            if (!fp) {
+                perror("Erro ao abrir fornecedores.bin");
+                return;
+            }
+
+            // Crio um arquivo temporário onde vou regravar apenas os fornecedores válidos
+            FILE* temp = fopen("temp.bin", "wb");
+            if (!temp) {
+                perror("Erro ao criar temp.bin");
+                fclose(fp);
+                return;
+            }
+
+            Fornecedor_parceiro fornecedor;   // Struct temporária usada para leitura
+            int deletado = 0;  // Controle de exclusão bem-sucedida
+
+            // Leio cada fornecedor do arquivo binário
+            while (fread(&fornecedor, sizeof(Fornecedor_parceiro), 1, fp) == 1) {
+                // Garante que o CNPJ termine corretamente
+                fornecedor.cnpj[sizeof(fornecedor.cnpj) - 1] = '\0';
+
+                // Comparo o CPF lido com o CPF digitado
+                if (strcmp(fornecedor.cnpj, cnpj_busca) == 0) {
+                    // Achei o fornecedor, agora verifico permissão
+                    if (fornecedor.id_logado != operador_atual) {
+                        // Se o operador atual não for o dono, apenas mostro o erro e saio
+                        printf("Erro: voce nao tem permissao para deletar este fornecedor/parceiro.\n");
+                        fclose(fp);
+                        fclose(temp);
+                        remove("temp.bin");
+                        return;
+                    } else {
+                        deletado = 1;
+                        continue;
+                    }
+                }
+
+                // Caso não seja o fornecedor a deletar, regravo normalmente no arquivo temporário
+                fwrite(&fornecedor, sizeof(Fornecedor_parceiro), 1, temp);
+            }
+
+            // Fecho ambos os arquivos
+            fclose(fp);
+            fclose(temp);
+
+            // Substituo o arquivo antigo pelo temporário atualizado
+            remove("fornecedores.bin");
+            rename("temp.bin", "fornecedores.bin");
+
+            // Exibo a mensagem final apropriada
+            if (deletado)
+                printf("Fornecedor/Parceiro %s deletado em ARQUIVO BINARIO!\n",fornecedor.nome_fantasia);
+            else
+                printf("Fornecedor/Parceiro com CNPJ %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c nao encontrada em BINARIO!\n", cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
+                        cnpj_busca[3], cnpj_busca[4], cnpj_busca[5],
+                        cnpj_busca[6], cnpj_busca[7], cnpj_busca[8],
+                        cnpj_busca[9], cnpj_busca[10], cnpj_busca[11], cnpj_busca[12],
+                        cnpj_busca[13]);
+
+            return;
+        }
+
+        // =====================================================
+        // Caso padrão — tipo de armazenamento inválido
+        // =====================================================
+        default:
+            printf("Tipo de armazenamento invalido!\n");
             return;
     }
 }

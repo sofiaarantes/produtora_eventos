@@ -609,8 +609,8 @@ void buscar_e_exibir_produtora(const char* cnpj_busca, TipoArmazenamento tipo) {
 
             // Caso percorra todo o arquivo e não encontre o CNPJ, fecho e libero tudo.
             fclose(fp);
-            free(produtora);
-            produtora = NULL;
+            free(produtora); //limpo a memoria alocada
+            produtora = NULL; //atribuo null ao ponteiro por precausao
             printf("+------------------------------+\n");
             printf("| Produtora nao encontrada!    |\n");
             printf("+------------------------------+\n");
