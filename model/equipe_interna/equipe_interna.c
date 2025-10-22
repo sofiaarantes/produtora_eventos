@@ -3,6 +3,7 @@
 #include <string.h>
 #include "equipe_interna.h"
 #include "../sessao/sessao.h"
+#include "../../util/util.h"
 
 // --- Variáveis para armazenamento em memória ---
 #define MAX_FUNCIONARIOS 100 // Máximo de funcionários para memória
@@ -17,6 +18,13 @@ EquipeInterna* adicionar_funcionario(EquipeInterna* funcionario, TipoArmazenamen
 
     // Define automaticamente o operador logado como responsável pelo cadastro
     funcionario->operador_id = get_operador_logado();
+
+    //antes de salvar verifica se o cpf é valido
+                if (validar_cpf(funcionario->cpf) == 0) {
+                    printf("Erro: CPF invalido. Deve conter 11 digitos.\n");
+                    printf("Funcionario NAO cadastrado");
+                    return NULL;
+                }
 
     int novo_id = 1; // Id começa em 1 por padrão
 

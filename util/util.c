@@ -169,10 +169,19 @@ int validar_tel(const char *tel) {
 int validar_cnpj(const char *cnpj) {
     // strlen() retorna o número de caracteres na string (sem contar o '\0').
     if (strlen(cnpj) == 14)
+        return 1; // cnpj tem 14 caracteres → válido
+    else
+        return 0; // qualquer outro tamanho → inválido
+}
+
+int validar_cpf(const char *cpf) {
+    // strlen() retorna o número de caracteres na string (sem contar o '\0').
+    if (strlen(cpf) == 11)
         return 1; // cnpj tem 11 caracteres → válido
     else
         return 0; // qualquer outro tamanho → inválido
 }
+
 
 int validar_inscr(const char *inscricao_estadual) {
     // strlen() retorna o número de caracteres na string (sem contar o '\0').

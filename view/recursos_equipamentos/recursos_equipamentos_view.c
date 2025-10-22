@@ -11,11 +11,11 @@ void exibir_equipamento(const RecursosEquipamentos* equipamentos) {
     }
     printf("+ --------------------------------------------------------------- +\n");
     printf("| ID: %d\n", equipamentos->id);
-    printf("| Descrição: %s\n", equipamentos->descricao);
+    printf("| Descricao: %s\n", equipamentos->descricao);
     printf("| Categoria: %s\n", equipamentos->categoria);
     printf("| Quantidade no Estoque: %d\n", equipamentos->qtd_estoque);
     printf("| Preço de Custo: R$ %.2f\n", equipamentos->preco_custo);
-    printf("| Valor da Diária/Hora: R$ %.2f\n", equipamentos->valor_diaria);
+    printf("| Valor da Diaria/Hora: R$ %.2f\n", equipamentos->valor_diaria);
     printf("+ --------------------------------------------------------------- +\n");
 }
 
@@ -40,11 +40,11 @@ RecursosEquipamentos ler_dados_equipamento() {
     printf("+ --------------------------------------------------------------- +\n");
     printf("|                     Novo Recurso/Equipamento                    |\n");
     printf("+ --------------------------------------------------------------- +\n");
-    ler_string("|  Descrição: ", e.descricao, sizeof(e.descricao));
+    ler_string("|  Descricao: ", e.descricao, sizeof(e.descricao));
     ler_string("|  Categoria: ", e.categoria, sizeof(e.categoria)); 
     ler_int("|  Quantidade no Estoque: ", &e.qtd_estoque);
     ler_float("|  Preço de Custo: ", &e.preco_custo);
-    ler_float("|  Valor da Diária/hora: ", &e.valor_diaria);
+    ler_float("|  Valor da Diaria/hora: ", &e.valor_diaria);
     printf("+ --------------------------------------------------------------- +\n");
     return e;  // Retorna a struct preenchida
 }
@@ -53,10 +53,10 @@ void ler_dados_atualizados_equipamento(char* descricao, char* categoria, int* qt
     printf("+ --------------------------------------------------------------- +\n");
     printf("|                  Atualizar Recurso/Equipamento                  |\n");
     printf("+ --------------------------------------------------------------- +\n");
-    ler_string("|  Nova descrição: ", descricao, sizeof(descricao));
+    ler_string("|  Nova descricao: ", descricao, sizeof(descricao));
     ler_string("|  Nova categoria: ", categoria, sizeof(categoria));
     ler_int("|  Nova quantidade no estoque: ", qtd_estoque);
-    ler_float("|  Novo preço de custo: ", preco_custo);
-    ler_float("|  Novo valor da diária: ", valor_diaria);
+    ler_float("|  Novo preco de custo: ", preco_custo);
+    ler_float("|  Novo valor da diaria: ", valor_diaria);
     printf("+ --------------------------------------------------------------- +\n");
 }
