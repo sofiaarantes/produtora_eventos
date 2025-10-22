@@ -6,6 +6,7 @@
 #include "../../view/main/main_view.h"
 #include "../../view/main/main_view.h"
 #include "../../model/sessao/sessao.h"
+#include "../../util/util.h"
 
 
 #define MAX_FORNECEDORES 100
@@ -23,6 +24,19 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor, 
 
     fornecedor->id_logado = get_operador_logado(); // Associo o fornecedor ao operador logado
 
+    //antes de salvar verifica se o tel é valido
+                if (validar_tel(fornecedor->tel) == 0) {
+                    printf("Erro: telefone invalido. Deve conter 11 digitos.\n");
+                    printf("Fornecedor/Parceiro NAO cadastrado\n");
+                    return NULL;
+                }
+    //antes de salvar verifica se o cnpj é valido
+                if (validar_cnpj(fornecedor->cnpj) == 0) {
+                    printf("Erro: CNPJ invalido. Deve conter 14 digitos.\n");
+                    printf("Fornecedor/Parceiro NAO cadastrado\n");
+                    return NULL;
+                }
+
     // Escolho o tipo de armazenamento que o sistema está usando (memória, texto ou binário)
     switch (tipo) {
         
@@ -33,6 +47,16 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor, 
         case MEMORIA: {
             // Verifico se ainda há espaço no array de fornecedors em memória
             if (qtd < MAX_FORNECEDORES) {
+
+                 // Antes de salvar, verifica se o cnpj inserido já existe em memória
+                for (int i = 0; i < qtd; i++) {
+                    if (strcmp(fornecedores_memoria[i].cnpj, fornecedor->cnpj) == 0 &&
+                        fornecedores_memoria[i].id_logado == fornecedor->id_logado) {
+                        printf("\nErro: Ja existe um fornecedor/parceiro com o CNPJ '%s' cadastrado.\n", fornecedor->cnpj);
+                        printf("Fornecedor/Parceiro NAO cadastrado\n\n");
+                        return NULL;
+                    }
+                }
 
                 // Se já existir pelo menos um fornecedor, pego o último ID e incremento
                 if (qtd > 0)
@@ -48,7 +72,7 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor, 
                 Fornecedor_parceiro* salvo = &fornecedores_memoria[qtd];
 
                 fornecedor->id_logado = get_operador_logado(); // garante que está atualizado
-
+                
                 // Incremento a contagem total de fornecedors
                 qtd++;
 
@@ -80,12 +104,21 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor, 
                     // %[^;] significa “ler até encontrar um ponto e vírgula”
                     int lidos = sscanf(linha, "%d;%49[^;];%49[^;];%14[^;];%99[^;];%11[^;];%49[^;];%d",
                                         &tmp.id, tmp.nome_fantasia, tmp.razao_social,
-                                        tmp.cnpj, tmp.endereco_completo,
+                                        tmp.endereco_completo,tmp.cnpj, 
                                         tmp.tel, tmp.tipo_servico, &tmp.id_logado);
 
                     // Se conseguiu ler pelo menos o ID, atualiza o próximo id
                     if (lidos >= 1) {
                         novo_id = tmp.id + 1;
+                    }
+                    // Se encontrar mesmo CNPJ e mesmo id_logado dentro do aqr txt ja cadastrado impede o cadastro
+                    if (strcmp(tmp.cnpj, fornecedor->cnpj) == 0 &&
+                        tmp.id_logado == fornecedor->id_logado) {
+                        printf("\nErro: Ja existe um fornecedor/parceiro com o CNPJ '%s' cadastrado por este operador.\n",
+                            fornecedor->cnpj);
+                            printf("Fornecedor/Parceiro NAO cadastrado\n");
+                        fclose(fp);
+                        return NULL;
                     }
                 }
                 // Fecha o arquivo após ler todas as linhas
@@ -137,6 +170,15 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor, 
                 // Lê fornecedor por fornecedor até o final do arquivo
                 while (fread(&tmp, sizeof(Fornecedor_parceiro), 1, fp) == 1) {
                     novo_id = tmp.id + 1; // sempre pega o último ID e soma 1
+
+                if (strcmp(tmp.cnpj, fornecedor->cnpj) == 0 &&
+                        tmp.id_logado == fornecedor->id_logado) {
+                        printf("\nErro: Ja existe um Fornecedor/Parceiro com o CNPJ '%s' cadastrado por este operador.\n",
+                               fornecedor->cnpj);
+                               printf("Produtora NAO cadastrado\n");
+                        fclose(fp);
+                        return NULL;
+                    }
                 }
                 fclose(fp);
             }

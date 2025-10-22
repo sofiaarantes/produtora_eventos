@@ -126,6 +126,7 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
                         tmp.id_logado == produtora->id_logado) {
                         printf("\nErro: Ja existe um produtora com o CNPJ '%s' cadastrado por este operador.\n",
                             produtora->cnpj);
+                            printf("Produtora NAO cadastrado\n");
                         fclose(fp);
                         return NULL;
                     }
@@ -134,6 +135,7 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
                         tmp.id_logado == produtora->id_logado) {
                         printf("\nErro: Ja existe um produtora com a inscricao estadual '%s' cadastrado por este operador.\n",
                             produtora->inscricao_estadual);
+                            printf("Produtora NAO cadastrado\n");
                         fclose(fp);
                         return NULL;
                     }
@@ -197,6 +199,7 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
                         tmp.id_logado == produtora->id_logado) {
                         printf("\nErro: Ja existe um produtora com o CNPJ '%s' cadastrado por este operador.\n",
                                produtora->cnpj);
+                               printf("Produtora NAO cadastrado\n");
                         fclose(fp);
                         return NULL;
                     }
@@ -205,6 +208,7 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
                         tmp.id_logado == produtora->id_logado) {
                         printf("\nErro: Ja existe um produtora com a inscricao estadual '%s' cadastrado por este operador.\n",
                                produtora->inscricao_estadual);
+                               printf("Produtora NAO cadastrado\n");
                         fclose(fp);
                         return NULL;
                     }

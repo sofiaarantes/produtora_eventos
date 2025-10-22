@@ -129,6 +129,7 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
                         tmp.id_logado == cliente->id_logado) {
                         printf("\nErro: Ja existe um cliente com o CPF/CNPJ '%s' cadastrado por este operador.\n",
                             cliente->cpf_cnpj);
+                            printf("Cliente NAO cadastrado");
                         fclose(fp);
                         return NULL;
                     }
@@ -200,6 +201,7 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
                         tmp.id_logado == cliente->id_logado) {
                         printf("\nErro: Ja existe um cliente com o CPF/CNPJ '%s' cadastrado por este operador.\n",
                                cliente->cpf_cnpj);
+                               printf("Cliente NAO cadastrado");
                         fclose(fp);
                         return NULL;
                     }
