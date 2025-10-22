@@ -227,6 +227,19 @@ Fornecedor_parceiro* atualizar_fornecedor_parceiro(const char* cnpj_busca, Forne
     // Pego o ID do operador que está logado no momento (para verificar permissões)
     int operador_atual = get_operador_logado();
 
+    //antes de salvar verifica se o tel é valido
+                if (validar_tel(novos_dados->tel) == 0) {
+                    printf("Erro: telefone invalido. Deve conter 11 digitos.\n");
+                    printf("Fornecedor/Parceiro NAO atualizado\n");
+                    return NULL;
+                }
+    //antes de salvar verifica se o cnpj é valido
+                if (validar_cnpj(novos_dados->cnpj) == 0) {
+                    printf("Erro: CNPJ invalido. Deve conter 14 digitos.\n");
+                    printf("Fornecedor/Parceiro NAO atualizado\n");
+                    return NULL;
+                }
+
     // Uso um switch para tratar de acordo com o tipo de armazenamento escolhido
     switch (tipo) {
 

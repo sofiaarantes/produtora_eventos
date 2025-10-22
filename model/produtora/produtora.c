@@ -261,6 +261,38 @@ Produtora* atualizar_produtora(const char* cnpj_busca, Produtora* novos_dados, T
     // Pego o ID do operador que está logado no momento (para verificar permissões)
     int operador_atual = get_operador_logado();
 
+    //antes de salvar verifica se o email é valido
+                if (validar_email(novos_dados->email) == 0) {
+                    printf("Erro: e-mail invalido. Deve conter '@gmail'.\n");
+                    printf("Produtora NAO atualizada\n");
+                    return NULL;
+                }
+     //antes de salvar verifica se o tel é valido
+                if (validar_tel(novos_dados->tel) == 0) {
+                    printf("Erro: telefone invalido. Deve conter 11 digitos.\n");
+                    printf("Produtora NAO atualizada\n");
+                    return NULL;
+                }
+    //antes de salvar verifica se o tel resp é valido
+                if (validar_tel(novos_dados->tel_resp) == 0) {
+                    printf("Erro: telefone do responsavel invalido. Deve conter 11 digitos.\n");
+                    printf("Produtora NAO atualizada\n");
+                    return NULL;
+                }
+    //antes de salvar verifica se o cnpj é valido
+     if (validar_cnpj(novos_dados->cnpj) == 0) {
+                    printf("Erro: CNPJ invalido. Deve conter 14 digitos.\n");
+                    printf("Produtora NAO atualizada\n");
+                    return NULL;
+                }
+    //antes de salvar verifica se a inscriçao estadual é valido
+                if (validar_inscr(novos_dados->inscricao_estadual) == 0) {
+                    printf("Erro: Inscricao estadual invalida. Deve conter 13 digitos.\n");
+                    printf("Produtora NAO atualizada\n");
+                    return NULL;
+                }
+
+
     // Uso um switch para tratar de acordo com o tipo de armazenamento escolhido
     switch (tipo) {
 

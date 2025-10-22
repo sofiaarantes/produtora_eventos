@@ -266,6 +266,19 @@ Cliente* atualizar_cliente(const char* cpf_cnpj_busca, Cliente* novos_dados, Tip
     // Pego o ID do operador que está logado no momento (para verificar permissões)
     int operador_atual = get_operador_logado();
 
+    //antes de salvar verifica se o email é valido
+                if (validar_email(novos_dados->email) == 0) {
+                    printf("Erro: e-mail invalido. Deve conter '@gmail'.\n");
+                    printf("Cliente NAO atualizado");
+                    return NULL;
+                }
+     //antes de salvar verifica se o tel é valido
+                if (validar_tel(novos_dados->tel) == 0) {
+                    printf("Erro: telefone invalido. Deve conter 11 digitos.\n");
+                    printf("Cliente NAO atualizado");
+                    return NULL;
+                }
+
     // Uso um switch para tratar de acordo com o tipo de armazenamento escolhido
     switch (tipo) {
 
