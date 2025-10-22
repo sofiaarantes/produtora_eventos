@@ -6,7 +6,7 @@
 typedef struct{
     char nome_fantasia[50];
     char razao_social[50];
-    char inscricao_estadual[13]; //13 dígitos + '\0'
+    char inscricao_estadual[14]; //13 dígitos + '\0'
     char cnpj[15];  // 14 dígitos + '\0'
     char endereco_completo[100];
     char tel[12];

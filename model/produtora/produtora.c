@@ -5,6 +5,7 @@
 #include "../../view/produtora/produtora_view.h"
 #include "../../view/main/main_view.h"
 #include "../../model/sessao/sessao.h"
+#include "../../util/util.h"
 
 
 #define MAX_PRODUTORAS 100
@@ -18,6 +19,37 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
 
     produtora->id_logado = get_operador_logado(); // Associo o produtora ao operador logado
 
+     //antes de salvar verifica se o email é valido
+                if (validar_email(produtora->email) == 0) {
+                    printf("Erro: e-mail invalido. Deve conter '@gmail'.\n");
+                    printf("Produtora NAO cadastrado\n");
+                    return NULL;
+                }
+     //antes de salvar verifica se o tel é valido
+                if (validar_tel(produtora->tel) == 0) {
+                    printf("Erro: telefone invalido. Deve conter 11 digitos.\n");
+                    printf("Produtora NAO cadastrado\n");
+                    return NULL;
+                }
+    //antes de salvar verifica se o tel resp é valido
+                if (validar_tel(produtora->tel_resp) == 0) {
+                    printf("Erro: telefone do responsavel invalido. Deve conter 11 digitos.\n");
+                    printf("Produtora NAO cadastrado\n");
+                    return NULL;
+                }
+    //antes de salvar verifica se o cnpj é valido
+     if (validar_cnpj(produtora->cnpj) == 0) {
+                    printf("Erro: CNPJ invalido. Deve conter 14 digitos.\n");
+                    printf("Produtora NAO cadastrado\n");
+                    return NULL;
+                }
+    //antes de salvar verifica se a inscriçao estadual é valido
+     if (validar_inscr(produtora->inscricao_estadual) == 0) {
+                    printf("Erro: Inscricao estadual invalida. Deve conter 13 digitos.\n");
+                    printf("Produtora NAO cadastrado\n");
+                    return NULL;
+                }
+
     // Escolho o tipo de armazenamento que o sistema está usando (memória, texto ou binário)
     switch (tipo) {
         
@@ -29,6 +61,25 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
             // Verifico se ainda há espaço no array de produtoras em memória
             if (qtd < MAX_PRODUTORAS) {
 
+                // Antes de salvar, verifica se o cnpj inserido já existe em memória
+                for (int i = 0; i < qtd; i++) {
+                    if (strcmp(produtoras_memoria[i].cnpj, produtora->cnpj) == 0 &&
+                        produtoras_memoria[i].id_logado == produtora->id_logado) {
+                        printf("\nErro: Ja existe uma produtora com o CNPJ '%s' cadastrado.\n", produtora->cnpj);
+                        printf("Produtora NAO cadastrado\n");
+                        return NULL;
+                    }
+                }
+
+                // Antes de salvar, verifica se a inscriçao estadual inserido já existe em memória
+                for (int i = 0; i < qtd; i++) {
+                    if (strcmp(produtoras_memoria[i].inscricao_estadual, produtora->inscricao_estadual) == 0 &&
+                        produtoras_memoria[i].id_logado == produtora->id_logado) {
+                        printf("\nErro: Ja existe uma produtora com a inscricao estadual '%s' cadastrado.\n", produtora->inscricao_estadual);
+                        printf("Produtora NAO cadastrado\n");
+                        return NULL;
+                    }
+                }
                 // Salvo o produtora no vetor em memória
                 produtoras_memoria[qtd] = *produtora;
 
@@ -56,11 +107,46 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
         // CASO 2 - SALVAR EM ARQUIVO TEXTO
         // ============================================
         case TEXTO: {
+            FILE* fp = fopen("produtoras.txt", "r");
+            if (fp) {
+                char linha[512];  // buffer para armazenar cada linha lida
+                Produtora tmp;      // struct temporária para ler os dados do arquivo
+
+                // Lê o arquivo linha por linha de forma segura (fgets evita travamentos)
+                while (fgets(linha, sizeof(linha), fp)) {
+                    // %[^;] significa “ler até encontrar um ponto e vírgula”
+                   sscanf(linha, "%49[^;];%49[^;];%13[^;];%14[^;];%99[^;];%11[^;];%49[^;];%49[^;];%11[^;];%f;%d",
+                                        tmp.nome_fantasia, tmp.razao_social, tmp.inscricao_estadual,tmp.cnpj,
+                                        tmp.endereco_completo, tmp.tel,
+                                        tmp.email, tmp.nome_resp,tmp.tel_resp,&tmp.lucro,
+                                        &tmp.id_logado);
+
+                    // Se encontrar mesmo CNPJ e mesmo id_logado dentro do aqr txt ja cadastrado impede o cadastro
+                    if (strcmp(tmp.cnpj, produtora->cnpj) == 0 &&
+                        tmp.id_logado == produtora->id_logado) {
+                        printf("\nErro: Ja existe um produtora com o CNPJ '%s' cadastrado por este operador.\n",
+                            produtora->cnpj);
+                        fclose(fp);
+                        return NULL;
+                    }
+                    // Se encontrar a mesma inscriçao estadual e mesmo id_logado dentro do aqr txt ja cadastrado impede o cadastro
+                    if (strcmp(tmp.inscricao_estadual, produtora->inscricao_estadual) == 0 &&
+                        tmp.id_logado == produtora->id_logado) {
+                        printf("\nErro: Ja existe um produtora com a inscricao estadual '%s' cadastrado por este operador.\n",
+                            produtora->inscricao_estadual);
+                        fclose(fp);
+                        return NULL;
+                    }
+                    
+                }
+                // Fecha o arquivo após ler todas as linhas
+                fclose(fp);
+            }
             
             produtora->id_logado = get_operador_logado(); // Associo o produtora ao operador logado
 
             // Agora abre o arquivo em modo append (“a”) para adicionar o novo produtora no final
-            FILE* fp = fopen("produtoras.txt", "a");
+             fp = fopen("produtoras.txt", "a");
             if (!fp) {
                 perror("Erro ao abrir produtoras.txt");
                 return NULL;
@@ -100,12 +186,40 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
         case BINARIO: {
 
             produtora->id_logado = get_operador_logado(); // Associo o produtora ao operador logado
+            
+            FILE* fp = fopen("produtoras.bin", "rb");
+            if (fp) {
+                Produtora tmp;
+                // Lê produtora por produtora até o final do arquivo
+                while (fread(&tmp, sizeof(Produtora), 1, fp) == 1) {
+                    //verifico tambem se ja existe um produtora com esse documento, se tiver nao deixo inserir
+                    if (strcmp(tmp.cnpj, produtora->cnpj) == 0 &&
+                        tmp.id_logado == produtora->id_logado) {
+                        printf("\nErro: Ja existe um produtora com o CNPJ '%s' cadastrado por este operador.\n",
+                               produtora->cnpj);
+                        fclose(fp);
+                        return NULL;
+                    }
+                    //verifico tambem se ja existe um produtora com essa inscriçao estadual, se tiver nao deixo inserir
+                    if (strcmp(tmp.inscricao_estadual, produtora->inscricao_estadual) == 0 &&
+                        tmp.id_logado == produtora->id_logado) {
+                        printf("\nErro: Ja existe um produtora com a inscricao estadual '%s' cadastrado por este operador.\n",
+                               produtora->inscricao_estadual);
+                        fclose(fp);
+                        return NULL;
+                    }
+                    
+                }
+                fclose(fp);
+            }
+
+            
             // Garante que os campos string terminam com '\0'
             produtora->cnpj[sizeof(produtora->cnpj) - 1] = '\0';
             produtora->tel[sizeof(produtora->tel) - 1] = '\0';
 
             // Abre o arquivo binário em modo append binário ("ab")
-            FILE* fp = fopen("produtoras.bin", "ab");
+             fp = fopen("produtoras.bin", "ab");
             if (!fp) {
                 perror("Erro ao abrir produtoras.bin");
                 return NULL;

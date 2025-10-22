@@ -24,4 +24,7 @@ int validar_tel(const char *tel);
 
 //funçao que verifica se o cnpj tem 14 digitos
 int validar_cnpj(const char *cnpj);
+
+////funçao que verifica se o cnpj tem 13 digitos
+int validar_inscr(const char *inscricao_estadual);
 #endif
