@@ -6,6 +6,7 @@
 #include "../../view/cliente/cliente_view.h"
 #include "../../view/main/main_view.h"
 #include "../../model/sessao/sessao.h"
+#include "../../util/util.h"
 
 
 #define MAX_CLIENTES 100
@@ -26,6 +27,19 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
         printf("Cliente NAO salvo.\n");
         return NULL;
     }
+    //antes de salvar verifica se o email é valido
+                if (validar_email(cliente->email) == 0) {
+                    printf("Erro: e-mail invalido. Deve conter '@gmail'.\n");
+                    printf("Cliente NAO cadastrado");
+                    return NULL;
+                }
+     //antes de salvar verifica se o tel é valido
+                if (validar_tel(cliente->tel) == 0) {
+                    printf("Erro: telefone invalido. Deve conter 11 digitos.\n");
+                    printf("Cliente NAO cadastrado");
+                    return NULL;
+                }
+
 
     // Começo o ID em 1. Caso haja clientes anteriores, ele será atualizado mais abaixo
     int novo_id = 1;
@@ -50,6 +64,16 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
                 // Atribuo o novo ID ao cliente atual
                 cliente->id = novo_id;
 
+                // Antes de salvar, verifica se o cpf_cnpj inserido já existe em memória
+                for (int i = 0; i < qtd; i++) {
+                    if (strcmp(clientes_memoria[i].cpf_cnpj, cliente->cpf_cnpj) == 0 &&
+                        clientes_memoria[i].id_logado == cliente->id_logado) {
+                        printf("\nErro: Ja existe um cliente com o CPF/CNPJ '%s' cadastrado.\n", cliente->cpf_cnpj);
+                        printf("Cliente NAO cadastrado");
+                        return NULL;
+                    }
+                }
+                
                 // Recalculo o tipo de documento para garantir consistência
                 cliente->tipo_doc = identificar_documento(cliente->cpf_cnpj);
 
@@ -99,6 +123,15 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
                                         tmp.endereco_completo, tmp.cpf_cnpj,
                                         tmp.tel, tmp.email, tmp.nome_contato,
                                         (int*)&tmp.tipo_doc,&tmp.id_logado);
+
+                    // Se encontrar mesmo CPF e mesmo id_logado impede o cadastro
+                    if (strcmp(tmp.cpf_cnpj, cliente->cpf_cnpj) == 0 &&
+                        tmp.id_logado == cliente->id_logado) {
+                        printf("\nErro: Ja existe um cliente com o CPF/CNPJ '%s' cadastrado por este operador.\n",
+                            cliente->cpf_cnpj);
+                        fclose(fp);
+                        return NULL;
+                    }
 
                     // Se conseguiu ler pelo menos o ID, atualiza o próximo id
                     if (lidos >= 1) {
@@ -162,6 +195,15 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
                 Cliente tmp;
                 // Lê cliente por cliente até o final do arquivo
                 while (fread(&tmp, sizeof(Cliente), 1, fp) == 1) {
+                    //verifico tambem se ja existe um cliente com esse documento, se tiver na deixo inserir
+                    if (strcmp(tmp.cpf_cnpj, cliente->cpf_cnpj) == 0 &&
+                        tmp.id_logado == cliente->id_logado) {
+                        printf("\nErro: Ja existe um cliente com o CPF/CNPJ '%s' cadastrado por este operador.\n",
+                               cliente->cpf_cnpj);
+                        fclose(fp);
+                        return NULL;
+                    }
+
                     novo_id = tmp.id + 1; // sempre pega o último ID e soma 1
                 }
                 fclose(fp);
@@ -537,7 +579,7 @@ void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo)
                     ver_cliente(cliente);
                     fclose(fp);
                     free(cliente);
-                    return; // Já encontrei, então retorno
+                    return; // Ja encontrei, então retorno
                 }
             }
 

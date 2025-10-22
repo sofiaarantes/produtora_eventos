@@ -148,3 +148,28 @@ void ler_float(const char *mensagem, float *destino) {
         return;
     }
 }
+int validar_email(const char *email) {
+    // strstr() busca uma substring dentro de outra string.
+    // Se encontrar "@gmail", ela retorna o endereço da primeira ocorrência.
+    // Se não encontrar, retorna NULL.
+    if (strstr(email, "@gmail") != NULL)
+        return 1; // Encontrou "@gmail" → e-mail é válido
+    else
+        return 0; // Não encontrou → e-mail é inválido
+}
+
+int validar_tel(const char *tel) {
+    // strlen() retorna o número de caracteres na string (sem contar o '\0').
+    if (strlen(tel) == 11)
+        return 1; // telefone tem 11 caracteres → válido
+    else
+        return 0; // qualquer outro tamanho → inválido
+}
+
+int validar_cnpj(const char *cnpj) {
+    // strlen() retorna o número de caracteres na string (sem contar o '\0').
+    if (strlen(cnpj) == 11)
+        return 1; // cnpj tem 11 caracteres → válido
+    else
+        return 0; // qualquer outro tamanho → inválido
+}
