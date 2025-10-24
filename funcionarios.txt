@@ -1,2 +1,0 @@
-2;funcionariotxt2;123;x;1.000000;2;
-3;functxt1;123;eita;12.000000;1;

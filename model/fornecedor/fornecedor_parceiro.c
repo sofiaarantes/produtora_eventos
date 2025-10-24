@@ -76,7 +76,7 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor, 
                 // Incremento a contagem total de fornecedors
                 qtd++;
 
-                printf("Fornecedor/Parceiro %s salvo em MEMORIA!\n",fornecedor->nome_fantasia );
+                printf("Fornecedor/Parceiro %s salvo em MEMORIA!\n",fornecedor->nome_fantasia);
 
                 // Retorno o ponteiro do fornecedores que acabou de ser salvo
                 return salvo;
@@ -100,12 +100,12 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor, 
 
                 // Lê o arquivo linha por linha de forma segura (fgets evita travamentos)
                 while (fgets(linha, sizeof(linha), fp)) {
-                    // Tenta ler até os campos formatados por ponto e vírgula
+                    // Tenta ler os campos formatados por ponto e vírgula
                     // %[^;] significa “ler até encontrar um ponto e vírgula”
-                    int lidos = sscanf(linha, "%d;%49[^;];%49[^;];%14[^;];%99[^;];%11[^;];%49[^;];%d",
+                    int lidos = sscanf(linha, "%d;%49[^;];%49[^;];%14[^;];%99[^;];%11[^;];%49[^;];%d;%f",
                                         &tmp.id, tmp.nome_fantasia, tmp.razao_social,
                                         tmp.endereco_completo,tmp.cnpj, 
-                                        tmp.tel, tmp.tipo_servico, &tmp.id_logado);
+                                        tmp.tel, tmp.tipo_servico, &tmp.id_logado, &tmp.valor);
 
                     // Se conseguiu ler pelo menos o ID, atualiza o próximo id
                     if (lidos >= 1) {
@@ -138,7 +138,7 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor, 
             }
 
             // Grava os dados do fornecedor em uma linha formatada, separados por ponto e vírgula
-            fprintf(fp, "%d;%s;%s;%s;%s;%s;%s;%d\n",
+            fprintf(fp, "%d;%s;%s;%s;%s;%s;%s;%d;%f\n",
                     fornecedor->id,
                     fornecedor->nome_fantasia,
                     fornecedor->razao_social,
@@ -146,7 +146,8 @@ Fornecedor_parceiro* criar_fornecedor_parceiro(Fornecedor_parceiro* fornecedor, 
                     fornecedor->cnpj,
                     fornecedor->tel,
                     fornecedor->tipo_servico,
-                    fornecedor->id_logado
+                    fornecedor->id_logado,
+                    fornecedor->valor
                 );
 
             // Fecha o arquivo após a escrita
@@ -233,12 +234,6 @@ Fornecedor_parceiro* atualizar_fornecedor_parceiro(const char* cnpj_busca, Forne
                     printf("Fornecedor/Parceiro NAO atualizado\n");
                     return NULL;
                 }
-    //antes de salvar verifica se o cnpj é valido
-                if (validar_cnpj(novos_dados->cnpj) == 0) {
-                    printf("Erro: CNPJ invalido. Deve conter 14 digitos.\n");
-                    printf("Fornecedor/Parceiro NAO atualizado\n");
-                    return NULL;
-                }
 
     // Uso um switch para tratar de acordo com o tipo de armazenamento escolhido
     switch (tipo) {
@@ -312,10 +307,10 @@ Fornecedor_parceiro* atualizar_fornecedor_parceiro(const char* cnpj_busca, Forne
                 Fornecedor_parceiro f = {0};
 
                 // Quebro a linha em campos separados por ';'
-                 sscanf(linha, "%d;%49[^;];%49[^;];%14[^;];%99[^;];%11[^;];%49[^;];%d",
+                 sscanf(linha, "%d;%49[^;];%49[^;];%14[^;];%99[^;];%11[^;];%49[^;];%d,%f",
                                         &f.id, f.nome_fantasia, f.razao_social,
                                        f.endereco_completo, f.cnpj, 
-                                        f.tel, f.tipo_servico, &f.id_logado);
+                                        f.tel, f.tipo_servico, &f.id_logado, &f.valor);
 
 
                 // Comparo o CNPJ lido com o buscado
@@ -332,7 +327,7 @@ Fornecedor_parceiro* atualizar_fornecedor_parceiro(const char* cnpj_busca, Forne
 
                     // Aqui sobrescrevo a linha do fornecedor com os novos dados
                     // mantendo id, CNPJ e id_logado originais
-                    fprintf(temp, "%d;%s;%s;%s;%s;%s;%s;%d\n",
+                    fprintf(temp, "%d;%s;%s;%s;%s;%s;%s;%d;%f\n",
                             f.id, 
                             novos_dados->nome_fantasia,
                             novos_dados->razao_social,
@@ -340,7 +335,8 @@ Fornecedor_parceiro* atualizar_fornecedor_parceiro(const char* cnpj_busca, Forne
                             f.cnpj,
                             novos_dados->tel,
                             novos_dados->tipo_servico,
-                            f.id_logado
+                            f.id_logado,
+                            novos_dados->valor
                         );
                         
 
@@ -527,7 +523,7 @@ void buscar_e_exibir_fornecedor_parceiro(const char* cnpj_busca, TipoArmazenamen
             while (fgets(linha, sizeof(linha), fp)) {
                 // Cada linha contém os dados separados por ';'
                 // Uso sscanf para extrair os campos para a estrutura fornecedor
-                sscanf(linha, "%d;%49[^;];%49[^;];%99[^;];%14[^;];%11[^;];%49[^;];%d",
+                sscanf(linha, "%d;%49[^;];%49[^;];%99[^;];%14[^;];%11[^;];%49[^;];%d;%f",
                        &fornecedor->id,
                        fornecedor->nome_fantasia,
                        fornecedor->razao_social,
@@ -535,7 +531,9 @@ void buscar_e_exibir_fornecedor_parceiro(const char* cnpj_busca, TipoArmazenamen
                        fornecedor->cnpj,
                        fornecedor->tel,
                        fornecedor->tipo_servico,
-                       &fornecedor->id_logado);
+                       &fornecedor->id_logado,
+                       &fornecedor->valor
+                    );
 
                 // Comparo o CNPJ lido com o buscado
                 if (strcmp(fornecedor->cnpj, cnpj_busca) == 0) {
@@ -611,7 +609,7 @@ void buscar_e_exibir_fornecedor_parceiro(const char* cnpj_busca, TipoArmazenamen
             // Se o loop terminou e nao encontrou o fornecedor, aviso o usuário
             fclose(fp);
             free(fornecedor); //libero a memoria temporaria
-            fornecedor = NULL;
+            fornecedor = NULL; //retorno null no memoria alocada por precausao
 
             printf("+--------------------------------------+\n");
             printf("| Fornecedor/Parceiro nao encontrado!  |\n");
@@ -710,7 +708,7 @@ void deletar_fornecedor_parceiro(const char* cnpj_busca, TipoArmazenamento tipo)
             // Leio o arquivo linha por linha
             while (fgets(linha, sizeof(linha), fp)) {
                 // Tento extrair todos os campos, incluindo tipo_doc e id_logado
-                 sscanf(linha, "%d;%49[^;];%49[^;];%99[^;];%14[^;];%11[^;];%49[^;];%d",
+                 sscanf(linha, "%d;%49[^;];%49[^;];%99[^;];%14[^;];%11[^;];%49[^;];%d;%f",
                                    &fornecedor.id,
                                    fornecedor.nome_fantasia,
                                    fornecedor.razao_social,
@@ -718,7 +716,9 @@ void deletar_fornecedor_parceiro(const char* cnpj_busca, TipoArmazenamento tipo)
                                    fornecedor.cnpj,
                                    fornecedor.tel,
                                    fornecedor.tipo_servico,
-                                   &fornecedor.id_logado);
+                                   &fornecedor.id_logado,
+                                   &fornecedor.valor
+                                );
 
                 // Verifico se esta linha pertence ao fornecedor que quero deletar
                 if (strcmp(fornecedor.cnpj, cnpj_busca) == 0) {

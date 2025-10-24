@@ -3,7 +3,7 @@
 #include <stdio.h>   // printf, fgets
 #include <stdlib.h>  // strtol
 #include <stddef.h>  // size_t
-#include "util.h"    // só 1 vez
+#include "util.h"    
 #include <errno.h>
 #include <float.h>
 

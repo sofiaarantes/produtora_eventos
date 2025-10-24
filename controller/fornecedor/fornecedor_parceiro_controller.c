@@ -38,7 +38,8 @@ void gerenciar_fornecedor_parceiro() {
                         novos_dados.razao_social,
                         novos_dados.endereco_completo,
                         novos_dados.tel,
-                        novos_dados.tipo_servico
+                        novos_dados.tipo_servico,
+                        &novos_dados.valor
                     );
                     
 

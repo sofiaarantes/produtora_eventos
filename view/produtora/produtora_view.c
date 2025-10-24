@@ -90,14 +90,14 @@ void ler_dados_atualizados_produtora(
     printf("+ --------------------------------------------------------------- +\n");
     printf("|                  Atualizar Produtora                            |\n");
     printf("+ --------------------------------------------------------------- +\n");
-    ler_string("| Novo nome fantasia: ", nome_fantasia, sizeof(nome_fantasia));
-    ler_string("| Nova razao social: ", razao_social, sizeof(razao_social));
-    ler_string("| Nova inscricao estadual: ", inscricao_estadual, sizeof(inscricao_estadual));
-    ler_string("| Novo endereco completo: ", endereco_completo, sizeof(endereco_completo));
-    ler_string("| Novo telefone: ", tel, sizeof(tel));
-    ler_string("| Novo email: ", email, sizeof(email));
-    ler_string("| Novo nome do responsavel: ", nome_resp, sizeof(nome_resp));
-    ler_string("| Novo telefone do responsavel: ", tel_resp, sizeof(tel_resp));
+    ler_string("| Novo nome fantasia: ", nome_fantasia, 50);
+    ler_string("| Nova razao social: ", razao_social, 50);
+    ler_string("| Nova inscricao estadual: ", inscricao_estadual, 13);
+    ler_string("| Novo endereco completo: ", endereco_completo, 100);
+    ler_string("| Novo telefone: ", tel, 12);
+    ler_string("| Novo email: ", email, 50);
+    ler_string("| Novo nome do responsavel: ", nome_resp, 50);
+    ler_string("| Novo telefone do responsavel: ", tel_resp, 12);
     ler_float("| Nova margem de lucro padrao (apenas numero, ex: 15.5): ", lucro);
 
     printf("+ --------------------------------------------------------------- +\n");

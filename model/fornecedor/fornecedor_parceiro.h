@@ -12,6 +12,7 @@ typedef struct{
     char tel[12];
     char tipo_servico[50];
     int id_logado;
+    float valor;
 }Fornecedor_parceiro;
 
 // Função que cria e salva um fornecedor/parceiro de acordo com o tipo escolhido

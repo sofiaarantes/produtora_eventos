@@ -14,12 +14,13 @@ Fornecedor_parceiro ler_dados_fornecedor_parceiro();
 
 // Pega dados atualizados de fornecedor/parceiro 
 void ler_dados_atualizados_fornecedor_parceiro(
-    char* nome_fantasia,    
+    char* nome_fantasia,
     char* razao_social,
     char* endereco_completo,
     char* tel,
-    char* tipo_servico
-        
+    char* tipo_servico,
+    float* valor
+    
 );
 
 #endif // FORNECEDOR_PARCEIRO_VIEW_H

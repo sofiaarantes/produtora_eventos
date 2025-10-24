@@ -93,11 +93,11 @@ void ler_dados_atualizados_cliente(
     printf("+ --------------------------------------------------------------- +\n");
     printf("|                  Atualizar Cliente                               |\n");
     printf("+ --------------------------------------------------------------- +\n");
-    ler_string("|  Novo nome: ", nome, sizeof(nome));
+    ler_string("|  Novo nome: ", nome, 50);
     ler_int("|  Nova idade: ", idade);
-    ler_string("|  Novo endereco completo: ", endereco_completo, sizeof(endereco_completo));
-    ler_string("|  Novo telefone: ", tel, sizeof(tel));
-    ler_string("|  Novo email: ", email, sizeof(email));
-    ler_string("|  Novo nome do contato: ", nome_contato, sizeof(nome_contato));
+    ler_string("|  Novo endereco completo: ", endereco_completo, 100);
+    ler_string("|  Novo telefone: ", tel, 12);
+    ler_string("|  Novo email: ", email, 50);
+    ler_string("|  Novo nome do contato: ", nome_contato, 50);
     printf("+ --------------------------------------------------------------- +\n");
 }

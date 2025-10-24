@@ -42,6 +42,7 @@ void ver_fornecedor_parceiro(const Fornecedor_parceiro* fornecedor_parceiro) {
                                         fornecedor_parceiro->cnpj[13]);
         //usando %c (em vez de %s) porque estou imprimindo cada caractere individualmente do CNPJ, e não a string completa.
     printf("| Tipo de servico : %s\n", fornecedor_parceiro->tipo_servico);
+    printf("| Valor cobrado : %.2f\n", fornecedor_parceiro->valor);
     printf("+---------------------------------------------------------------------+\n");
 }
 
@@ -57,6 +58,7 @@ Fornecedor_parceiro ler_dados_fornecedor_parceiro() {
     ler_string("|  CNPJ (atencao ao inserir esse dado,ele nao podera ser alterado depois): ", fp.cnpj, sizeof(fp.cnpj));
     ler_string("|  Telefone: ", fp.tel, sizeof(fp.tel));
     ler_string("|  Tipo de servico: ", fp.tipo_servico, sizeof(fp.tipo_servico));
+    ler_float("|  Valor cobrado: (apenas numeros, sem caracteres . ou ,)", &fp.valor);
     printf("+ --------------------------------------------------------------- +\n");
     return fp;  // retorna a struct preenchida
 }
@@ -65,18 +67,18 @@ void ler_dados_atualizados_fornecedor_parceiro(
     char* razao_social,
     char* endereco_completo,
     char* tel,
-    char* tipo_servico
-    //passar tambem o tamanho dos arrays para a funçao ler_stringsaber ate onde pode ler
+    char* tipo_servico,
+    float* valor
 ) {
-   printf("+ --------------------------------------------------------------- +\n");
+    printf("+ --------------------------------------------------------------- +\n");
     printf("|                  Atualizar Fornecedor/Parceiro                  |\n");
     printf("+ --------------------------------------------------------------- +\n");
-    ler_string("|  Novo nome fantasia: ", nome_fantasia, sizeof(nome_fantasia));
-    ler_string("|  Nova razao social: ", razao_social, sizeof(razao_social));
-    ler_string("|  Novo endereco completo: ", endereco_completo, sizeof(endereco_completo));
-    ler_string("|  Novo telefone: ", tel, sizeof(tel));
-    ler_string("|  Novo tipo de servico: ", tipo_servico, sizeof(tipo_servico));
+    ler_string("|  Novo nome fantasia: ", nome_fantasia, 50);
+    ler_string("|  Nova razao social: ", razao_social, 50);
+    ler_string("|  Novo endereco completo: ", endereco_completo, 100);
+    ler_string("|  Novo telefone: ", tel, 12);
+    ler_string("|  Novo tipo de servico: ", tipo_servico, 50);
+    ler_float("|  Novo preco cobrado: ", valor);
     printf("+ --------------------------------------------------------------- +\n");
 }
-    //passar tambem o tamanho dos arrays para a funçao ler_stringsaber ate onde pode ler
 
