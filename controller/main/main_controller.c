@@ -40,7 +40,7 @@ void iniciar_sistema(){
             break;
         }
         // Editar conta
-        case 7:{ 
+        case 6:{ 
             editar_operador();
             break;
         }

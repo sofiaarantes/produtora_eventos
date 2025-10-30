@@ -10,7 +10,7 @@
 int main() {
     while (1) {
         // Faz login ou cadastro
-        gerenciar_login();   
+        gerenciar_login();
         // Entra no menu principal
         exibir_mensagem("+ --------------------------------------------------------------- +");
         exibir_mensagem("|                       Seja Bem Vindo(a)!                        |");

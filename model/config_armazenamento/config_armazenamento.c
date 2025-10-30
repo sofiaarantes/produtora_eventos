@@ -1,4 +1,5 @@
 #include "config_armazenamento.h"
+#include "equipe_interna/equipe_interna.h"
 
 // Variável global estática (acessada só via funções)
 static TipoArmazenamento armazenamento = MEMORIA;

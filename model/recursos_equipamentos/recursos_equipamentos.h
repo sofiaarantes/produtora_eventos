@@ -35,4 +35,13 @@ int get_qtd_equipamentos();
 // Busca equipamento/recurso por id (retorna ponteiro para o equipamento/recurso ou NULL se não achar)
 RecursosEquipamentos* buscar_equipamento_por_id(int id_busca, TipoArmazenamento tipo);
 
+// Migrar dados
+
+// Lista todos os registros do tipo especificado. Retorna array alocado e seta out_count.
+// Se não houver registros, retorna NULL e out_count = 0.
+RecursosEquipamentos* listar_todos_equipamentos(TipoArmazenamento tipo, int* out_count);
+
+// Remove todos os registros do armazenamento especificado. Retorna 1 em sucesso.
+int limpar_equipamentos(TipoArmazenamento tipo);
+
 #endif

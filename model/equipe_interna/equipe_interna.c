@@ -38,8 +38,7 @@ EquipeInterna* adicionar_funcionario(EquipeInterna* funcionario, TipoArmazenamen
 
                 // Antes de salvar, verifica se o cpf inserido já existe em memória
                 for (int i = 0; i < qtd; i++) {
-                    if (strcmp(funcionarios_memoria[i].cpf, funcionario->cpf) == 0 &&
-                        funcionarios_memoria[i].operador_id == funcionario->operador_id) {
+                    if (strcmp(funcionarios_memoria[i].cpf, funcionario->cpf) == 0) {
                         printf("\nErro: Já existe um funcionário com o CPF '%s' cadastrado.\n", funcionario->cpf);
                         return NULL;
                     }
@@ -63,17 +62,15 @@ EquipeInterna* adicionar_funcionario(EquipeInterna* funcionario, TipoArmazenamen
         
         case TEXTO: {
             // Descobre o último id no arquivo e verifica se o cpf recebido já não foi cadastrado
-            // por esse operador
             FILE* fp = fopen("funcionarios.txt", "r");
             if (fp) {
                 EquipeInterna tmp;
                 while (fscanf(fp, "%d;%49[^;];%19[^;];%99[^;];%f;%d;",
                             &tmp.id, tmp.nome, tmp.cpf, tmp.funcao, &tmp.valor_diaria, &tmp.operador_id) == 6) {
                 
-                    // Se encontrar mesmo CPF e mesmo operador_id impede o cadastro
-                    if (strcmp(tmp.cpf, funcionario->cpf) == 0 &&
-                        tmp.operador_id == funcionario->operador_id) {
-                        printf("\nErro: Já existe um funcionário com o CPF '%s' cadastrado por este operador.\n",
+                    // Se encontrar mesmo CPF 
+                    if (strcmp(tmp.cpf, funcionario->cpf) == 0) {
+                        printf("\nErro: Já existe um funcionário com o CPF '%s' cadastrado no sistema.\n",
                             funcionario->cpf);
                         fclose(fp);
                         return NULL;
@@ -108,9 +105,8 @@ EquipeInterna* adicionar_funcionario(EquipeInterna* funcionario, TipoArmazenamen
             if (fp) {
                 EquipeInterna tmp;
                 while (fread(&tmp, sizeof(EquipeInterna), 1, fp) == 1) {
-                    if (strcmp(tmp.cpf, funcionario->cpf) == 0 &&
-                        tmp.operador_id == funcionario->operador_id) {
-                        printf("\nErro: Já existe um funcionário com o CPF '%s' cadastrado por este operador.\n",
+                    if (strcmp(tmp.cpf, funcionario->cpf) == 0) {
+                        printf("\nErro: Já existe um funcionário com o CPF '%s' cadastrado no sistema.\n",
                                funcionario->cpf);
                         fclose(fp);
                         return NULL;
@@ -156,9 +152,7 @@ EquipeInterna* atualizar_funcionario(const char* cpf_busca, EquipeInterna* novos
         // ==========================
         case MEMORIA: {
             for (int i = 0; i < qtd; i++) {
-                if (strcmp(funcionarios_memoria[i].cpf, cpf_busca) == 0 &&
-                    funcionarios_memoria[i].operador_id == operador_logado) {
-
+                if (strcmp(funcionarios_memoria[i].cpf, cpf_busca) == 0) {
                     // Mantém o ID original e operador_id
                     int id_original = funcionarios_memoria[i].id;
                     int operador_original = funcionarios_memoria[i].operador_id;
@@ -202,7 +196,7 @@ EquipeInterna* atualizar_funcionario(const char* cpf_busca, EquipeInterna* novos
 
             while (fscanf(fp, "%d;%49[^;];%19[^;];%99[^;];%f;%d;\n",
                           &f.id, f.nome, f.cpf, f.funcao, &f.valor_diaria, &f.operador_id) == 6) {
-                if (strcmp(f.cpf, cpf_busca) == 0 && f.operador_id == operador_logado) {
+                if (strcmp(f.cpf, cpf_busca) == 0) {
                     // Mantém ID, operador_id e CPF originais
                     int id_original = f.id;
                     int operador_original = f.operador_id;
@@ -248,7 +242,7 @@ EquipeInterna* atualizar_funcionario(const char* cpf_busca, EquipeInterna* novos
             EquipeInterna f;
             int atualizado = 0;
             while (fread(&f, sizeof(EquipeInterna), 1, fp) == 1) {
-                if (strcmp(f.cpf, cpf_busca) == 0 && f.operador_id == operador_logado) {
+                if (strcmp(f.cpf, cpf_busca) == 0) {
                     int id_original = f.id;
                     strcpy(f.cpf, cpf_busca);
 
@@ -270,7 +264,7 @@ EquipeInterna* atualizar_funcionario(const char* cpf_busca, EquipeInterna* novos
                 printf("Funcionário %s atualizado em BINÁRIO!\n", novos_dados->nome);
                 return novos_dados;
             } else {
-                printf("Erro: Funcionário com CPF %s não encontrado ou sem permissão!\n", cpf_busca);
+                printf("Erro: Funcionário com CPF %s não encontrado!\n", cpf_busca);
                 return NULL;
             }
         }
@@ -288,7 +282,6 @@ EquipeInterna* atualizar_funcionario(const char* cpf_busca, EquipeInterna* novos
 // Deletar Funcionário
 // ====================
 int deletar_funcionario(const char* cpf, TipoArmazenamento tipo) {
-    int operador_logado = get_operador_logado();
     int removido = 0; // flag para indicar se encontrou e removeu o funcionário
 
     switch (tipo) {
@@ -298,8 +291,7 @@ int deletar_funcionario(const char* cpf, TipoArmazenamento tipo) {
         case MEMORIA: {
             for (int i = 0; i < qtd; i++) {
                 // Verifica CPF e se pertence ao operador logado
-                if (strcmp(funcionarios_memoria[i].cpf, cpf) == 0 &&
-                    funcionarios_memoria[i].operador_id == operador_logado) {
+                if (strcmp(funcionarios_memoria[i].cpf, cpf) == 0) {
                     // Move todos os funcionários após ele para uma posição para trás
                     for (int j = i; j < qtd - 1; j++) {
                         funcionarios_memoria[j] = funcionarios_memoria[j + 1];
@@ -329,8 +321,8 @@ int deletar_funcionario(const char* cpf, TipoArmazenamento tipo) {
 
             while (fscanf(fp, "%d;%49[^;];%19[^;];%99[^;];%f;%d;\n",
                           &f.id, f.nome, f.cpf, f.funcao, &f.valor_diaria, &f.operador_id) == 6) {
-                // Se não for o funcionário do operador logado, grava no arquivo temporário
-                if (!(strcmp(f.cpf, cpf) == 0 && f.operador_id == operador_logado)) {
+                // Se não for o funcionário, grava no arquivo temporário
+                if (!(strcmp(f.cpf, cpf) == 0)) {
                     fprintf(temp, "%d;%s;%s;%s;%f;%d;\n",
                             f.id, f.nome, f.cpf, f.funcao, f.valor_diaria, f.operador_id);
                 } else {
@@ -363,7 +355,7 @@ int deletar_funcionario(const char* cpf, TipoArmazenamento tipo) {
 
             while (fread(&f, sizeof(EquipeInterna), 1, fp) == 1) {
                 // Copia todos os registros exceto o que será removido
-                if (!(strcmp(f.cpf, cpf) == 0 && f.operador_id == operador_logado)) {
+                if (!(strcmp(f.cpf, cpf) == 0)) {
                     fwrite(&f, sizeof(EquipeInterna), 1, temp);
                 } else {
                     removido = 1; // marcou como removido
@@ -400,8 +392,6 @@ int get_qtd_funcionarios() {
 // Buscar Funcionário 
 // ======================
 EquipeInterna* buscar_funcionario_por_cpf(const char* cpf_busca, TipoArmazenamento tipo) {
-    int operador_logado = get_operador_logado();
-
     // Ponteiro estático para manter os dados válidos fora da função
     static EquipeInterna funcionario_tmp;
 
@@ -411,8 +401,7 @@ EquipeInterna* buscar_funcionario_por_cpf(const char* cpf_busca, TipoArmazenamen
         // ======================
         case MEMORIA: {
             for (int i = 0; i < get_qtd_funcionarios(); i++) {
-                if (strcmp(funcionarios_memoria[i].cpf, cpf_busca) == 0 &&
-                    funcionarios_memoria[i].operador_id == operador_logado) {
+                if (strcmp(funcionarios_memoria[i].cpf, cpf_busca) == 0) {
                     return &funcionarios_memoria[i];
                 }
             }
@@ -434,8 +423,7 @@ EquipeInterna* buscar_funcionario_por_cpf(const char* cpf_busca, TipoArmazenamen
                           &funcionario_tmp.id, funcionario_tmp.nome, funcionario_tmp.cpf, 
                           funcionario_tmp.funcao, &funcionario_tmp.valor_diaria, 
                           &funcionario_tmp.operador_id) == 6) {
-                if (strcmp(funcionario_tmp.cpf, cpf_busca) == 0 &&
-                    funcionario_tmp.operador_id == operador_logado) {
+                if (strcmp(funcionario_tmp.cpf, cpf_busca) == 0) {
                     fclose(fp);
                     return &funcionario_tmp;
                 }
@@ -456,8 +444,7 @@ EquipeInterna* buscar_funcionario_por_cpf(const char* cpf_busca, TipoArmazenamen
             }
 
             while (fread(&funcionario_tmp, sizeof(EquipeInterna), 1, fp) == 1) {
-                if (strcmp(funcionario_tmp.cpf, cpf_busca) == 0 &&
-                    funcionario_tmp.operador_id == operador_logado) {
+                if (strcmp(funcionario_tmp.cpf, cpf_busca) == 0) {
                     fclose(fp);
                     return &funcionario_tmp;
                 }
@@ -473,4 +460,113 @@ EquipeInterna* buscar_funcionario_por_cpf(const char* cpf_busca, TipoArmazenamen
     }
 
     return NULL; // Não encontrado
+}
+
+// Função auxiliar para ler todos do arquivo texto em um array alocado
+EquipeInterna* _listar_texto(int* out_count) {
+    FILE* fp = fopen("funcionarios.txt", "r");
+    if (!fp) {
+        *out_count = 0;
+        return NULL;
+    }
+
+    // contagem preliminar
+    int cap = 16;
+    EquipeInterna* arr = malloc(sizeof(EquipeInterna) * cap);
+    int cnt = 0;
+    EquipeInterna tmp;
+    while (fscanf(fp, "%d;%49[^;];%19[^;];%99[^;];%f;%d;\n",
+                  &tmp.id, tmp.nome, tmp.cpf, tmp.funcao, &tmp.valor_diaria, &tmp.operador_id) == 6) {
+        if (cnt >= cap) {
+            cap *= 2;
+            arr = realloc(arr, sizeof(EquipeInterna) * cap);
+        }
+        arr[cnt++] = tmp;
+    }
+    fclose(fp);
+    if (cnt == 0) {
+        free(arr);
+        arr = NULL;
+    }
+    *out_count = cnt;
+    return arr;
+}
+
+// Função auxiliar para ler todos do binário
+EquipeInterna* _listar_bin(int* out_count) {
+    FILE* fp = fopen("funcionarios.bin", "rb");
+    if (!fp) {
+        *out_count = 0;
+        return NULL;
+    }
+    int cap = 16;
+    EquipeInterna* arr = malloc(sizeof(EquipeInterna) * cap);
+    int cnt = 0;
+    EquipeInterna tmp;
+    while (fread(&tmp, sizeof(EquipeInterna), 1, fp) == 1) {
+        if (cnt >= cap) {
+            cap *= 2;
+            arr = realloc(arr, sizeof(EquipeInterna) * cap);
+        }
+        arr[cnt++] = tmp;
+    }
+    fclose(fp);
+    if (cnt == 0) {
+        free(arr);
+        arr = NULL;
+    }
+    *out_count = cnt;
+    return arr;
+}
+
+// LISTAR TODOS
+EquipeInterna* listar_todos_equipe_interna(TipoArmazenamento tipo, int* out_count) {
+    if (!out_count) return NULL;
+    *out_count = 0;
+
+    switch (tipo) {
+        case MEMORIA: {
+            if (qtd == 0) return NULL;
+            EquipeInterna* arr = malloc(sizeof(EquipeInterna) * qtd);
+            for (int i = 0; i < qtd; i++) arr[i] = funcionarios_memoria[i];
+            *out_count = qtd;
+            return arr;
+        }
+        case TEXTO:
+            return _listar_texto(out_count);
+        case BINARIO:
+            return _listar_bin(out_count);
+        default:
+            return NULL;
+    }
+}
+
+// LIMPAR ARMAZENAMENTO (remove todos registros do tipo especificado)
+int limpar_equipe_interna(TipoArmazenamento tipo) {
+    switch (tipo) {
+        case MEMORIA:
+            qtd = 0;
+            return 1;
+        case TEXTO:
+            // apaga/limpa o arquivo texto
+            if (remove("funcionarios.txt") == 0) {
+                // removido com sucesso; criar arquivo vazio para garantir existência
+                FILE* f = fopen("funcionarios.txt", "w");
+                if (f) fclose(f);
+                return 1;
+            } else {
+                // se não existe, considera sucesso
+                return 1;
+            }
+        case BINARIO:
+            if (remove("funcionarios.bin") == 0) {
+                FILE* f = fopen("funcionarios.bin", "wb");
+                if (f) fclose(f);
+                return 1;
+            } else {
+                return 1;
+            }
+        default:
+            return 0;
+    }
 }

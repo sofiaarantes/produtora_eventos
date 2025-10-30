@@ -11,8 +11,8 @@ Operadores* adicionar_operador(Operadores* operador) {
     FILE* fp = fopen("operadores.txt", "r");
     if (fp) {
         Operadores tmp;
-        while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];%d;\n",
-                      &tmp.id, tmp.nome, tmp.usuario, tmp.senha, (int*)&tmp.tipo) != EOF) {
+        while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];\n",
+                      &tmp.id, tmp.nome, tmp.usuario, tmp.senha) == 4) {
 
             // Se encontrar um usuário igual, avisa e cancela o cadastro
             if (strcmp(tmp.usuario, operador->usuario) == 0) {
@@ -29,8 +29,8 @@ Operadores* adicionar_operador(Operadores* operador) {
     fp = fopen("operadores.txt", "r");
     if (fp) {
         Operadores tmp;
-        while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];%d;\n", 
-            &tmp.id, tmp.nome, tmp.usuario, tmp.senha, (int*)&tmp.tipo) != EOF) 
+        while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];\n", 
+            &tmp.id, tmp.nome, tmp.usuario, tmp.senha) == 4) 
         {
             novo_id = tmp.id + 1; 
         }
@@ -45,12 +45,11 @@ Operadores* adicionar_operador(Operadores* operador) {
         return NULL;
     }
 
-    fprintf(fp, "%d;%s;%s;%s;%d;\n",
+    fprintf(fp, "%d;%s;%s;%s;\n",
             operador->id,
             operador->nome,
             operador->usuario,
-            operador->senha,
-            operador->tipo);
+            operador->senha);
     fclose(fp);
 
     printf("\nOperador '%s' cadastrado com sucesso!\n", operador->usuario);
@@ -71,12 +70,12 @@ int deletar_operador(const int id) {
     Operadores f;
     int removido = 0;
     // Lê linha por linha do arquivo original
-    while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];%d;\n",
-                  &f.id, f.nome, f.usuario, f.senha, (int*)&f.tipo) != EOF) {
+    while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];\n",
+                  &f.id, f.nome, f.usuario, f.senha) == 4) {
         // Só regrava se não for o operador que queremos remover
         if (f.id != id) {
-            fprintf(temp, "%d;%s;%s;%s;%d;\n",
-                f.id, f.nome, f.usuario, f.senha, f.tipo);
+            fprintf(temp, "%d;%s;%s;%s;\n",
+                f.id, f.nome, f.usuario, f.senha);
         } else {
             removido = 1; // operador encontrado e removido
         }
@@ -95,9 +94,8 @@ Operadores* buscar_operador_por_credenciais(const char* usuario, const char* sen
     if (!fp) return NULL;
 
     Operadores* encontrado = malloc(sizeof(Operadores));
-    while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];%d;\n",
-              &encontrado->id, encontrado->nome, encontrado->usuario, encontrado->senha,
-              (int*)&encontrado->tipo) != EOF) { 
+    while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];\n",
+              &encontrado->id, encontrado->nome, encontrado->usuario, encontrado->senha) == 4) { 
         if (strcmp(encontrado->usuario, usuario) == 0 &&
             strcmp(encontrado->senha, senha) == 0) {
             fclose(fp);
@@ -109,4 +107,3 @@ Operadores* buscar_operador_por_credenciais(const char* usuario, const char* sen
     free(encontrado);
     return NULL;
 }
-

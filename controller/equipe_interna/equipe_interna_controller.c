@@ -47,7 +47,6 @@ void gerenciar_funcionario() {
                 printf("+ --------------------------------------------------------------- +\n");
                 ler_string("|  Digite o CPF do funcionário que deseja exibir: ", cpf_busca, sizeof(cpf_busca));
                 printf("+ --------------------------------------------------------------- +\n");
-                // Busca o funcionário (restrito ao operador logado)
                 EquipeInterna* func = buscar_funcionario_por_cpf(cpf_busca, tipo);
                 if (!func) {
                     exibir_mensagem("Erro: Funcionário não encontrado ou sem permissão para exibir!");

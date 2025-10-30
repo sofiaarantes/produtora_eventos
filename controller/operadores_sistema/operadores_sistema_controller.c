@@ -7,6 +7,7 @@
 #include "../../controller/config_armazenamento/config_armazenamento_controller.h"
 #include "../../view/main/main_view.h"
 #include "../../model/sessao/sessao.h"
+#include "../../migration/migration.h"
 #include "../../util/util.h"
 
 void criptografar_senha(char* senha) {
@@ -32,8 +33,8 @@ void gerenciar_login() {
 
             Operadores tmp;
             int encontrado = 0;
-            while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];%d;\n",
-                          &tmp.id, tmp.nome, tmp.usuario, tmp.senha, (int*)&tmp.tipo) != EOF) {
+            while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];\n",
+                          &tmp.id, tmp.nome, tmp.usuario, tmp.senha) != EOF) {
                 if (strcmp(o.usuario, tmp.usuario) == 0 &&
                     strcmp(o.senha, tmp.senha) == 0) {
                     encontrado = 1;
@@ -46,16 +47,22 @@ void gerenciar_login() {
                 printf("\nLogin realizado com sucesso! Bem-vindo(a), %s. Armazenando dados em %s\n", tmp.nome, 
                        tmp.tipo == 1 ? "Memoria" : tmp.tipo == 2 ? "Arquivo Texto" : tmp.tipo == 3 ? "Binario" : "Desconhecido");
                 set_operador_logado(tmp.id); 
-                set_armazenamento(tmp.tipo);
                 return;
             } else {
                 printf("\nErro: Credenciais invalidas! Tente novamente.\n");
             }
         } else if (opcao == 2) { // Cadastro
-            Operadores novo = ler_dados_operador_cadastro();
-            if (novo.tipo == 0) {
+            TipoArmazenamento tipo = mostrar_menu_configuracao(); 
+            if (tipo > 3){
+                printf("\nErro: Falha no cadastro, opção de armazenamento inválida. \n");
+                continue;
+            }else if (tipo == 0){
+                printf("\nSaindo... \n");
                 continue;
             }
+            
+            set_armazenamento(tipo);
+            Operadores novo = ler_dados_operador_cadastro();
             criptografar_senha(novo.senha);
 
             Operadores* cadastrado = adicionar_operador(&novo);
@@ -65,7 +72,6 @@ void gerenciar_login() {
             }
 
             set_operador_logado(cadastrado->id); 
-            set_armazenamento(cadastrado->tipo);
             printf("\nCadastro realizado com sucesso! Bem-vindo(a), %s.\n", cadastrado->usuario);
             return;
         } else if ((opcao != 0) && (opcao != 1) && (opcao != 2)){
@@ -96,8 +102,8 @@ void editar_operador() {
     int encontrado = 0;
 
     // Buscar operador logado no arquivo
-    while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];%d;\n",
-            &operador.id, operador.nome, operador.usuario, operador.senha, (int*)&operador.tipo) != EOF) {
+    while (fscanf(fp, "%d;%49[^;];%49[^;];%19[^;];\n",
+            &operador.id, operador.nome, operador.usuario, operador.senha) != EOF) {
         if (operador.id == id_logado) {
             encontrado = 1;
             atual = operador;
@@ -135,8 +141,8 @@ void editar_operador() {
             // Lê o arquivo original e busca se há o id do operador atual, se sim ele salva no arquivo os 
             // dados desse operador, se não ele mantém os dados anteriores
             Operadores tmp;
-            while (fscanf(original, "%d;%49[^;];%49[^;];%19[^;];%d;\n",
-                          &tmp.id, tmp.nome, tmp.usuario, tmp.senha, (int*)&tmp.tipo) != EOF) {
+            while (fscanf(original, "%d;%49[^;];%49[^;];%19[^;];\n",
+                          &tmp.id, tmp.nome, tmp.usuario, tmp.senha) != EOF) {
                 if (tmp.id == atual.id) {
                     fprintf(temp, "%d;%s;%s;%s;\n",
                             atual.id, atual.nome, atual.usuario, tmp.senha);
@@ -161,41 +167,12 @@ void editar_operador() {
                 printf("\nErro: Operação cancelada.\n");
                 return;
             }
+            TipoArmazenamento origem = get_armazenamento(); 
+            TipoArmazenamento destino = novo_tipo;
 
-            // Atualiza o tipo de armazenamento do operador atual
-            atual.tipo = novo_tipo;
-
-            // Abre arquivos para atualizar
-            FILE* original = fopen("operadores.txt", "r");
-            FILE* temp = fopen("operadores_temp.txt", "w");
-            if (!original || !temp) {
-                printf("\nErro ao abrir arquivos para atualização.\n");
-                if (original) fclose(original);
-                if (temp) fclose(temp);
-                return;
-            }
-
-            Operadores tmp;
-            // Copia todos os operadores, substituindo o tipo do operador logado
-            while (fscanf(original, "%d;%49[^;];%49[^;];%19[^;];%d;\n",
-                        &tmp.id, tmp.nome, tmp.usuario, tmp.senha, (int*)&tmp.tipo) != EOF) {
-                if (tmp.id == atual.id) {
-                    fprintf(temp, "%d;%s;%s;%s;%d;\n",
-                            atual.id, atual.nome, atual.usuario, tmp.senha, atual.tipo);
-                } else {
-                    fprintf(temp, "%d;%s;%s;%s;%d;\n",
-                            tmp.id, tmp.nome, tmp.usuario, tmp.senha, tmp.tipo);
-                }
-            }
-
-            fclose(original);
-            fclose(temp);
-            remove("operadores.txt");
-            rename("operadores_temp.txt", "operadores.txt");
-
-            // Chama o controlador de armazenamento para atualizar o tipo no sistema
-            set_armazenamento((TipoArmazenamento)novo_tipo);
-
+            // MIGRAR DADOS
+            migrar_todo_sistema(origem, destino);
+            set_armazenamento(destino);
             printf("\nTipo de armazenamento atualizado com sucesso!\n");
         } else if (opcao == 3) {
             // Deletar conta

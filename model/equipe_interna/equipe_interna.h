@@ -34,4 +34,13 @@ int get_qtd_funcionarios();
 // Busca funcionário por CPF (retorna ponteiro para o funcionário ou NULL se não achar)
 EquipeInterna* buscar_funcionario_por_cpf(const char* cpf_busca, TipoArmazenamento tipo);
 
+// Migrar dados
+
+// Lista todos os registros do tipo especificado. Retorna array alocado e seta out_count.
+// Se não houver registros, retorna NULL e out_count = 0.
+EquipeInterna* listar_todos_equipe_interna(TipoArmazenamento tipo, int* out_count);
+
+// Remove todos os registros do armazenamento especificado. Retorna 1 em sucesso.
+int limpar_equipe_interna(TipoArmazenamento tipo);
+
 #endif
