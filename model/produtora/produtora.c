@@ -622,3 +622,83 @@ void deletar_produtora(const char* cnpj_busca, TipoArmazenamento tipo) {
             break;
     }
 }
+
+// Lista todos as produtoras do tipo especificado. Retorna array alocado e seta out_count.
+// Se não houver registros, retorna NULL e out_count = 0.
+Produtora* listar_todos_produtoras(TipoArmazenamento tipo, int* out_count) {
+    if (!out_count) return NULL;
+    *out_count = 0;
+
+    switch (tipo) {
+        case MEMORIA: {
+            if (qtd == 0) return NULL;
+            Produtora* arr = malloc(sizeof(Produtora) * qtd);
+            if (!arr) return NULL;
+            for (int i = 0; i < qtd; i++) arr[i] = produtoras_memoria[i];
+            *out_count = qtd;
+            return arr;
+        }
+        case TEXTO: {
+            FILE* fp = fopen("produtoras.txt", "r");
+            if (!fp) return NULL;
+            int count = 0;
+            char linha[512];
+            while (fgets(linha, sizeof(linha), fp)) count++;
+            if (count == 0) { fclose(fp); return NULL; }
+            rewind(fp);
+            Produtora* arr = malloc(sizeof(Produtora) * count);
+            if (!arr) { fclose(fp); return NULL; }
+            int idx = 0;
+            while (fgets(linha, sizeof(linha), fp) && idx < count) {
+                Produtora p = {0};
+                sscanf(linha, "%49[^;];%49[^;];%13[^;];%14[^;];%99[^;];%11[^;];%49[^;];%49[^;];%11[^;];%f",
+                       p.nome_fantasia, p.razao_social, p.inscricao_estadual,
+                       p.cnpj, p.endereco_completo, p.tel, p.email, p.nome_resp, p.tel_resp, &p.lucro);
+                p.cnpj[sizeof(p.cnpj)-1] = '\0';
+                arr[idx++] = p;
+            }
+            fclose(fp);
+            *out_count = idx;
+            return arr;
+        }
+        case BINARIO: {
+            FILE* fp = fopen("produtoras.bin", "rb");
+            if (!fp) return NULL;
+            int count = 0;
+            Produtora tmp;
+            while (fread(&tmp, sizeof(Produtora), 1, fp) == 1) count++;
+            if (count == 0) { fclose(fp); return NULL; }
+            rewind(fp);
+            Produtora* arr = malloc(sizeof(Produtora) * count);
+            if (!arr) { fclose(fp); return NULL; }
+            int idx = 0;
+            while (fread(&arr[idx], sizeof(Produtora), 1, fp) == 1) {
+                arr[idx].cnpj[sizeof(arr[idx].cnpj)-1] = '\0';
+                idx++;
+            }
+            fclose(fp);
+            *out_count = idx;
+            return arr;
+        }
+        default:
+            return NULL;
+    }
+}
+
+// Remove todas as produtoras do armazenamento especificado. Retorna 1 em sucesso, 0 caso contrário.
+int limpar_produtoras(TipoArmazenamento tipo) {
+    switch (tipo) {
+        case MEMORIA:
+            qtd = 0;
+            // opcional: memset(produtoras_memoria, 0, sizeof(produtoras_memoria));
+            return 1;
+        case TEXTO:
+            remove("produtoras.txt");
+            return 1;
+        case BINARIO:
+            remove("produtoras.bin");
+            return 1;
+        default:
+            return 0;
+    }
+}

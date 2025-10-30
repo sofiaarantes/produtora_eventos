@@ -48,7 +48,6 @@ void gerenciar_equipamento() {
                 printf("+ --------------------------------------------------------------- +\n");
                 ler_int("|  Digite o id do equipamento que deseja exibir: ", &id_busca);
                 printf("+ --------------------------------------------------------------- +\n");
-
                 RecursosEquipamentos* eq = buscar_equipamento_por_id(id_busca, tipo);
                 if (!eq) {
                     exibir_mensagem("Erro: Equipamento não encontrado ou sem permissão para exibir!");

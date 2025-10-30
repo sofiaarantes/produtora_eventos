@@ -45,4 +45,14 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo);
 
 //preciso dessa funçao para identificar se o documento do cliente é cpf ou cnpj
 TipoDocumento identificar_documento(const char *doc);
+
+// Migrar dados
+
+// Lista todos os registros do tipo especificado. Retorna array alocado e seta out_count.
+// Se não houver registros, retorna NULL e out_count = 0.
+Cliente* listar_todos_clientes(TipoArmazenamento tipo, int* out_count);
+
+// Remove todos os registros do armazenamento especificado. Retorna 1 em sucesso.
+int limpar_clientes(TipoArmazenamento tipo);
+
 #endif

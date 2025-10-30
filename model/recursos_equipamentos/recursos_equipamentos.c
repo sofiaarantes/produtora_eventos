@@ -31,8 +31,7 @@ RecursosEquipamentos* adicionar_equipamento(RecursosEquipamentos* equipamento, T
                 // Antes de salvar, verifica se o equipamento inserido já existe em memória
                 for (int i = 0; i < qtd; i++) {
                     if (strcmp(equipamentos_memoria[i].descricao, equipamento->descricao) == 0 &&  
-                            strcmp(equipamentos_memoria[i].categoria, equipamento->categoria) == 0 && 
-                                equipamentos_memoria[i].operador_id == equipamento->operador_id) {
+                            strcmp(equipamentos_memoria[i].categoria, equipamento->categoria) == 0) {
                         printf("\nErro: Já existe um equipamento '%s' cadastrado na categoria %s.\n", equipamento->descricao, equipamento->categoria);
                         return NULL;
                     }
@@ -57,17 +56,15 @@ RecursosEquipamentos* adicionar_equipamento(RecursosEquipamentos* equipamento, T
 
         case TEXTO: {
             // Descobre o último id no arquivo e verifica se o cpf recebido já não foi cadastrado
-            // por esse operador
             FILE* fp = fopen("equipamentos.txt", "r");
             if (fp) {
                 RecursosEquipamentos tmp;
                 while (fscanf(fp, "%d;%49[^;];%49[^;];%d;%f;%f;%d;\n",
                               &tmp.id, tmp.descricao, tmp.categoria, &tmp.qtd_estoque, 
                               &tmp.preco_custo, &tmp.valor_diaria, &tmp.operador_id) == 7) {
-                    // Se encontrar mesma descrição, categoria e mesmo operador_id impede o cadastro
+                    // Se encontrar mesma descrição, categoria impede o cadastro
                     if (strcmp(tmp.descricao, equipamento->descricao) == 0 &&  
-                            strcmp(tmp.categoria, equipamento->categoria) == 0 && 
-                            tmp.operador_id == equipamento->operador_id) {
+                            strcmp(tmp.categoria, equipamento->categoria) == 0) {
                         printf("\nErro: Já existe um equipamento '%s' cadastrado na categoria %s.\n", equipamento->descricao, equipamento->categoria);
                         fclose(fp);
                         return NULL;
@@ -104,8 +101,7 @@ RecursosEquipamentos* adicionar_equipamento(RecursosEquipamentos* equipamento, T
                 RecursosEquipamentos tmp;
                 while (fread(&tmp, sizeof(RecursosEquipamentos), 1, fp) == 1) {
                     if (strcmp(tmp.descricao, equipamento->descricao) == 0 &&  
-                            strcmp(tmp.categoria, equipamento->categoria) == 0 && 
-                                tmp.operador_id == equipamento->operador_id) {
+                            strcmp(tmp.categoria, equipamento->categoria) == 0) {
                         printf("\nErro: Já existe um equipamento '%s' cadastrado na categoria %s.\n", equipamento->descricao, equipamento->categoria);
                         fclose(fp);
                         return NULL;
@@ -152,8 +148,7 @@ RecursosEquipamentos* atualizar_equipamento(int id_busca, RecursosEquipamentos* 
         case MEMORIA: {
             // Verifica se já existe outro equipamento com mesma descrição e categoria
             for (int i = 0; i < qtd; i++) {
-                if (equipamentos_memoria[i].operador_id == operador_logado &&
-                    equipamentos_memoria[i].id != id_busca &&
+                if (equipamentos_memoria[i].id != id_busca &&
                     strcmp(equipamentos_memoria[i].descricao, novos_dados->descricao) == 0 &&
                     strcmp(equipamentos_memoria[i].categoria, novos_dados->categoria) == 0) {
 
@@ -165,8 +160,7 @@ RecursosEquipamentos* atualizar_equipamento(int id_busca, RecursosEquipamentos* 
 
             // Agora faz a atualização
             for (int i = 0; i < qtd; i++) {
-                if (equipamentos_memoria[i].id == id_busca &&
-                    equipamentos_memoria[i].operador_id == operador_logado) {
+                if (equipamentos_memoria[i].id == id_busca) {
 
                     int id_original = equipamentos_memoria[i].id;
                     int operador_original = equipamentos_memoria[i].operador_id;
@@ -208,8 +202,7 @@ RecursosEquipamentos* atualizar_equipamento(int id_busca, RecursosEquipamentos* 
                 while (fscanf(check, "%d;%49[^;];%49[^;];%d;%f;%f;%d;\n",
                               &tmp.id, tmp.descricao, tmp.categoria, &tmp.qtd_estoque,
                               &tmp.preco_custo, &tmp.valor_diaria, &tmp.operador_id) == 7) {
-                    if (tmp.operador_id == operador_logado &&
-                        tmp.id != id_busca &&
+                    if (tmp.id != id_busca &&
                         strcmp(tmp.descricao, novos_dados->descricao) == 0 &&
                         strcmp(tmp.categoria, novos_dados->categoria) == 0) {
                         conflito = 1;
@@ -233,7 +226,7 @@ RecursosEquipamentos* atualizar_equipamento(int id_busca, RecursosEquipamentos* 
                           &e.id, e.descricao, e.categoria, &e.qtd_estoque,
                           &e.preco_custo, &e.valor_diaria, &e.operador_id) == 7) {
 
-                if (e.id == id_busca && e.operador_id == operador_logado) {
+                if (e.id == id_busca) {
                     int operador_original = e.operador_id;
                     e = *novos_dados;
                     e.id = id_busca;
@@ -275,9 +268,7 @@ RecursosEquipamentos* atualizar_equipamento(int id_busca, RecursosEquipamentos* 
             if (check) {
                 RecursosEquipamentos tmp;
                 while (fread(&tmp, sizeof(RecursosEquipamentos), 1, check) == 1) {
-                    if (tmp.operador_id == operador_logado &&
-                        tmp.id != id_busca &&
-                        strcmp(tmp.descricao, novos_dados->descricao) == 0 &&
+                    if (tmp.id != id_busca && strcmp(tmp.descricao, novos_dados->descricao) == 0 &&
                         strcmp(tmp.categoria, novos_dados->categoria) == 0) {
                         printf("\nErro: Já existe um equipamento '%s' cadastrado na categoria %s.\n",
                                novos_dados->descricao, novos_dados->categoria);
@@ -292,7 +283,7 @@ RecursosEquipamentos* atualizar_equipamento(int id_busca, RecursosEquipamentos* 
             RecursosEquipamentos e;
             int atualizado = 0;
             while (fread(&e, sizeof(RecursosEquipamentos), 1, fp) == 1) {
-                if (e.id == id_busca && e.operador_id == operador_logado) {
+                if (e.id == id_busca) {
                     e = *novos_dados;
                     e.id = id_busca;
                     e.operador_id = operador_logado;
@@ -326,7 +317,6 @@ RecursosEquipamentos* atualizar_equipamento(int id_busca, RecursosEquipamentos* 
 // Deletar equipamento
 // ====================
 int deletar_equipamento(int id_busca, TipoArmazenamento tipo) {
-    int operador_logado = get_operador_logado();
     int removido = 0; // flag para indicar se encontrou e removeu o funcionário
 
     switch (tipo) {
@@ -335,9 +325,7 @@ int deletar_equipamento(int id_busca, TipoArmazenamento tipo) {
         // ============================
         case MEMORIA: {
             for (int i = 0; i < qtd; i++) {
-                // Verifica ID e se pertence ao operador logado
-                if (equipamentos_memoria[i].id == id_busca &&
-                    equipamentos_memoria[i].operador_id == operador_logado) {
+                if (equipamentos_memoria[i].id == id_busca) {
                     // Move todos os equipamentos após ele para uma posição para trás
                     for (int j = i; j < qtd - 1; j++) {
                         equipamentos_memoria[j] = equipamentos_memoria[j + 1];
@@ -367,8 +355,8 @@ int deletar_equipamento(int id_busca, TipoArmazenamento tipo) {
             while (fscanf(fp, "%d;%49[^;];%49[^;];%d;%f;%f;%d;\n",
                           &e.id, e.descricao, e.categoria, &e.qtd_estoque,
                           &e.preco_custo, &e.valor_diaria, &e.operador_id) == 7) {
-                // Se não for o equipamento do operador logado, grava no arquivo temporário
-                if (e.id != id_busca && e.operador_id == operador_logado) {
+                // Se não for o equipamento, grava no arquivo temporário
+                if (e.id != id_busca) {
                     fprintf(temp, "%d;%s;%s;%d;%f;%f;%d;\n",
                             e.id, e.descricao, e.categoria, e.qtd_estoque,
                             e.preco_custo, e.valor_diaria, e.operador_id);
@@ -401,7 +389,7 @@ int deletar_equipamento(int id_busca, TipoArmazenamento tipo) {
             RecursosEquipamentos e;
             while (fread(&e, sizeof(RecursosEquipamentos), 1, fp) == 1) {
                 // Copia todos os registros exceto o que será removido
-                if (e.id != id_busca && e.operador_id != operador_logado) {
+                if (e.id != id_busca) {
                     fwrite(&e, sizeof(RecursosEquipamentos), 1, temp);
                 } else {
                     removido = 1;
@@ -440,16 +428,13 @@ RecursosEquipamentos* buscar_equipamento_por_id(int id_busca, TipoArmazenamento 
     // Ponteiro estático para manter os dados válidos fora da função
     static RecursosEquipamentos equipamento_tmp;
 
-    int operador_logado = get_operador_logado();
-
     switch (tipo) {
         // ======================
         // Memória
         // ======================
         case MEMORIA: {
             for (int i = 0; i < qtd; i++) {
-                if (equipamentos_memoria[i].id == id_busca &&
-                    equipamentos_memoria[i].operador_id == operador_logado) {
+                if (equipamentos_memoria[i].id == id_busca) {
                     return &equipamentos_memoria[i];
                 }
             }
@@ -470,8 +455,7 @@ RecursosEquipamentos* buscar_equipamento_por_id(int id_busca, TipoArmazenamento 
                           equipamento_tmp.categoria, &equipamento_tmp.qtd_estoque,
                           &equipamento_tmp.preco_custo, &equipamento_tmp.valor_diaria,
                           &equipamento_tmp.operador_id) == 7) {
-                if (equipamento_tmp.id == id_busca &&
-                    equipamento_tmp.operador_id == operador_logado) {
+                if (equipamento_tmp.id == id_busca) {
                     fclose(fp);
                     return &equipamento_tmp;
                 }
@@ -492,8 +476,7 @@ RecursosEquipamentos* buscar_equipamento_por_id(int id_busca, TipoArmazenamento 
             }
 
             while (fread(&equipamento_tmp, sizeof(RecursosEquipamentos), 1, fp) == 1) {
-                if (equipamento_tmp.id == id_busca &&
-                    equipamento_tmp.operador_id == operador_logado) {
+                if (equipamento_tmp.id == id_busca) {
                     fclose(fp);
                     return &equipamento_tmp;
                 }
@@ -509,4 +492,82 @@ RecursosEquipamentos* buscar_equipamento_por_id(int id_busca, TipoArmazenamento 
     }
 
     return NULL;
+}
+
+// Lista todos os equipamentos do tipo especificado. Retorna array alocado e seta out_count.
+// Se não houver registros, retorna NULL e out_count = 0.
+RecursosEquipamentos* listar_todos_equipamentos(TipoArmazenamento tipo, int* out_count) {
+    if (!out_count) return NULL;
+    *out_count = 0;
+
+    switch (tipo) {
+        case MEMORIA: {
+            if (qtd == 0) return NULL;
+            RecursosEquipamentos* arr = malloc(sizeof(RecursosEquipamentos) * qtd);
+            if (!arr) return NULL;
+            for (int i = 0; i < qtd; i++) arr[i] = equipamentos_memoria[i];
+            *out_count = qtd;
+            return arr;
+        }
+        case TEXTO: {
+            FILE* fp = fopen("equipamentos.txt", "r");
+            if (!fp) return NULL;
+            int count = 0;
+            char linha[512];
+            while (fgets(linha, sizeof(linha), fp)) count++;
+            if (count == 0) { fclose(fp); return NULL; }
+            rewind(fp);
+            RecursosEquipamentos* arr = malloc(sizeof(RecursosEquipamentos) * count);
+            if (!arr) { fclose(fp); return NULL; }
+            int idx = 0;
+            while (fgets(linha, sizeof(linha), fp) && idx < count) {
+                RecursosEquipamentos e = {0};
+                sscanf(linha, "%d;%99[^;];%49[^;];%d;%f;%f;%d;",
+                       &e.id, e.descricao, e.categoria, &e.qtd_estoque,
+                       &e.preco_custo, &e.valor_diaria, &e.operador_id);
+                arr[idx++] = e;
+            }
+            fclose(fp);
+            *out_count = idx;
+            return arr;
+        }
+        case BINARIO: {
+            FILE* fp = fopen("equipamentos.bin", "rb");
+            if (!fp) return NULL;
+            int count = 0;
+            RecursosEquipamentos tmp;
+            while (fread(&tmp, sizeof(RecursosEquipamentos), 1, fp) == 1) count++;
+            if (count == 0) { fclose(fp); return NULL; }
+            rewind(fp);
+            RecursosEquipamentos* arr = malloc(sizeof(RecursosEquipamentos) * count);
+            if (!arr) { fclose(fp); return NULL; }
+            int idx = 0;
+            while (fread(&arr[idx], sizeof(RecursosEquipamentos), 1, fp) == 1) {
+                idx++;
+            }
+            fclose(fp);
+            *out_count = idx;
+            return arr;
+        }
+        default:
+            return NULL;
+    }
+}
+
+// Remove todos os equipamentos do armazenamento especificado. Retorna 1 em sucesso, 0 caso contrário.
+int limpar_equipamentos(TipoArmazenamento tipo) {
+    switch (tipo) {
+        case MEMORIA:
+            qtd = 0;
+            // opcional: memset(equipamentos_memoria, 0, sizeof(equipamentos_memoria));
+            return 1;
+        case TEXTO:
+            remove("equipamentos.txt");
+            return 1;
+        case BINARIO:
+            remove("equipamentos.bin");
+            return 1;
+        default:
+            return 0;
+    }
 }

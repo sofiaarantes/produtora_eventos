@@ -16,7 +16,11 @@
         "util.h": "c",
         "operadores_sistema.h": "c",
         "operadores_sistema_controller.h": "c",
-        "produtora_controller.h": "c"
+        "produtora_controller.h": "c",
+        "produtora.h": "c",
+        "sessao.h": "c",
+        "recursos_equipamentos.h": "c",
+        "fornecedor_parceiro.h": "c"
     },
     "C_Cpp.dimInactiveRegions": false
 }
