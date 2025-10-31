@@ -13,6 +13,7 @@ int menu_main() {
     printf("|  4 - Acessar Menu Recursos e Equipamentos                       |\n");
     printf("|  5 - Acessar Menu Fornecedores e Parceiros                      |\n");
     printf("|  6 - Minha Conta                                                |\n");
+    printf("|  7 - Orçamentos                                                 |\n");
     printf("|  0 - Sair                                                       |\n");
     printf("+ --------------------------------------------------------------- +\n");
     ler_int("Escolha uma opcao: ", &escolher);

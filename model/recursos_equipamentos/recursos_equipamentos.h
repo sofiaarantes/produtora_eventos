@@ -7,7 +7,7 @@
 // Model de Recursos e Equipamentos
 // ================================
 
-// Estrutura básica de Equipe Interna
+
 typedef struct {
     int id;
     char descricao[100];
@@ -35,4 +35,9 @@ int get_qtd_equipamentos();
 // Busca equipamento/recurso por id (retorna ponteiro para o equipamento/recurso ou NULL se não achar)
 RecursosEquipamentos* buscar_equipamento_por_id(int id_busca, TipoArmazenamento tipo);
 
+//função que lista os equipamentos de acordo com o tipo de armazenamento
+void listar_equipamentos(TipoArmazenamento tipo);
+
+//função que busca um recurso/equipamento pelo ID
+RecursosEquipamentos* buscar_recurso_por_id(TipoArmazenamento tipo, int id);
 #endif

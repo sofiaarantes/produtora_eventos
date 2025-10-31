@@ -92,7 +92,7 @@ void ler_dados_atualizados_produtora(
     printf("+ --------------------------------------------------------------- +\n");
     ler_string("| Novo nome fantasia: ", nome_fantasia, 50);
     ler_string("| Nova razao social: ", razao_social, 50);
-    ler_string("| Nova inscricao estadual: ", inscricao_estadual, 13);
+    ler_string("| Nova inscricao estadual: ", inscricao_estadual, 14);
     ler_string("| Novo endereco completo: ", endereco_completo, 100);
     ler_string("| Novo telefone: ", tel, 12);
     ler_string("| Novo email: ", email, 50);

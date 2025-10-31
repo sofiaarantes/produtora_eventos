@@ -1,0 +1,9 @@
+#include "orcamento.h"
+#include "../model/cliente/cliente.h"
+#include "../model/fornecedor/fornecedor_parceiro.h"
+#include "../model/recursos_equipamentos/recursos_equipamentos.h"
+#include "../model/equipe_interna/equipe_interna.h"
+#include "../model/config_armazenamento/config_armazenamento.h"
+#include "../../model/sessao/sessao.h"
+#include <stdlib.h>
+#include <string.h>

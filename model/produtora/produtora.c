@@ -12,254 +12,195 @@
 static Produtora produtoras_memoria[MAX_PRODUTORAS]; // cada posição guarda uma produtora
 static int qtd = 0; // contador de quantas produtoras já estão salvas na memória
 
-// Função que cria e salva uma produtora de acordo com o tipo escolhido
+
 Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
-    // Se o ponteiro produtora for nulo, nao há como salvar — retorno NULL
+    // -------------------------------------------------------------------------
+    // Primeiro eu verifico se o ponteiro passado é válido.
+    // Se for NULL, não tem como continuar o cadastro.
+    // -------------------------------------------------------------------------
     if (!produtora) return NULL;
 
-    produtora->id_logado = get_operador_logado(); // Associo o produtora ao operador logado
+    // -------------------------------------------------------------------------
+    // Agora eu começo as validações básicas dos campos obrigatórios da produtora.
+    // Cada verificação impede o cadastro e mostra uma mensagem de erro explicando o motivo.
+    // -------------------------------------------------------------------------
+    
+    // Validação do e-mail: precisa conter "@gmail"
+    if (validar_email(produtora->email) == 0) {
+        printf("Erro: e-mail inválido. Deve conter '@gmail'.\n");
+        printf("Produtora NÃO cadastrada.\n");
+        return NULL;
+    }
 
-     //antes de salvar verifica se o email é valido
-                if (validar_email(produtora->email) == 0) {
-                    printf("Erro: e-mail invalido. Deve conter '@gmail'.\n");
-                    printf("Produtora NAO cadastrado\n");
-                    return NULL;
-                }
-     //antes de salvar verifica se o tel é valido
-                if (validar_tel(produtora->tel) == 0) {
-                    printf("Erro: telefone invalido. Deve conter 11 digitos.\n");
-                    printf("Produtora NAO cadastrado\n");
-                    return NULL;
-                }
-    //antes de salvar verifica se o tel resp é valido
-                if (validar_tel(produtora->tel_resp) == 0) {
-                    printf("Erro: telefone do responsavel invalido. Deve conter 11 digitos.\n");
-                    printf("Produtora NAO cadastrado\n");
-                    return NULL;
-                }
-    //antes de salvar verifica se o cnpj é valido
-     if (validar_cnpj(produtora->cnpj) == 0) {
-                    printf("Erro: CNPJ invalido. Deve conter 14 digitos.\n");
-                    printf("Produtora NAO cadastrado\n");
-                    return NULL;
-                }
-    //antes de salvar verifica se a inscriçao estadual é valido
-     if (validar_inscr(produtora->inscricao_estadual) == 0) {
-                    printf("Erro: Inscricao estadual invalida. Deve conter 13 digitos.\n");
-                    printf("Produtora NAO cadastrado\n");
-                    return NULL;
-                }
+    // Validação do telefone principal: precisa ter 11 dígitos
+    if (validar_tel(produtora->tel) == 0) {
+        printf("Erro: telefone inválido. Deve conter 11 dígitos.\n");
+        printf("Produtora NÃO cadastrada.\n");
+        return NULL;
+    }
 
-    // Escolho o tipo de armazenamento que o sistema está usando (memória, texto ou binário)
+    // Validação do telefone do responsável: também deve ter 11 dígitos
+    if (validar_tel(produtora->tel_resp) == 0) {
+        printf("Erro: telefone do responsável inválido. Deve conter 11 dígitos.\n");
+        printf("Produtora NÃO cadastrada.\n");
+        return NULL;
+    }
+
+    // Validação do CNPJ: precisa ter 14 dígitos
+    if (validar_cnpj(produtora->cnpj) == 0) {
+        printf("Erro: CNPJ inválido. Deve conter 14 dígitos.\n");
+        printf("Produtora NÃO cadastrada.\n");
+        return NULL;
+    }
+
+    // Validação da inscrição estadual: precisa ter 13 dígitos
+    if (validar_inscr(produtora->inscricao_estadual) == 0) {
+        printf("Erro: Inscrição estadual inválida. Deve conter 13 dígitos.\n");
+        printf("Produtora NÃO cadastrada.\n");
+        return NULL;
+    }
+
+
+    // Aqui eu garanto que só pode existir UMA produtora em TODO o sistema.
+    FILE *fp_txt = fopen("produtoras.txt", "r");   // abro o arquivo texto só pra leitura
+    FILE *fp_bin = fopen("produtoras.bin", "rb");  // abro o arquivo binário só pra leitura
+
+    // Essa condição verifica em todas as formas de armazenamento
+    // Se já existir alguma produtora, bloqueia o cadastro
+    if (qtd > 0 || (fp_txt && fgetc(fp_txt) != EOF) || (fp_bin && fgetc(fp_bin) != EOF)) {
+        // EOF é um valor especial que as funções de leitura em C — como fgetc(), 
+        //fscanf(), fread() — retornam quando chegam ao final do arquivo ou não há mais nada para ler.
+
+        //Se eu abrir um arquivo vazio e chamar fgetc(fp), o retorno já será EOF logo na primeira leitura, porque não existe nenhum caractere lá dentro.
+        //Mas se o arquivo tiver qualquer conteúdo (mesmo um único caractere ou espaço), 
+        //o fgetc() primeiro vai retornar esse caractere, e só depois de ler tudo é que vai retornar EOF.
+
+        printf("Erro: Ja existe uma produtora cadastrada no sistema!\n");
+        printf("Nao e permitido cadastrar mais de uma produtora.\n");
+
+        // Fecho os arquivos abertos (se existirem)
+        if (fp_txt) fclose(fp_txt);
+        if (fp_bin) fclose(fp_bin);
+
+        return NULL; // interrompo o cadastro
+    }
+
+    // Fecho os arquivos se foram abertos (preciso garantir que não fiquem pendentes)
+    if (fp_txt) fclose(fp_txt);
+    if (fp_bin) fclose(fp_bin);
+
+    // -------------------------------------------------------------------------
+    // Associo a produtora ao operador logado.
+    // Isso é importante para saber qual usuário criou essa produtora.
+    // -------------------------------------------------------------------------
+    produtora->id_logado = get_operador_logado();
+
+    // -------------------------------------------------------------------------
+    // Agora sim, posso salvar a produtora conforme o tipo de armazenamento escolhido.
+    // O switch decide se vou salvar em memória, texto ou binário.
+    // -------------------------------------------------------------------------
     switch (tipo) {
-        
 
-        // ============================================
-        // CASO 1 - SALVAR NA MEMORIA
-        // ============================================
+        // ===============================================================
+        // CASO 1 - ARMAZENAMENTO EM MEMÓRIA
+        // ===============================================================
         case MEMORIA: {
-            // Verifico se ainda há espaço no array de produtoras em memória
+            // Verifico se ainda tem espaço no vetor estático de produtoras
             if (qtd < MAX_PRODUTORAS) {
 
-                // Antes de salvar, verifica se o cnpj inserido já existe em memória
-                for (int i = 0; i < qtd; i++) {
-                    if (strcmp(produtoras_memoria[i].cnpj, produtora->cnpj) == 0 &&
-                        produtoras_memoria[i].id_logado == produtora->id_logado) {
-                        printf("\nErro: Ja existe uma produtora com o CNPJ '%s' cadastrado.\n", produtora->cnpj);
-                        printf("Produtora NAO cadastrado\n");
-                        return NULL;
-                    }
-                }
-
-                // Antes de salvar, verifica se a inscriçao estadual inserido já existe em memória
-                for (int i = 0; i < qtd; i++) {
-                    if (strcmp(produtoras_memoria[i].inscricao_estadual, produtora->inscricao_estadual) == 0 &&
-                        produtoras_memoria[i].id_logado == produtora->id_logado) {
-                        printf("\nErro: Ja existe uma produtora com a inscricao estadual '%s' cadastrado.\n", produtora->inscricao_estadual);
-                        printf("Produtora NAO cadastrado\n");
-                        return NULL;
-                    }
-                }
-                // Salvo o produtora no vetor em memória
+                // Copio os dados da produtora para o vetor em memória
                 produtoras_memoria[qtd] = *produtora;
 
-                // Crio um ponteiro que aponta para o produtora recém-salvo
+                // Crio um ponteiro que aponta para o registro recém-salvo
                 Produtora* salvo = &produtoras_memoria[qtd];
 
-                produtora->id_logado = get_operador_logado(); // garante que está atualizada
-
-                // Incremento a contagem total de produtoras
+                // Atualizo a quantidade total de produtoras em memória
                 qtd++;
 
-                printf("Produtora %s salvo em MEMORIA! \n", produtora->nome_fantasia);
+                printf("Produtora %s salva em MEMÓRIA!\n", produtora->nome_fantasia);
 
-                // Retorno o ponteiro do produtora que acabou de ser salvo
+                // Retorno o ponteiro para a produtora salva
                 return salvo;
             } else {
-                // Caso o vetor estaja cheio, nao consigo salvar
+                // Se o vetor estiver cheio, não consigo salvar
                 printf("Erro: limite de produtoras na memória atingido!\n");
                 return NULL;
             }
         }
 
-
-        // ============================================
-        // CASO 2 - SALVAR EM ARQUIVO TEXTO
-        // ============================================
+        // ===============================================================
+        // CASO 2 - ARMAZENAMENTO EM ARQUIVO TEXTO
+        // ===============================================================
         case TEXTO: {
-            FILE* fp = fopen("produtoras.txt", "r");
-            if (fp) {
-                char linha[512];  // buffer para armazenar cada linha lida
-                Produtora tmp;      // struct temporária para ler os dados do arquivo
-
-                // Lê o arquivo linha por linha de forma segura (fgets evita travamentos)
-                while (fgets(linha, sizeof(linha), fp)) {
-                    // %[^;] significa “ler até encontrar um ponto e vírgula”
-                   sscanf(linha, "%49[^;];%49[^;];%13[^;];%14[^;];%99[^;];%11[^;];%49[^;];%49[^;];%11[^;];%f;%d",
-                                        tmp.nome_fantasia, tmp.razao_social, tmp.inscricao_estadual,tmp.cnpj,
-                                        tmp.endereco_completo, tmp.tel,
-                                        tmp.email, tmp.nome_resp,tmp.tel_resp,&tmp.lucro,
-                                        &tmp.id_logado);
-
-                    // Se encontrar mesmo CNPJ e mesmo id_logado dentro do aqr txt ja cadastrado impede o cadastro
-                    if (strcmp(tmp.cnpj, produtora->cnpj) == 0 &&
-                        tmp.id_logado == produtora->id_logado) {
-                        printf("\nErro: Ja existe um produtora com o CNPJ '%s' cadastrado por este operador.\n",
-                            produtora->cnpj);
-                            printf("Produtora NAO cadastrado\n");
-                        fclose(fp);
-                        return NULL;
-                    }
-                    // Se encontrar a mesma inscriçao estadual e mesmo id_logado dentro do aqr txt ja cadastrado impede o cadastro
-                    if (strcmp(tmp.inscricao_estadual, produtora->inscricao_estadual) == 0 &&
-                        tmp.id_logado == produtora->id_logado) {
-                        printf("\nErro: Ja existe um produtora com a inscricao estadual '%s' cadastrado por este operador.\n",
-                            produtora->inscricao_estadual);
-                            printf("Produtora NAO cadastrado\n");
-                        fclose(fp);
-                        return NULL;
-                    }
-                    
-                }
-                // Fecha o arquivo após ler todas as linhas
-                fclose(fp);
-            }
-            
-            produtora->id_logado = get_operador_logado(); // Associo o produtora ao operador logado
-
-            // Agora abre o arquivo em modo append (“a”) para adicionar o novo produtora no final
-             fp = fopen("produtoras.txt", "a");
+            // Abro o arquivo de produtoras no modo append (acrescentar no final)
+            FILE* fp = fopen("produtoras.txt", "a");
             if (!fp) {
                 perror("Erro ao abrir produtoras.txt");
                 return NULL;
             }
 
-            // Escrevo os dados da produtora no arquivo separados por ponto e vírgula
-            // Uso o limite máximo de caracteres baseado no tamanho do array da struct
-                 // Isso garante que o campo não ultrapasse o espaço definido
-                fprintf(fp, "%s;%s;%s;%s;%s;%s;%s;%s;%s;%f;%d\n",
-                    produtora->nome_fantasia,
-                    produtora->razao_social,
-                    produtora->inscricao_estadual,
-                    produtora->cnpj,
-                    produtora->endereco_completo,
-                    produtora->tel,
-                    produtora->email,
-                    produtora->nome_resp,
-                    produtora->tel_resp,
-                    produtora->lucro,
-                    produtora->id_logado
-                );
+            // Escrevo todas as informações da produtora em formato texto
+            // Cada campo é separado por ponto e vírgula para facilitar a leitura posterior
+            fprintf(fp, "%s;%s;%s;%s;%s;%s;%s;%s;%s;%f;%d\n",
+                produtora->nome_fantasia,
+                produtora->razao_social,
+                produtora->inscricao_estadual,
+                produtora->cnpj,
+                produtora->endereco_completo,
+                produtora->tel,
+                produtora->email,
+                produtora->nome_resp,
+                produtora->tel_resp,
+                produtora->lucro,
+                produtora->id_logado
+            );
 
-            // Fecha o arquivo após a escrita
+            // Fecho o arquivo após escrever
             fclose(fp);
 
+            printf("Produtora %s salva em TEXTO!\n", produtora->nome_fantasia);
 
-            printf("Produtora %s salvo em TEXTO!\n", produtora->nome_fantasia);
-
-            // Retorna o ponteiro para o produtora criado
+            // Retorno o ponteiro da produtora salva (mesmo endereço que recebi)
             return produtora;
         }
 
-
-        // ============================================
-        // CASO 3 - SALVAR EM ARQUIVO BINARIO
-        // ============================================
+        // ===============================================================
+        // CASO 3 - ARMAZENAMENTO EM ARQUIVO BINÁRIO
+        // ===============================================================
         case BINARIO: {
-
-            produtora->id_logado = get_operador_logado(); // Associo o produtora ao operador logado
-            
-            FILE* fp = fopen("produtoras.bin", "rb");
-            if (fp) {
-                Produtora tmp;
-                // Lê produtora por produtora até o final do arquivo
-                while (fread(&tmp, sizeof(Produtora), 1, fp) == 1) {
-                    //verifico tambem se ja existe um produtora com esse documento, se tiver nao deixo inserir
-                    if (strcmp(tmp.cnpj, produtora->cnpj) == 0 &&
-                        tmp.id_logado == produtora->id_logado) {
-                        printf("\nErro: Ja existe um produtora com o CNPJ '%s' cadastrado por este operador.\n",
-                               produtora->cnpj);
-                               printf("Produtora NAO cadastrado\n");
-                        fclose(fp);
-                        return NULL;
-                    }
-                    //verifico tambem se ja existe um produtora com essa inscriçao estadual, se tiver nao deixo inserir
-                    if (strcmp(tmp.inscricao_estadual, produtora->inscricao_estadual) == 0 &&
-                        tmp.id_logado == produtora->id_logado) {
-                        printf("\nErro: Ja existe um produtora com a inscricao estadual '%s' cadastrado por este operador.\n",
-                               produtora->inscricao_estadual);
-                               printf("Produtora NAO cadastrado\n");
-                        fclose(fp);
-                        return NULL;
-                    }
-                    
-                }
-                fclose(fp);
-            }
-
-            
-            // Garante que os campos string terminam com '\0'
-            produtora->cnpj[sizeof(produtora->cnpj) - 1] = '\0';
-            produtora->tel[sizeof(produtora->tel) - 1] = '\0';
-
-            // Abre o arquivo binário em modo append binário ("ab")
-             fp = fopen("produtoras.bin", "ab");
+            // Abro o arquivo binário no modo append ("ab") para adicionar no final
+            FILE* fp = fopen("produtoras.bin", "ab");
             if (!fp) {
                 perror("Erro ao abrir produtoras.bin");
                 return NULL;
             }
 
-            // Escreve o produtora no arquivo em formato binário
-            if (fwrite(produtora, sizeof(Produtora), 1, fp) != 1) {
-                perror("Erro ao gravar produtora em produtoras.bin");
-                fclose(fp);
-                return NULL;
-            }
+            // Escrevo a struct produtora completa em formato binário
+            fwrite(produtora, sizeof(Produtora), 1, fp);
 
-            // Fecha o arquivo após gravar
+            // Fecho o arquivo
             fclose(fp);
 
+            printf("Produtora %s salva em BINÁRIO!\n", produtora->nome_fantasia);
 
-            printf("Produtora %s salvo em BINARIO! \n", produtora->nome_fantasia);
-
-            // Retorna o ponteiro do produtora que foi salvo
+            // Retorno o ponteiro da produtora salva
             return produtora;
         }
-    }
 
-    // Caso o tipo de armazenamento nao seja reconhecido, retorno NULL
-    return NULL;
+        // ===============================================================
+        // CASO INVÁLIDO
+        // ===============================================================
+        default:
+            printf("Erro: Tipo de armazenamento inválido!\n");
+            return NULL;
+    }
 }
+
     
-            // Função que atualiza um produtora de acordo com o tipo escolhido
-            // recebe o CNPJ do produtora que quero atualizar e o tipo de armazenamento
 Produtora* atualizar_produtora(const char* cnpj_busca, Produtora* novos_dados, TipoArmazenamento tipo) {
 
     // Verifico se os parâmetros passados são válidos antes de qualquer coisa
     if (!cnpj_busca || !novos_dados) return NULL;
-
-    // Pego o ID do operador que está logado no momento (para verificar permissões)
-    int operador_atual = get_operador_logado();
 
     //antes de salvar verifica se o email é valido
                 if (validar_email(novos_dados->email) == 0) {
@@ -276,12 +217,6 @@ Produtora* atualizar_produtora(const char* cnpj_busca, Produtora* novos_dados, T
     //antes de salvar verifica se o tel resp é valido
                 if (validar_tel(novos_dados->tel_resp) == 0) {
                     printf("Erro: telefone do responsavel invalido. Deve conter 11 digitos.\n");
-                    printf("Produtora NAO atualizada\n");
-                    return NULL;
-                }
-    //antes de salvar verifica se o cnpj é valido
-     if (validar_cnpj(novos_dados->cnpj) == 0) {
-                    printf("Erro: CNPJ invalido. Deve conter 14 digitos.\n");
                     printf("Produtora NAO atualizada\n");
                     return NULL;
                 }
@@ -305,11 +240,6 @@ Produtora* atualizar_produtora(const char* cnpj_busca, Produtora* novos_dados, T
                 // Comparo o CNPJ atual com o que foi informado pelo usuário
                 if (strcmp(produtoras_memoria[i].cnpj, cnpj_busca) == 0) {
 
-                    // Verifico se o operador logado é o mesmo que criou essa produtora
-                    if (produtoras_memoria[i].id_logado != operador_atual) {
-                        printf("Erro: voce nao tem permissao para atualizar esta produtora \n");
-                        return NULL; // se não for o mesmo, não permito a atualização
-                    }
 
                     // Guardo o id_logado original
                     int id_logado_original = produtoras_memoria[i].id_logado;
@@ -400,28 +330,6 @@ Produtora* atualizar_produtora(const char* cnpj_busca, Produtora* novos_dados, T
                     if (strcmp(pro.cnpj, cnpj_busca) == 0) {
 
                         // Se for o mesmo CNPJ, significa que encontrei a produtora que preciso atualizar
-
-                        // Agora preciso verificar se o operador logado tem permissão para atualizar essa produtora
-                        // Isso é feito comparando o id_logado salvo na linha com o id do operador atual
-                        if (pro.id_logado != operador_atual) {
-                            // Se forem diferentes, o usuário atual não cadastrou essa produtora
-                            
-                            printf("Erro: voce nao tem permissao para atualizar esta produtora\n");
-
-                            // Fecho os arquivos abertos
-                            fclose(fp);
-                            fclose(temp);
-
-                            // Apago o arquivo temporário, já que não quero deixar lixo parcial
-                            remove("produtora_tmp.txt");
-
-                            // Retorno NULL e saio imediatamente da função, sem fazer nenhuma modificação
-                            return NULL;
-                        }
-
-                        // Se chegou até aqui, significa que o operador atual tem permissão de atualizar
-                        // (ele mesmo cadastrou a produtora anteriormente)
-
                         // Aqui reescrevo a linha da produtora com os novos dados inseridos pelo usuário
                         // OBS: o CNPJ e o id_logado permanecem iguais, pois não podem ser alterados
                         fprintf(temp, "%s;%s;%s;%s;%s;%s;%s;%s;%s;%f;%d\n",
@@ -511,22 +419,6 @@ Produtora* atualizar_produtora(const char* cnpj_busca, Produtora* novos_dados, T
                 if (strcmp(p.cnpj, cnpj_busca) == 0) {
                     // Marco que encontrei a produtora
                     encontrado = 1;
-
-                    // Agora preciso verificar se o operador logado tem permissão para atualizar essa produtora.
-                    // Isso é feito comparando o ID salvo no campo id_logado com o ID do operador atual.
-                    if (p.id_logado != operador_atual) {
-                        // Se forem diferentes, quer dizer que o usuário logado não criou essa produtora.
-                        // Então ele NÃO tem permissão para alterá-la.
-                        printf("Erro: voce nao tem permissao para atualizar esta produtora\n");
-
-                        // Fecho o arquivo antes de sair da função para liberar o recurso.
-                        fclose(fp);
-
-                        // Retorno NULL para indicar que a operação não foi realizada.
-                        return NULL;
-                    }
-
-                    // Se chegou aqui, significa que o operador logado é o dono da produtora.
                     // Então posso atualizar os dados dela no próprio arquivo.
 
                     // fseek move o cursor do arquivo para a posição correta para sobrescrever os dados.
@@ -567,7 +459,6 @@ Produtora* atualizar_produtora(const char* cnpj_busca, Produtora* novos_dados, T
             // Agora verifico se a flag "encontrado" permaneceu 0 (ou seja, produtora não localizada)
             if (!encontrado) {
                 // Nesse caso, exibo uma mensagem indicando que não encontrei a produtora no arquivo binário.
-                // Aqui faço a formatação visual do CNPJ (tipo 12.345.678/0001-99) apenas para deixar a mensagem mais legível.
                 printf(
                     "Produtora com CNPJ %c%c.%c%c%c.%c%c%c/%c%c%c%c-%c%c nao encontrada em BINARIO",
                     cnpj_busca[0], cnpj_busca[1], cnpj_busca[2],
@@ -585,21 +476,16 @@ Produtora* atualizar_produtora(const char* cnpj_busca, Produtora* novos_dados, T
     return NULL;
 }
 
-
 void buscar_e_exibir_produtora(const char* cnpj_busca, TipoArmazenamento tipo) {
     // Primeiro, verifico se o parâmetro "cnpj_busca" é válido (ou seja, se não é NULL)
     if (!cnpj_busca) {
         // Se o CNPJ for inválido (por exemplo, o ponteiro for nulo),
         // exibo uma mensagem de erro formatada para o usuário.
-        exibir_mensagem("+--------------------------+\n");
-        exibir_mensagem("| CNPJ invalido!           |\n");
-        exibir_mensagem("+--------------------------+\n");
+        printf("+--------------------------+\n");
+        printf("| CNPJ invalido!           |\n");
+        printf("+--------------------------+\n");
         return; // E saio da função imediatamente
     }
-
-    // Aqui obtenho o ID do operador que está atualmente logado no sistema.
-    // Isso é essencial para verificar permissões de acesso.
-    int operador_atual = get_operador_logado();
 
     // Crio um ponteiro para armazenar a produtora que será encontrada durante a busca.
     // Começa como NULL, indicando que ainda não encontrei nada.
@@ -622,15 +508,7 @@ void buscar_e_exibir_produtora(const char* cnpj_busca, TipoArmazenamento tipo) {
                 // Comparo o CNPJ da produtora atual com o CNPJ buscado pelo usuário.
                 if (strcmp(produtoras_memoria[i].cnpj, cnpj_busca) == 0) {
                     // Se o CNPJ for igual, encontrei a produtora.
-                    // Antes de exibir, verifico se o operador logado é o dono da produtora.
-                    if (produtoras_memoria[i].id_logado != operador_atual) {
-                        // Se o ID não for o mesmo, o operador não tem permissão para ver os dados.
-                        printf("Erro: voce nao tem permissao para visualizar esta produtora.\n");
-                        return; // Saio da função sem mostrar nada
-                    }
-
-                    // Se o operador for o mesmo, chamo a função "ver_produtora"
-                    // para exibir os dados formatados da produtora encontrada.
+                    // função para exibir os dados formatados da produtora encontrada.
                     ver_produtora(&produtoras_memoria[i]);
                     return; // Encerro a função, pois já exibi a produtora
                 }
@@ -686,16 +564,7 @@ void buscar_e_exibir_produtora(const char* cnpj_busca, TipoArmazenamento tipo) {
                 if (strcmp(produtora->cnpj, cnpj_busca) == 0) {
                     // Se for igual, encontrei a produtora no arquivo.
 
-                    // Antes de exibir, preciso confirmar se o operador atual tem permissão.
-                    if (produtora->id_logado != operador_atual) {
-                        // Caso o operador não seja o dono da produtora, nego o acesso.
-                        printf("Erro: voce nao tem permissao para visualizar esta produtora.\n");
-                        fclose(fp);
-                        free(produtora);
-                        return;
-                    }
-
-                    // Se o operador tiver permissão, exibo os dados da produtora.
+                    // função para exibir os dados da produtora encontrada.
                     ver_produtora(produtora);
 
                     // Fecho o arquivo e libero a memória usada.
@@ -739,15 +608,8 @@ void buscar_e_exibir_produtora(const char* cnpj_busca, TipoArmazenamento tipo) {
 
                 // Comparo o CNPJ da produtora lida com o buscado.
                 if (strcmp(produtora->cnpj, cnpj_busca) == 0) {
-                    // Se encontrar o CNPJ, verifico se o operador tem permissão de visualização.
-                    if (produtora->id_logado != operador_atual) {
-                        printf("Erro: voce nao tem permissao para visualizar esta produtora.\n");
-                        fclose(fp);
-                        free(produtora);
-                        return;
-                    }
-
-                    // Caso tenha permissão, exibo a produtora encontrada.
+                    // Se forem iguais, encontrei a produtora desejada.
+                    // Exibo os dados formatados da produtora encontrada.
                     ver_produtora(produtora);
 
                     // Fecho o arquivo e libero a memória.
@@ -776,17 +638,17 @@ void buscar_e_exibir_produtora(const char* cnpj_busca, TipoArmazenamento tipo) {
     }
 }
 
-
 void deletar_produtora(const char* cnpj_busca, TipoArmazenamento tipo) {
     // Primeiro verifico se o parâmetro CNPJ recebido é válido
     // Se for nulo, já mostro uma mensagem de erro e saio da função.
     if (!cnpj_busca) {
-        printf("CNPJ invalido!\n");
+        printf("+--------------------------+\n");
+        printf("| CNPJ invalido!           |\n");
+        printf("+--------------------------+\n");
         return;
     }
 
-    // Pego o ID do operador atualmente logado (para checar permissões)
-    int operador_atual = get_operador_logado();
+  
 
     // Uso o switch para tratar cada tipo de armazenamento (memória, texto ou binário)
     switch (tipo) {
@@ -799,14 +661,7 @@ void deletar_produtora(const char* cnpj_busca, TipoArmazenamento tipo) {
             for (int i = 0; i < qtd; i++) {
                 // Comparo o CNPJ digitado com o do produtora atual
                 if (strcmp(produtoras_memoria[i].cnpj, cnpj_busca) == 0) {
-                    // Achei o produtora, agora verifico se o operador atual tem permissão
-                    if (produtoras_memoria[i].id_logado != operador_atual) {
-                        // Se o ID logado for diferente, mostro a mensagem e saio da função
-                        printf("Erro: voce nao tem permissao para deletar esta produtora.\n");
-                        return;
-                    }
-
-                    // Se tiver permissão, preciso remover o produtora do vetor
+                    // Achei o produtora, agora preciso remover o produtora do vetor
                     // Para isso, desloco todos os próximos elementos uma posição para trás
                     for (int j = i; j < qtd - 1; j++) {
                         produtoras_memoria[j] = produtoras_memoria[j + 1];
@@ -874,20 +729,12 @@ void deletar_produtora(const char* cnpj_busca, TipoArmazenamento tipo) {
 
                 // Verifico se esta linha pertence ao produtora que quero deletar
                 if (strcmp(produtora.cnpj, cnpj_busca) == 0) {
-                    // Se achei o produtora, verifico a permissão
-                    if (produtora.id_logado != operador_atual) {
-                        // Sem permissão: apago o arquivo temporário e retorno imediatamente
-                        printf("Erro: voce nao tem permissao para deletar esta produtora.\n");
-                        fclose(fp);
-                        fclose(temp);
-                        remove("temp.txt");
-                        return;
-                    } else {
-                        // Se tiver permissão, simplesmente não escrevo essa linha no arquivo temporário
+                    // Se achei o produtora
+                    // simplesmente não escrevo essa linha no arquivo temporário
                         // Isso faz com que o produtora seja removido
                         deletado = 1;
                         continue; // Pulo para a próxima linha
-                    }
+                    
                 }
 
                 // Caso não seja o produtora que quero excluir, regravo a linha normalmente
@@ -945,20 +792,12 @@ void deletar_produtora(const char* cnpj_busca, TipoArmazenamento tipo) {
 
                 // Comparo o CPF lido com o CPF digitado
                 if (strcmp(produtora.cnpj, cnpj_busca) == 0) {
-                    // Achei o produtora, agora verifico permissão
-                    if (produtora.id_logado != operador_atual) {
-                        // Se o operador atual não for o dono, apenas mostro o erro e saio
-                        printf("Erro: voce nao tem permissao para deletar esta produtora.\n");
-                        fclose(fp);
-                        fclose(temp);
-                        remove("temp.bin");
-                        return;
-                    } else {
-                        // Se tiver permissão, não escrevo esse produtora no arquivo temporário
-                        deletado = 1;
-                        continue;
-                    }
-                }
+                    // Achei o produtora, agora preciso remover o produtora do vetor
+                    // não escrevo esse produtora no arquivo temporário
+                    deletado = 1;
+                    continue;
+
+            }
 
                 // Caso não seja o produtora a deletar, regravo normalmente no arquivo temporário
                 fwrite(&produtora, sizeof(Produtora), 1, temp);

@@ -474,3 +474,166 @@ EquipeInterna* buscar_funcionario_por_cpf(const char* cpf_busca, TipoArmazenamen
 
     return NULL; // Não encontrado
 }
+
+void listar_equipe_interna(TipoArmazenamento tipo) {
+    printf("\n");
+    printf("+ --------------------------------------------------------------- +\n");
+    printf("|                     LISTA DE FUNCIONARIOS                       |\n");
+    printf("+ --------------------------------------------------------------- +\n");
+
+    // ---------------------------------------------------------------
+    // Aqui eu uso o switch pra tratar de acordo com o tipo de armazenamento
+    // (MEMORIA, TEXTO ou BINARIO)
+    // ---------------------------------------------------------------
+    switch (tipo) {
+
+        // ============================================================
+        // MODO MEMORIA
+        // Aqui os dados estão guardados no vetor global funcionarios_memoria
+        // ============================================================
+        case MEMORIA: {
+            int encontrados = 0; // contador pra saber se tem algo cadastrado
+
+            for (int i = 0; i < qtd; i++) {
+                // Mostro todos os funcionários cadastrados (sem filtrar operador)
+                printf("|  ID: %d | Nome: %s | Função: %s | Diária: %.2f\n",
+                       funcionarios_memoria[i].id,
+                       funcionarios_memoria[i].nome,
+                       funcionarios_memoria[i].funcao,
+                       funcionarios_memoria[i].valor_diaria);
+                encontrados++;
+            }
+
+            if (encontrados == 0)
+                printf("|  Nenhum funcionário encontrado.\n");
+
+            break;
+        }
+
+        // ============================================================
+        // MODO TEXTO
+        // Aqui leio o arquivo funcionarios.txt e mostro os dados linha a linha
+        // ============================================================
+        case TEXTO: {
+            FILE* fp = fopen("funcionarios.txt", "r");
+            if (!fp) {
+                printf("|  Arquivo funcionarios.txt não encontrado.\n");
+                return;
+            }
+
+            EquipeInterna tmp;
+            int encontrados = 0;
+
+            // Leitura com fscanf respeitando o formato de gravação
+            while (fscanf(fp, "%d;%49[^;];%19[^;];%99[^;];%f;%d;\n",
+                          &tmp.id, tmp.nome, tmp.cpf, tmp.funcao,
+                          &tmp.valor_diaria, &tmp.operador_id) == 6) {
+
+                printf("|  ID: %d | Nome: %s | Função: %s | Diária: %.2f\n",
+                       tmp.id, tmp.nome, tmp.funcao, tmp.valor_diaria);
+                encontrados++;
+            }
+
+            fclose(fp);
+
+            if (encontrados == 0)
+                printf("|  Nenhum funcionário encontrado no arquivo texto.\n");
+
+            break;
+        }
+
+        // ============================================================
+        // MODO BINARIO
+        // Aqui leio o arquivo funcionarios.bin com fread()
+        // ============================================================
+        case BINARIO: {
+            FILE* fp = fopen("funcionarios.bin", "rb");
+            if (!fp) {
+                printf("|  Arquivo funcionarios.bin não encontrado.\n");
+                return;
+            }
+
+            EquipeInterna tmp;
+            int encontrados = 0;
+
+            while (fread(&tmp, sizeof(EquipeInterna), 1, fp) == 1) {
+                printf("|  ID: %d | Nome: %s | Função: %s | Diária: %.2f\n",
+                       tmp.id, tmp.nome, tmp.funcao, tmp.valor_diaria);
+                encontrados++;
+            }
+
+            fclose(fp);
+
+            if (encontrados == 0)
+                printf("|  Nenhum funcionário encontrado no arquivo binário.\n");
+
+            break;
+        }
+    }
+
+    printf("+ --------------------------------------------------------------- +\n");
+}
+
+EquipeInterna* buscar_funcionario_por_id(TipoArmazenamento tipo, int id) {
+    static EquipeInterna funcionario; // variável estática, mesma lógica das outras buscas
+    FILE* arquivo;
+
+    switch (tipo) {
+        // ------------------------------------------------------------
+        // Caso 1: busca em memória
+        // ------------------------------------------------------------
+        case MEMORIA:
+            for (int i = 0; i < qtd; i++) {
+                if (funcionarios_memoria[i].id == id) {
+                    return &funcionarios_memoria[i];
+                }
+            }
+            return NULL;
+
+        // ------------------------------------------------------------
+        // Caso 2: busca em arquivo texto
+        // ------------------------------------------------------------
+        case TEXTO:
+            arquivo = fopen("funcionarios.txt", "r");
+            if (!arquivo) {
+                printf("Erro: arquivo funcionarios.txt não encontrado.\n");
+                return NULL;
+            }
+
+            // leitura linha a linha no mesmo formato usado no cadastro
+            while (fscanf(arquivo, "%d;%49[^;];%19[^;];%99[^;];%f;%d;\n",
+                          &funcionario.id, funcionario.nome, funcionario.cpf,
+                          funcionario.funcao, &funcionario.valor_diaria, &funcionario.operador_id) == 6) {
+
+                if (funcionario.id == id) {
+                    fclose(arquivo);
+                    return &funcionario;
+                }
+            }
+
+            fclose(arquivo);
+            return NULL;
+
+        // ------------------------------------------------------------
+        // Caso 3: busca em arquivo binário
+        // ------------------------------------------------------------
+        case BINARIO:
+            arquivo = fopen("funcionarios.bin", "rb");
+            if (!arquivo) {
+                printf("Erro: arquivo funcionarios.bin não encontrado.\n");
+                return NULL;
+            }
+
+            while (fread(&funcionario, sizeof(EquipeInterna), 1, arquivo)) {
+                if (funcionario.id == id) {
+                    fclose(arquivo);
+                    return &funcionario;
+                }
+            }
+
+            fclose(arquivo);
+            return NULL;
+    }
+
+    return NULL;
+}

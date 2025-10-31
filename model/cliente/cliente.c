@@ -66,8 +66,7 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
 
                 // Antes de salvar, verifica se o cpf_cnpj inserido já existe em memória
                 for (int i = 0; i < qtd; i++) {
-                    if (strcmp(clientes_memoria[i].cpf_cnpj, cliente->cpf_cnpj) == 0 &&
-                        clientes_memoria[i].id_logado == cliente->id_logado) {
+                    if (strcmp(clientes_memoria[i].cpf_cnpj, cliente->cpf_cnpj) == 0) {
                         printf("\nErro: Ja existe um cliente com o CPF/CNPJ '%s' cadastrado.\n", cliente->cpf_cnpj);
                         printf("Cliente NAO cadastrado");
                         return NULL;
@@ -125,9 +124,8 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
                                         (int*)&tmp.tipo_doc,&tmp.id_logado);
 
                     // Se encontrar mesmo CPF e mesmo id_logado impede o cadastro
-                    if (strcmp(tmp.cpf_cnpj, cliente->cpf_cnpj) == 0 &&
-                        tmp.id_logado == cliente->id_logado) {
-                        printf("\nErro: Ja existe um cliente com o CPF/CNPJ '%s' cadastrado por este operador.\n",
+                    if (strcmp(tmp.cpf_cnpj, cliente->cpf_cnpj) == 0 ) {
+                        printf("\nErro: Ja existe um cliente com o CPF/CNPJ '%s' cadastrado.\n",
                             cliente->cpf_cnpj);
                             printf("Cliente NAO cadastrado");
                         fclose(fp);
@@ -197,9 +195,8 @@ Cliente* criar_cliente(Cliente* cliente, TipoArmazenamento tipo) {
                 // Lê cliente por cliente até o final do arquivo
                 while (fread(&tmp, sizeof(Cliente), 1, fp) == 1) {
                     //verifico tambem se ja existe um cliente com esse documento, se tiver na deixo inserir
-                    if (strcmp(tmp.cpf_cnpj, cliente->cpf_cnpj) == 0 &&
-                        tmp.id_logado == cliente->id_logado) {
-                        printf("\nErro: Ja existe um cliente com o CPF/CNPJ '%s' cadastrado por este operador.\n",
+                    if (strcmp(tmp.cpf_cnpj, cliente->cpf_cnpj) == 0 ) {
+                        printf("\nErro: Ja existe um cliente com o CPF/CNPJ '%s' cadastrado.\n",
                                cliente->cpf_cnpj);
                                printf("Cliente NAO cadastrado");
                         fclose(fp);
@@ -291,12 +288,6 @@ Cliente* atualizar_cliente(const char* cpf_cnpj_busca, Cliente* novos_dados, Tip
                 // Comparo o CPF/CNPJ atual com o que foi informado pelo usuário
                 if (strcmp(clientes_memoria[i].cpf_cnpj, cpf_cnpj_busca) == 0) {
 
-                    // Verifico se o operador logado é o mesmo que criou esse cliente
-                    if (clientes_memoria[i].id_logado != operador_atual) {
-                        printf("Erro: voce nao tem permissao para atualizar este cliente \n");
-                        return NULL; // se não for o mesmo, não permito a atualização
-                    }
-
                     // Guardo o tipo de documento e o id_logado original
                     TipoDocumento tipo_doc_original = clientes_memoria[i].tipo_doc;
                     int id_logado_original = clientes_memoria[i].id_logado;
@@ -361,14 +352,6 @@ Cliente* atualizar_cliente(const char* cpf_cnpj_busca, Cliente* novos_dados, Tip
                 // Comparo o CPF/CNPJ lido com o buscado
                 if (strcmp(c.cpf_cnpj, cpf_cnpj_busca) == 0) {
 
-                    // Confiro se o operador logado tem permissão para atualizar esse cliente
-                    if (c.id_logado != operador_atual) {
-                        printf("Erro: voce nao tem permissao para atualizar este cliente\n");
-                        fclose(fp);
-                        fclose(temp);
-                        remove("clientes_tmp.txt"); // removo o arquivo temporário, já que deu erro
-                        return NULL; // e saio direto
-                    }
 
                     // Aqui sobrescrevo a linha do cliente com os novos dados
                     // mantendo CPF/CNPJ, tipo_doc e id_logado originais
@@ -432,12 +415,6 @@ Cliente* atualizar_cliente(const char* cpf_cnpj_busca, Cliente* novos_dados, Tip
                 if (strcmp(c.cpf_cnpj, cpf_cnpj_busca) == 0) {
                     encontrado = 1;
 
-                    // Verifico se o operador logado é o mesmo que criou o cliente
-                    if (c.id_logado != operador_atual) {
-                        printf("Erro: voce nao tem permissao para atualizar este cliente\n");
-                        fclose(fp);
-                        return NULL; // retorno imediatamente, sem exibir "não encontrado"
-                    }
 
                     // Volto o cursor do arquivo para reescrever esse mesmo cliente
                     fseek(fp, -(long)sizeof(Cliente), SEEK_CUR);
@@ -498,13 +475,7 @@ void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo)
         return; // interrompo a função aqui
     }
 
-    // --------------------------------------------------------
-    // Capturo o ID do operador logado (quem está usando o sistema)
-    // para controlar as permissões de visualização.
-    // Só pode visualizar o cliente quem o criou (id_logado igual).
-    // --------------------------------------------------------
-    int operador_atual = get_operador_logado();
-
+    
     // --------------------------------------------------------
     // Crio um ponteiro para Cliente que usarei conforme o tipo
     // de armazenamento (pode ser carregado da memória, texto ou binário).
@@ -526,14 +497,7 @@ void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo)
                 // Comparo o CPF/CNPJ de cada cliente com o que foi buscado
                 if (strcmp(clientes_memoria[i].cpf_cnpj, cpf_cnpj_busca) == 0) {
 
-                    // Se encontrar o cliente, verifico se pertence ao operador logado
-                    if (clientes_memoria[i].id_logado != operador_atual) {
-                        // Se for de outro operador, não pode visualizar
-                        printf("Erro: voce nao tem permissao para visualizar este cliente.\n");
-                        return; // Encerro imediatamente
-                    }
-
-                    // Se o operador for o dono, exibo os dados
+                    // Exibo os dados do cliente encontrado
                     ver_cliente(&clientes_memoria[i]);
                     return; // Saio da função pois já encontrei
                 }
@@ -580,17 +544,7 @@ void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo)
 
                 // Comparo o CPF/CNPJ lido com o buscado
                 if (strcmp(cliente->cpf_cnpj, cpf_cnpj_busca) == 0) {
-
-                    // Verifico se o operador logado é o dono do cliente
-                    if (cliente->id_logado != operador_atual) {
-                        // Se não for, o sistema bloqueia a visualização
-                        printf("Erro: voce nao tem permissao para visualizar este cliente.\n");
-                        fclose(fp);
-                        free(cliente);
-                        return;
-                    }
-
-                    // Se tiver permissão, exibo os dados do cliente
+                    // Exibo os dados do cliente
                     ver_cliente(cliente);
                     fclose(fp);
                     free(cliente);
@@ -632,16 +586,7 @@ void buscar_e_exibir_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo)
                 // Comparo com o CPF/CNPJ buscado
                 if (strcmp(cliente->cpf_cnpj, cpf_cnpj_busca) == 0) {
 
-                    // Verifico se o operador logado é o dono do cliente
-                    if (cliente->id_logado != operador_atual) {
-                        // Se não for, mostro erro e não permito exibir
-                        printf("Erro: voce nao tem permissao para visualizar este cliente.\n");
-                        fclose(fp);
-                        free(cliente);
-                        return;
-                    }
-
-                    // Se o operador for o dono, exibo os dados normalmente
+                   // Exibo os dados normalmente
                     ver_cliente(cliente);
                     fclose(fp);
                     free(cliente);
@@ -679,9 +624,6 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
         return;
     }
 
-    // Pego o ID do operador atualmente logado (para checar permissões)
-    int operador_atual = get_operador_logado();
-
     // Uso o switch para tratar cada tipo de armazenamento (memória, texto ou binário)
     switch (tipo) {
 
@@ -693,14 +635,7 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
             for (int i = 0; i < qtd; i++) {
                 // Comparo o CPF/CNPJ digitado com o do cliente atual
                 if (strcmp(clientes_memoria[i].cpf_cnpj, cpf_cnpj_busca) == 0) {
-                    // Achei o cliente, agora verifico se o operador atual tem permissão
-                    if (clientes_memoria[i].id_logado != operador_atual) {
-                        // Se o ID logado for diferente, mostro a mensagem e saio da função
-                        printf("Erro: voce nao tem permissao para deletar este cliente.\n");
-                        return;
-                    }
-
-                    // Se tiver permissão, preciso remover o cliente do vetor
+                    // Achei o cliente, agora preciso removê-lo da memória.
                     // Para isso, desloco todos os próximos elementos uma posição para trás
                     for (int j = i; j < qtd - 1; j++) {
                         clientes_memoria[j] = clientes_memoria[j + 1];
@@ -745,7 +680,7 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
 
             // Leio o arquivo linha por linha
             while (fgets(linha, sizeof(linha), fp)) {
-                // Tento extrair todos os campos, incluindo tipo_doc e id_logado
+                // Tento extrair todos os campos
                  sscanf(linha, "%d;%49[^;];%d;%99[^;];%19[^;];%14[^;];%49[^;];%49[^;];%d;%d",
                                    &cliente.id,
                                    cliente.nome,
@@ -760,20 +695,12 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
 
                 // Verifico se esta linha pertence ao cliente que quero deletar
                 if (strcmp(cliente.cpf_cnpj, cpf_cnpj_busca) == 0) {
-                    // Se achei o cliente, verifico a permissão
-                    if (cliente.id_logado != operador_atual) {
-                        // Sem permissão: apago o arquivo temporário e retorno imediatamente
-                        printf("Erro: voce nao tem permissao para deletar este cliente.\n");
-                        fclose(fp);
-                        fclose(temp);
-                        remove("temp.txt");
-                        return;
-                    } else {
-                        // Se tiver permissão, simplesmente não escrevo essa linha no arquivo temporário
-                        // Isso faz com que o cliente seja removido
+                    // Se achei o cliente, preciso removê-lo do texto
+                    //simplesmente não escrevo essa linha no arquivo temporário
+                    // Isso faz com que o cliente seja removido
                         deletado = 1;
                         continue; // Pulo para a próxima linha
-                    }
+                    
                 }
 
                 // Caso não seja o cliente que quero excluir, regravo a linha normalmente
@@ -827,19 +754,11 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo) {
 
                 // Comparo o CPF lido com o CPF digitado
                 if (strcmp(cliente.cpf_cnpj, cpf_cnpj_busca) == 0) {
-                    // Achei o cliente, agora verifico permissão
-                    if (cliente.id_logado != operador_atual) {
-                        // Se o operador atual não for o dono, apenas mostro o erro e saio
-                        printf("Erro: voce nao tem permissao para deletar este cliente.\n");
-                        fclose(fp);
-                        fclose(temp);
-                        remove("temp.bin");
-                        return;
-                    } else {
-                        // Se tiver permissão, não escrevo esse cliente no arquivo temporário
+                    // Achei o cliente, preciso removê-lo do arquivo
+                    //  não escrevo esse cliente no arquivo temporário
                         deletado = 1;
                         continue;
-                    }
+                    
                 }
 
                 // Caso não seja o cliente a deletar, regravo normalmente no arquivo temporário
@@ -891,4 +810,104 @@ TipoDocumento identificar_documento(const char *doc) {
     } else {
         return TIPO_DESCONHECIDO;
     }
+}
+
+void listar_clientes(TipoArmazenamento tipo) {
+    printf("+ --------------------------------------------------------------- +\n");
+    printf("|                        LISTA DE CLIENTES                        |\n");
+    printf("+ --------------------------------------------------------------- +\n");
+
+    switch (tipo) {
+
+        // ============================================================
+        // MODO MEMORIA
+        // Lista os clientes diretamente do vetor em memória
+        // ============================================================
+        case MEMORIA: {
+            int encontrados = 0;
+
+            for (int i = 0; i < qtd; i++) {
+                printf("|  ID: %d | Nome: %s | CPF/CNPJ: %s | Telefone: %s\n",
+                       clientes_memoria[i].id,
+                       clientes_memoria[i].nome,
+                       clientes_memoria[i].cpf_cnpj,
+                       clientes_memoria[i].tel);
+                encontrados++;
+            }
+
+            if (encontrados == 0)
+                printf("|  Nenhum cliente encontrado.\n");
+
+            break;
+        }
+
+        // ============================================================
+        // MODO TEXTO
+        // Leitura linha a linha do arquivo clientes.txt
+        // ============================================================
+        case TEXTO: {
+            FILE *fp = fopen("clientes.txt", "r");
+            if (!fp) {
+                printf("|  Arquivo clientes.txt não encontrado.\n");
+                return;
+            }
+
+            Cliente tmp;
+            int encontrados = 0;
+
+            while (fscanf(fp, "%d;%49[^;];%d;%99[^;];%19[^;];%11[^;];%49[^;];%49[^;];%d;%d\n",
+                          &tmp.id,
+                          tmp.nome,
+                          &tmp.idade,
+                          tmp.endereco_completo,
+                          tmp.cpf_cnpj,
+                          tmp.tel,
+                          tmp.email,
+                          tmp.nome_contato,
+                          (int*)&tmp.tipo_doc,
+                          &tmp.id_logado) == 10) {
+
+                printf("|  ID: %d | Nome: %s | CPF/CNPJ: %s | Telefone: %s\n",
+                       tmp.id, tmp.nome, tmp.cpf_cnpj, tmp.tel);
+                encontrados++;
+            }
+
+            fclose(fp);
+
+            if (encontrados == 0)
+                printf("|  Nenhum cliente encontrado no arquivo texto.\n");
+
+            break;
+        }
+
+        // ============================================================
+        // MODO BINARIO
+        // Leitura do arquivo clientes.bin com fread()
+        // ============================================================
+        case BINARIO: {
+            FILE *fp = fopen("clientes.bin", "rb");
+            if (!fp) {
+                printf("|  Arquivo clientes.bin não encontrado.\n");
+                return;
+            }
+
+            Cliente tmp;
+            int encontrados = 0;
+
+            while (fread(&tmp, sizeof(Cliente), 1, fp) == 1) {
+                printf("|  ID: %d | Nome: %s | CPF/CNPJ: %s | Telefone: %s\n",
+                       tmp.id, tmp.nome, tmp.cpf_cnpj, tmp.tel);
+                encontrados++;
+            }
+
+            fclose(fp);
+
+            if (encontrados == 0)
+                printf("|  Nenhum cliente encontrado no arquivo binário.\n");
+
+            break;
+        }
+    }
+
+    printf("+ --------------------------------------------------------------- +\n");
 }

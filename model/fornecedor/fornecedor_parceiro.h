@@ -29,4 +29,10 @@ int get_qtd_fornecedores();
 
 // Função para deletar um fornecedor/parceiro a partir do CNPJ e do tipo de armazenamento
 void deletar_fornecedor_parceiro(const char* cnpj_busca, TipoArmazenamento tipo);
+
+//funçao que lista os fornecedores/parceiros de acordo com o tipo de armazenamento 
+void listar_fornecedores(TipoArmazenamento tipo);
+
+//função que busca um fornecedor/parceiro pelo ID
+Fornecedor_parceiro* buscar_fornecedor_por_id(TipoArmazenamento tipo, int id);
 #endif

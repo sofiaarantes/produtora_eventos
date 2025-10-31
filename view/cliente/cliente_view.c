@@ -52,7 +52,7 @@ void ver_cliente(const Cliente* cliente) {
 int menu_cliente() {
     int opcao;
     printf("\n==================================================================\n");
-    printf("|                   Menu Cliente                                  |\n");
+    printf("|                          Menu Cliente                           |\n");
     printf("===================================================================\n");
     printf("|  1 - Adicionar novo cliente                                     |\n");
     printf("|  2 - Atualizar cliente                                          |\n");

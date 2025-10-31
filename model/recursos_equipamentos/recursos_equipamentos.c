@@ -15,9 +15,6 @@ static int qtd = 0; // Contador de equipamentos na memória
 RecursosEquipamentos* adicionar_equipamento(RecursosEquipamentos* equipamento, TipoArmazenamento tipo) {
     if (!equipamento) return NULL; // Se o ponteiro recebido for nulo, quebra o programa
 
-    // Define automaticamente o operador logado como responsável pelo cadastro
-    equipamento->operador_id = get_operador_logado();
-
     int novo_id = 1; // Id começa em 1 por padrão
 
     switch (tipo) {
@@ -47,7 +44,7 @@ RecursosEquipamentos* adicionar_equipamento(RecursosEquipamentos* equipamento, T
 
                 qtd++; // Incrementa o contador de funcionários na memória
 
-                printf("Equipamento %s salvo em MEMÓRIA! ID: %d\n", equipamento->descricao, equipamento->id);
+                printf("Equipamento %s salvo em MEMÓRIA!\n", equipamento->descricao);
                 return salvo; // Retorna o endereço do funcion salvo
             } else {
                 printf("Erro: limite de equipamentos na memória atingido!\n");
@@ -93,7 +90,7 @@ RecursosEquipamentos* adicionar_equipamento(RecursosEquipamentos* equipamento, T
                     equipamento->operador_id);
             fclose(fp);
 
-            printf("Equipamento %s salvo em TEXTO! ID: %d\n", equipamento->descricao, equipamento->id);
+            printf("Equipamento %s salvo em TEXTO!\n", equipamento->descricao);
             return equipamento;// Retorna o equipamento que foi salvo
         }
 
@@ -127,7 +124,7 @@ RecursosEquipamentos* adicionar_equipamento(RecursosEquipamentos* equipamento, T
             fwrite(equipamento, sizeof(RecursosEquipamentos), 1, fp);
             fclose(fp);
 
-            printf("Equipamento %s salvo em BINÁRIO! ID: %d\n", equipamento->descricao, equipamento->id);
+            printf("Equipamento %s salvo em BINÁRIO! \n", equipamento->descricao);
             return equipamento; // retorno o equipamento que foi salvo
         }
 
@@ -508,5 +505,189 @@ RecursosEquipamentos* buscar_equipamento_por_id(int id_busca, TipoArmazenamento 
             break;
     }
 
+    return NULL;
+}
+
+void listar_equipamentos(TipoArmazenamento tipo) {
+-
+    printf("\n");
+    printf("+ --------------------------------------------------------------- +\n");
+    printf("|                     LISTA DE EQUIPAMENTOS                       |\n");
+    printf("+ --------------------------------------------------------------- +\n");
+
+    // ------------------------------------------------------------------
+    // Aqui eu trato de acordo com o tipo de armazenamento que o usuário
+    // escolheu (MEMORIA, TEXTO ou BINARIO)
+    // ------------------------------------------------------------------
+    switch (tipo) {
+
+        // ===============================================================
+        // MODO MEMÓRIA
+        // Nesse caso, os dados estão em um vetor global (equipamentos_memoria)
+        // ===============================================================
+        case MEMORIA: {
+            // Se não tiver nenhum equipamento cadastrado, eu aviso
+            if (qtd == 0) {
+                printf("|  Nenhum equipamento cadastrado.\n");
+                break;
+            }
+
+            // Caso tenha, eu percorro o vetor e mostro todos os registros
+            for (int i = 0; i < qtd; i++) {
+                printf("|  ID: %d | Descrição: %s | Categoria: %s | Estoque: %d | Diária: %.2f\n",
+                       equipamentos_memoria[i].id,           // id do equipamento
+                       equipamentos_memoria[i].descricao,     // nome ou descrição
+                       equipamentos_memoria[i].categoria,     // categoria (ex: som, iluminação)
+                       equipamentos_memoria[i].qtd_estoque,   // quantidade disponível
+                       equipamentos_memoria[i].valor_diaria); // valor da diária
+            }
+            break;
+        }
+
+        // ===============================================================
+        // MODO TEXTO
+        // Aqui eu leio o arquivo "equipamentos.txt"
+        // Cada linha do arquivo representa um equipamento
+        // ===============================================================
+        case TEXTO: {
+            FILE* fp = fopen("equipamentos.txt", "r"); // abre o arquivo no modo leitura
+            if (!fp) {
+                // Se o arquivo não existir, eu aviso
+                printf("|  Arquivo 'equipamentos.txt' não encontrado.\n");
+                return;
+            }
+
+            RecursosEquipamentos tmp;  // struct temporária para armazenar o que eu leio do arquivo
+            int encontrados = 0;       // contador para saber se achei algo
+
+            // Leio linha por linha do arquivo, respeitando o formato usado no salvamento
+            while (fscanf(fp, "%d;%49[^;];%49[^;];%d;%f;%f;%d;\n",
+                          &tmp.id, tmp.descricao, tmp.categoria,
+                          &tmp.qtd_estoque, &tmp.preco_custo,
+                          &tmp.valor_diaria, &tmp.operador_id) == 7) {
+
+                // Aqui eu exibo os dados formatadinhos na tela
+                printf("|  ID: %d | Descrição: %s | Categoria: %s | Estoque: %d | Diária: %.2f\n",
+                       tmp.id, tmp.descricao, tmp.categoria,
+                       tmp.qtd_estoque, tmp.valor_diaria);
+                encontrados++;
+            }
+
+            fclose(fp); // fecho o arquivo após ler tudo
+
+            // Se não encontrei nenhum registro, aviso o usuário
+            if (encontrados == 0)
+                printf("|  Nenhum equipamento encontrado no arquivo.\n");
+
+            break;
+        }
+
+        // ===============================================================
+        // MODO BINÁRIO
+        // Aqui eu leio o arquivo "equipamentos.bin"
+        // Esse modo é mais rápido e ocupa menos espaço, mas não dá pra
+        // abrir direto e ler, por isso uso fread()
+        // ===============================================================
+        case BINARIO: {
+            FILE* fp = fopen("equipamentos.bin", "rb"); // abre o arquivo no modo leitura binária
+            if (!fp) {
+                printf("|  Arquivo 'equipamentos.bin' não encontrado.\n");
+                return;
+            }
+
+            RecursosEquipamentos tmp;  // struct temporária usada pra leitura
+            int encontrados = 0;       // contador de registros
+
+            // Leio um por um até o final do arquivo
+            while (fread(&tmp, sizeof(RecursosEquipamentos), 1, fp) == 1) {
+                printf("|  ID: %d | Descrição: %s | Categoria: %s | Estoque: %d | Diária: %.2f\n",
+                       tmp.id, tmp.descricao, tmp.categoria,
+                       tmp.qtd_estoque, tmp.valor_diaria);
+                encontrados++;
+            }
+
+            fclose(fp); // sempre fecho o arquivo
+
+            // Caso não exista nenhum equipamento no arquivo
+            if (encontrados == 0)
+                printf("|  Nenhum equipamento encontrado no arquivo.\n");
+
+            break;
+        }
+    }
+    printf("+ --------------------------------------------------------------- +\n");
+}
+
+RecursosEquipamentos* buscar_recurso_por_id(TipoArmazenamento tipo, int id) {
+    static RecursosEquipamentos recurso;  // uso de static para manter o dado acessível após o retorno
+    FILE* arquivo;                      // ponteiro de arquivo usado nos modos TEXTO e BINÁRIO
+
+    switch (tipo) {
+
+        // ------------------------------------------------------------
+        // Caso 1: Busca em MEMÓRIA
+        // ------------------------------------------------------------
+        case MEMORIA:
+            // percorro o vetor de recursos que está em memória
+            for (int i = 0; i < qtd; i++) {
+                // se o ID bater, retorno o endereço do recurso encontrado
+                if (equipamentos_memoria[i].id == id) {
+                    return &equipamentos_memoria[i];
+                }
+            }
+            // se sair do loop sem retornar, é porque o recurso não foi encontrado
+            return NULL;
+
+        // ------------------------------------------------------------
+        // Caso 2: Busca em ARQUIVO TEXTO
+        // ------------------------------------------------------------
+        case TEXTO:
+            arquivo = fopen("equipamentos.txt", "r");
+            if (!arquivo) {
+                printf("Erro: arquivo equipamentos.txt não encontrado.\n");
+                return NULL;
+            }
+
+            // faço a leitura linha a linha no formato CSV com separador ';'
+            while (fscanf(arquivo, "%d;%100[^;];%49[^;];%d;%f;%f;%d;\n",
+                          &recurso.id, recurso.descricao, recurso.categoria,
+                          &recurso.qtd_estoque, &recurso.preco_custo,
+                          &recurso.valor_diaria, &recurso.operador_id) == 7) {
+
+                // se o id lido for igual ao id procurado, já posso devolver o recurso
+                if (recurso.id == id) {
+                    fclose(arquivo);
+                    return &recurso;
+                }
+            }
+
+            // se terminar a leitura sem encontrar, fecho o arquivo e retorno NULL
+            fclose(arquivo);
+            return NULL;
+
+        // ------------------------------------------------------------
+        // Caso 3: Busca em ARQUIVO BINÁRIO
+        // ------------------------------------------------------------
+        case BINARIO:
+            arquivo = fopen("equipamentos.bin", "rb");
+            if (!arquivo) {
+                printf("Erro: arquivo equipamentos.bin não encontrado.\n");
+                return NULL;
+            }
+
+            // leio registro por registro até o final do arquivo
+            while (fread(&recurso, sizeof(RecursosEquipamentos), 1, arquivo)) {
+                if (recurso.id == id) {
+                    fclose(arquivo);
+                    return &recurso;
+                }
+            }
+
+            // se não encontrar, fecho o arquivo e retorno NULL
+            fclose(arquivo);
+            return NULL;
+    }
+
+    // caso algum tipo inválido de armazenamento seja passado
     return NULL;
 }

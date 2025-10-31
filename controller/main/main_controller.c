@@ -6,6 +6,7 @@
 #include "../controller/fornecedor/fornecedor_parceiro_controller.h"
 #include "../controller/produtora/produtora_controller.h"
 #include "../controller/operadores_sistema/operadores_sistema_controller.h"
+#include "../controller/orcamento/orcamento_controller.h"
 #include "../view/main/main_view.h"
 
 // Controla o primeiro menu do sistema e chama cada menu correspondente
@@ -40,8 +41,12 @@ void iniciar_sistema(){
             break;
         }
         // Editar conta
-        case 7:{ 
+        case 6:{ 
             editar_operador();
+            break;
+        }
+        case 7:{ 
+            gerenciar_orcamento();
             break;
         }
         // Sair

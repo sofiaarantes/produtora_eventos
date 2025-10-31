@@ -43,4 +43,7 @@ void deletar_cliente(const char* cpf_cnpj_busca, TipoArmazenamento tipo);
 
 //preciso dessa funçao para identificar se o documento do cliente é cpf ou cnpj
 TipoDocumento identificar_documento(const char *doc);
+
+//função que lista os clientes de acordo com o tipo de armazenamento
+void listar_clientes(TipoArmazenamento tipo);
 #endif

@@ -34,4 +34,12 @@ int get_qtd_funcionarios();
 // Busca funcionário por CPF (retorna ponteiro para o funcionário ou NULL se não achar)
 EquipeInterna* buscar_funcionario_por_cpf(const char* cpf_busca, TipoArmazenamento tipo);
 
+//função que lista os funcionários de acordo com o tipo de armazenamento 
+void listar_equipe_interna(TipoArmazenamento tipo);
+
+//função que busca um membro da equipe pelo ID
+EquipeInterna* buscar_equipe_por_id(TipoArmazenamento tipo, int id);
+
+//função que busca um funcionário pelo ID
+EquipeInterna* buscar_funcionario_por_id(TipoArmazenamento tipo, int id);
 #endif
