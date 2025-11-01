@@ -260,9 +260,6 @@ Cliente* atualizar_cliente(const char* cpf_cnpj_busca, Cliente* novos_dados, Tip
     // Verifico se os parâmetros passados são válidos antes de qualquer coisa
     if (!cpf_cnpj_busca || !novos_dados) return NULL;
 
-    // Pego o ID do operador que está logado no momento (para verificar permissões)
-    int operador_atual = get_operador_logado();
-
     //antes de salvar verifica se o email é valido
                 if (validar_email(novos_dados->email) == 0) {
                     printf("Erro: e-mail invalido. Deve conter '@gmail'.\n");
@@ -910,4 +907,89 @@ void listar_clientes(TipoArmazenamento tipo) {
     }
 
     printf("+ --------------------------------------------------------------- +\n");
+}
+// Lista todos os clientes do tipo especificado. Retorna array alocado e seta out_count.
+// Se não houver registros, retorna NULL e out_count = 0.
+Cliente* listar_todos_clientes(TipoArmazenamento tipo, int* out_count) {
+    if (!out_count) return NULL;
+    *out_count = 0;
+
+    switch (tipo) {
+        case MEMORIA: {
+            if (qtd == 0) return NULL;
+            // Aloca um array com exatamente qtd elementos
+            Cliente* arr = malloc(sizeof(Cliente) * qtd);
+            if (!arr) return NULL;
+            for (int i = 0; i < qtd; i++) arr[i] = clientes_memoria[i];
+            *out_count = qtd;
+            return arr;
+        }
+        case TEXTO: {
+            FILE* fp = fopen("clientes.txt", "r");
+            if (!fp) return NULL;
+            // Leitura dinâmica: primeiro conta linhas / registros
+            int count = 0;
+            char linha[512];
+            while (fgets(linha, sizeof(linha), fp)) count++;
+            if (count == 0) { fclose(fp); return NULL; }
+            rewind(fp);
+            Cliente* arr = malloc(sizeof(Cliente) * count);
+            if (!arr) { fclose(fp); return NULL; }
+            int idx = 0;
+            while (fgets(linha, sizeof(linha), fp) && idx < count) {
+                Cliente c = {0};
+                sscanf(linha, "%d;%49[^;];%d;%99[^;];%19[^;];%11[^;];%49[^;];%49[^;];%d",
+                    &c.id, c.nome, &c.idade, c.endereco_completo,
+                    c.cpf_cnpj, c.tel, c.email, c.nome_contato, (int*)&c.tipo_doc);
+                // garante terminação
+                c.cpf_cnpj[sizeof(c.cpf_cnpj)-1] = '\0';
+                arr[idx++] = c;
+            }
+            fclose(fp);
+            *out_count = idx;
+            return arr;
+        }
+        case BINARIO: {
+            FILE* fp = fopen("clientes.bin", "rb");
+            if (!fp) return NULL;
+            // Descobre quantidade lendo o arquivo
+            int count = 0;
+            Cliente tmp;
+            while (fread(&tmp, sizeof(Cliente), 1, fp) == 1) count++;
+            if (count == 0) { fclose(fp); return NULL; }
+            rewind(fp);
+            Cliente* arr = malloc(sizeof(Cliente) * count);
+            if (!arr) { fclose(fp); return NULL; }
+            int idx = 0;
+            while (fread(&arr[idx], sizeof(Cliente), 1, fp) == 1) {
+                // garante terminação de strings
+                arr[idx].cpf_cnpj[sizeof(arr[idx].cpf_cnpj)-1] = '\0';
+                idx++;
+            }
+            fclose(fp);
+            *out_count = idx;
+            return arr;
+        }
+        default:
+            return NULL;
+    }
+}
+
+// Remove todos os registros do armazenamento especificado. Retorna 1 em sucesso, 0 caso contrário.
+int limpar_clientes(TipoArmazenamento tipo) {
+    switch (tipo) {
+        case MEMORIA:
+            qtd = 0;
+            // opcional: zerar array
+            // memset(clientes_memoria, 0, sizeof(clientes_memoria));
+            return 1;
+        case TEXTO:
+            remove("clientes.txt"); // ignora erro se não existir
+            return 1;
+        case BINARIO:
+            remove("clientes.bin");
+            return 1;
+        default:
+            return 0;
+    }
 }

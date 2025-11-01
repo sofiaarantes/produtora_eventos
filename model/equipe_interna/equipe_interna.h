@@ -42,4 +42,13 @@ EquipeInterna* buscar_equipe_por_id(TipoArmazenamento tipo, int id);
 
 //função que busca um funcionário pelo ID
 EquipeInterna* buscar_funcionario_por_id(TipoArmazenamento tipo, int id);
+// Migrar dados
+
+// Lista todos os registros do tipo especificado. Retorna array alocado e seta out_count.
+// Se não houver registros, retorna NULL e out_count = 0.
+EquipeInterna* listar_todos_equipe_interna(TipoArmazenamento tipo, int* out_count);
+
+// Remove todos os registros do armazenamento especificado. Retorna 1 em sucesso.
+int limpar_equipe_interna(TipoArmazenamento tipo);
+
 #endif

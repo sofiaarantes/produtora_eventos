@@ -27,7 +27,7 @@ void exibir_mensagem(const char* msg) {
 // Exibe o menu de configuração do tipo de armazenamento
 int mostrar_menu_configuracao() {
     int opcao;
-    printf("\n========================= Armazenamento =========================\n");
+    printf("\n========================== Armazenamento ==========================\n");
     printf("| Em qual formato gostaria de salvar suas informacoes?            |\n");
     printf("|  1 - Memoria (dados temporarios)                                |\n");
     printf("|  2 - Arquivo Texto                                              |\n");

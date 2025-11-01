@@ -40,4 +40,13 @@ void listar_equipamentos(TipoArmazenamento tipo);
 
 //função que busca um recurso/equipamento pelo ID
 RecursosEquipamentos* buscar_recurso_por_id(TipoArmazenamento tipo, int id);
+// Migrar dados
+
+// Lista todos os registros do tipo especificado. Retorna array alocado e seta out_count.
+// Se não houver registros, retorna NULL e out_count = 0.
+RecursosEquipamentos* listar_todos_equipamentos(TipoArmazenamento tipo, int* out_count);
+
+// Remove todos os registros do armazenamento especificado. Retorna 1 em sucesso.
+int limpar_equipamentos(TipoArmazenamento tipo);
+
 #endif

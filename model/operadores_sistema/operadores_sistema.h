@@ -8,7 +8,6 @@ typedef struct {
     char nome[50];
     char usuario[50];
     char senha[20];
-    TipoArmazenamento tipo;
 } Operadores;
 
 Operadores* adicionar_operador(Operadores* operador);

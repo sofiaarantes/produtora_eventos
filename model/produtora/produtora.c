@@ -16,131 +16,167 @@ static int qtd = 0; // contador de quantas produtoras já estão salvas na memó
 Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
     // -------------------------------------------------------------------------
     // Primeiro eu verifico se o ponteiro passado é válido.
-    // Se for NULL, não tem como continuar o cadastro.
+    // Se o ponteiro for NULL, significa que nem existe estrutura pra salvar.
+    // Então eu retorno NULL logo de cara.
     // -------------------------------------------------------------------------
     if (!produtora) return NULL;
 
     // -------------------------------------------------------------------------
-    // Agora eu começo as validações básicas dos campos obrigatórios da produtora.
-    // Cada verificação impede o cadastro e mostra uma mensagem de erro explicando o motivo.
+    // Agora eu começo as validações básicas.
+    // Antes de salvar qualquer coisa, eu garanto que os dados principais
+    // da produtora estão dentro dos padrões corretos.
     // -------------------------------------------------------------------------
-    
-    // Validação do e-mail: precisa conter "@gmail"
+
+    // O e-mail precisa obrigatoriamente conter "@gmail"
     if (validar_email(produtora->email) == 0) {
         printf("Erro: e-mail inválido. Deve conter '@gmail'.\n");
         printf("Produtora NÃO cadastrada.\n");
         return NULL;
     }
 
-    // Validação do telefone principal: precisa ter 11 dígitos
+    // Telefone principal: deve ter 11 dígitos
     if (validar_tel(produtora->tel) == 0) {
         printf("Erro: telefone inválido. Deve conter 11 dígitos.\n");
         printf("Produtora NÃO cadastrada.\n");
         return NULL;
     }
 
-    // Validação do telefone do responsável: também deve ter 11 dígitos
+    // Telefone do responsável: também deve ter 11 dígitos
     if (validar_tel(produtora->tel_resp) == 0) {
         printf("Erro: telefone do responsável inválido. Deve conter 11 dígitos.\n");
         printf("Produtora NÃO cadastrada.\n");
         return NULL;
     }
 
-    // Validação do CNPJ: precisa ter 14 dígitos
+    // CNPJ: deve ter exatamente 14 dígitos
     if (validar_cnpj(produtora->cnpj) == 0) {
         printf("Erro: CNPJ inválido. Deve conter 14 dígitos.\n");
         printf("Produtora NÃO cadastrada.\n");
         return NULL;
     }
 
-    // Validação da inscrição estadual: precisa ter 13 dígitos
+    // Inscrição estadual: precisa ter 13 dígitos
     if (validar_inscr(produtora->inscricao_estadual) == 0) {
         printf("Erro: Inscrição estadual inválida. Deve conter 13 dígitos.\n");
         printf("Produtora NÃO cadastrada.\n");
         return NULL;
     }
 
+    // -------------------------------------------------------------------------
+    // Aqui eu verifico se já existe alguma produtora cadastrada no tipo de
+    // armazenamento atual (memória, texto ou binário).
+    // Só pode existir UMA produtora em cada tipo de armazenamento.
+    // -------------------------------------------------------------------------
+    switch (tipo) {
 
-    // Aqui eu garanto que só pode existir UMA produtora em TODO o sistema.
-    FILE *fp_txt = fopen("produtoras.txt", "r");   // abro o arquivo texto só pra leitura
-    FILE *fp_bin = fopen("produtoras.bin", "rb");  // abro o arquivo binário só pra leitura
+        // ============================
+        // CASO 1 - Memória
+        // ============================
+        case MEMORIA: {
+            // Eu verifico se já existe alguma produtora no vetor.
+            // Se qtd > 0, quer dizer que já tem uma cadastrada.
+            if (qtd > 0) {
+                printf("Erro: Já existe uma produtora cadastrada no sistema!\n");
+                return NULL;
+            }
+            break;
+        }
 
-    // Essa condição verifica em todas as formas de armazenamento
-    // Se já existir alguma produtora, bloqueia o cadastro
-    if (qtd > 0 || (fp_txt && fgetc(fp_txt) != EOF) || (fp_bin && fgetc(fp_bin) != EOF)) {
-        // EOF é um valor especial que as funções de leitura em C — como fgetc(), 
-        //fscanf(), fread() — retornam quando chegam ao final do arquivo ou não há mais nada para ler.
+        // ============================
+        // CASO 2 - Texto
+        // ============================
+        case TEXTO: {
+            // Abro o arquivo de produtoras em modo leitura.
+            FILE *fp_txt = fopen("produtoras.txt", "r");
+            if (fp_txt) {
+                // Aqui eu uso fgetc para tentar ler o primeiro caractere do arquivo.
+                // fgetc() retorna EOF se o arquivo estiver vazio.
+                // Se NÃO for EOF, significa que o arquivo tem conteúdo (já tem produtora salva).
+                if (fgetc(fp_txt) != EOF) {
+                    printf("Erro: Já existe uma produtora cadastrada no sistema!\n");
+                    fclose(fp_txt);
+                    return NULL;
+                }
+                // Fecho o arquivo depois de verificar.
+                fclose(fp_txt);
+            }
+            break;
+        }
 
-        //Se eu abrir um arquivo vazio e chamar fgetc(fp), o retorno já será EOF logo na primeira leitura, porque não existe nenhum caractere lá dentro.
-        //Mas se o arquivo tiver qualquer conteúdo (mesmo um único caractere ou espaço), 
-        //o fgetc() primeiro vai retornar esse caractere, e só depois de ler tudo é que vai retornar EOF.
+        // ============================
+        // CASO 3 - Binário
+        // ============================
+        case BINARIO: {
+            // Abro o arquivo binário só pra leitura.
+            FILE *fp_bin = fopen("produtoras.bin", "rb");
+            if (fp_bin) {
+                // Mesma lógica do texto: se o arquivo não estiver vazio,
+                // fgetc vai ler algum byte antes de retornar EOF.
+                if (fgetc(fp_bin) != EOF) {
+                    printf("Erro: Já existe uma produtora cadastrada no sistema!\n");
+                    fclose(fp_bin);
+                    return NULL;
+                }
+                fclose(fp_bin);
+            }
+            break;
+        }
 
-        printf("Erro: Ja existe uma produtora cadastrada no sistema!\n");
-        printf("Nao e permitido cadastrar mais de uma produtora.\n");
-
-        // Fecho os arquivos abertos (se existirem)
-        if (fp_txt) fclose(fp_txt);
-        if (fp_bin) fclose(fp_bin);
-
-        return NULL; // interrompo o cadastro
+        // Caso o tipo passado não seja nenhum dos válidos.
+        default:
+            printf("Erro: Tipo de armazenamento inválido!\n");
+            return NULL;
     }
 
-    // Fecho os arquivos se foram abertos (preciso garantir que não fiquem pendentes)
-    if (fp_txt) fclose(fp_txt);
-    if (fp_bin) fclose(fp_bin);
-
     // -------------------------------------------------------------------------
-    // Associo a produtora ao operador logado.
-    // Isso é importante para saber qual usuário criou essa produtora.
+    // Aqui eu associo a produtora ao operador logado.
+    // Assim eu sei qual usuário criou essa produtora no sistema.
     // -------------------------------------------------------------------------
     produtora->id_logado = get_operador_logado();
 
     // -------------------------------------------------------------------------
-    // Agora sim, posso salvar a produtora conforme o tipo de armazenamento escolhido.
-    // O switch decide se vou salvar em memória, texto ou binário.
+    // Agora vem a parte de salvar de fato a produtora no armazenamento escolhido.
     // -------------------------------------------------------------------------
     switch (tipo) {
 
         // ===============================================================
-        // CASO 1 - ARMAZENAMENTO EM MEMÓRIA
+        // SALVAR EM MEMÓRIA
         // ===============================================================
         case MEMORIA: {
-            // Verifico se ainda tem espaço no vetor estático de produtoras
+            // Verifico se ainda há espaço no vetor.
             if (qtd < MAX_PRODUTORAS) {
-
-                // Copio os dados da produtora para o vetor em memória
+                // Copio os dados da produtora pro vetor global.
                 produtoras_memoria[qtd] = *produtora;
 
-                // Crio um ponteiro que aponta para o registro recém-salvo
+                // Crio um ponteiro pro item recém-salvo (posição qtd do vetor).
                 Produtora* salvo = &produtoras_memoria[qtd];
 
-                // Atualizo a quantidade total de produtoras em memória
+                // Aumento a contagem de produtoras salvas em memória.
                 qtd++;
 
+                // Mensagem de confirmação
                 printf("Produtora %s salva em MEMÓRIA!\n", produtora->nome_fantasia);
 
-                // Retorno o ponteiro para a produtora salva
+                // Retorno o ponteiro pra produtora salva.
                 return salvo;
             } else {
-                // Se o vetor estiver cheio, não consigo salvar
                 printf("Erro: limite de produtoras na memória atingido!\n");
                 return NULL;
             }
         }
 
         // ===============================================================
-        // CASO 2 - ARMAZENAMENTO EM ARQUIVO TEXTO
+        // SALVAR EM ARQUIVO TEXTO
         // ===============================================================
         case TEXTO: {
-            // Abro o arquivo de produtoras no modo append (acrescentar no final)
+            // Abro o arquivo no modo append (acrescentar no final).
             FILE* fp = fopen("produtoras.txt", "a");
             if (!fp) {
                 perror("Erro ao abrir produtoras.txt");
                 return NULL;
             }
 
-            // Escrevo todas as informações da produtora em formato texto
-            // Cada campo é separado por ponto e vírgula para facilitar a leitura posterior
+            // Escrevo todos os dados da produtora separados por ponto e vírgula.
             fprintf(fp, "%s;%s;%s;%s;%s;%s;%s;%s;%s;%f;%d\n",
                 produtora->nome_fantasia,
                 produtora->razao_social,
@@ -155,35 +191,35 @@ Produtora* criar_produtora(Produtora* produtora, TipoArmazenamento tipo) {
                 produtora->id_logado
             );
 
-            // Fecho o arquivo após escrever
+            // Fecho o arquivo.
             fclose(fp);
 
+            // Aviso o usuário que deu certo.
             printf("Produtora %s salva em TEXTO!\n", produtora->nome_fantasia);
 
-            // Retorno o ponteiro da produtora salva (mesmo endereço que recebi)
             return produtora;
         }
 
         // ===============================================================
-        // CASO 3 - ARMAZENAMENTO EM ARQUIVO BINÁRIO
+        // SALVAR EM ARQUIVO BINÁRIO
         // ===============================================================
         case BINARIO: {
-            // Abro o arquivo binário no modo append ("ab") para adicionar no final
+            // Abro o arquivo binário no modo append ("ab").
             FILE* fp = fopen("produtoras.bin", "ab");
             if (!fp) {
                 perror("Erro ao abrir produtoras.bin");
                 return NULL;
             }
 
-            // Escrevo a struct produtora completa em formato binário
+            // Escrevo a estrutura completa no arquivo binário.
             fwrite(produtora, sizeof(Produtora), 1, fp);
 
-            // Fecho o arquivo
+            // Fecho o arquivo.
             fclose(fp);
 
+            // Confirmo o salvamento pro usuário.
             printf("Produtora %s salva em BINÁRIO!\n", produtora->nome_fantasia);
 
-            // Retorno o ponteiro da produtora salva
             return produtora;
         }
 
@@ -833,4 +869,82 @@ void deletar_produtora(const char* cnpj_busca, TipoArmazenamento tipo) {
     }
 }
 
+// Lista todos as produtoras do tipo especificado. Retorna array alocado e seta out_count.
+// Se não houver registros, retorna NULL e out_count = 0.
+Produtora* listar_todos_produtoras(TipoArmazenamento tipo, int* out_count) {
+    if (!out_count) return NULL;
+    *out_count = 0;
 
+    switch (tipo) {
+        case MEMORIA: {
+            if (qtd == 0) return NULL;
+            Produtora* arr = malloc(sizeof(Produtora) * qtd);
+            if (!arr) return NULL;
+            for (int i = 0; i < qtd; i++) arr[i] = produtoras_memoria[i];
+            *out_count = qtd;
+            return arr;
+        }
+        case TEXTO: {
+            FILE* fp = fopen("produtoras.txt", "r");
+            if (!fp) return NULL;
+            int count = 0;
+            char linha[512];
+            while (fgets(linha, sizeof(linha), fp)) count++;
+            if (count == 0) { fclose(fp); return NULL; }
+            rewind(fp);
+            Produtora* arr = malloc(sizeof(Produtora) * count);
+            if (!arr) { fclose(fp); return NULL; }
+            int idx = 0;
+            while (fgets(linha, sizeof(linha), fp) && idx < count) {
+                Produtora p = {0};
+                sscanf(linha, "%49[^;];%49[^;];%13[^;];%14[^;];%99[^;];%11[^;];%49[^;];%49[^;];%11[^;];%f",
+                       p.nome_fantasia, p.razao_social, p.inscricao_estadual,
+                       p.cnpj, p.endereco_completo, p.tel, p.email, p.nome_resp, p.tel_resp, &p.lucro);
+                p.cnpj[sizeof(p.cnpj)-1] = '\0';
+                arr[idx++] = p;
+            }
+            fclose(fp);
+            *out_count = idx;
+            return arr;
+        }
+        case BINARIO: {
+            FILE* fp = fopen("produtoras.bin", "rb");
+            if (!fp) return NULL;
+            int count = 0;
+            Produtora tmp;
+            while (fread(&tmp, sizeof(Produtora), 1, fp) == 1) count++;
+            if (count == 0) { fclose(fp); return NULL; }
+            rewind(fp);
+            Produtora* arr = malloc(sizeof(Produtora) * count);
+            if (!arr) { fclose(fp); return NULL; }
+            int idx = 0;
+            while (fread(&arr[idx], sizeof(Produtora), 1, fp) == 1) {
+                arr[idx].cnpj[sizeof(arr[idx].cnpj)-1] = '\0';
+                idx++;
+            }
+            fclose(fp);
+            *out_count = idx;
+            return arr;
+        }
+        default:
+            return NULL;
+    }
+}
+
+// Remove todas as produtoras do armazenamento especificado. Retorna 1 em sucesso, 0 caso contrário.
+int limpar_produtoras(TipoArmazenamento tipo) {
+    switch (tipo) {
+        case MEMORIA:
+            qtd = 0;
+            // opcional: memset(produtoras_memoria, 0, sizeof(produtoras_memoria));
+            return 1;
+        case TEXTO:
+            remove("produtoras.txt");
+            return 1;
+        case BINARIO:
+            remove("produtoras.bin");
+            return 1;
+        default:
+            return 0;
+    }
+}

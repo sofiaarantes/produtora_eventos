@@ -747,12 +747,92 @@ void deletar_fornecedor_parceiro(const char* cnpj_busca, TipoArmazenamento tipo)
             return;
         }
 
-        // =====================================================
-        // Caso padrão — tipo de armazenamento inválido
-        // =====================================================
+                        // =====================================================
+                        // Caso padrão — tipo de armazenamento inválido
+                        // =====================================================
+                        default:
+                            printf("Tipo de armazenamento inválido!\n");
+                            break;
+                    }
+                }
+
+// Lista todos os fornecedores do tipo especificado. Retorna array alocado e seta out_count.
+// Se não houver registros, retorna NULL e out_count = 0.
+Fornecedor_parceiro* listar_todos_fornecedores(TipoArmazenamento tipo, int* out_count) {
+    if (!out_count) return NULL;
+    *out_count = 0;
+
+    switch (tipo) {
+        case MEMORIA: {
+            if (qtd == 0) return NULL;
+            Fornecedor_parceiro* arr = malloc(sizeof(Fornecedor_parceiro) * qtd);
+            if (!arr) return NULL;
+            for (int i = 0; i < qtd; i++) arr[i] = fornecedores_memoria[i];
+            *out_count = qtd;
+            return arr;
+        }
+        case TEXTO: {
+            FILE* fp = fopen("fornecedores.txt", "r");
+            if (!fp) return NULL;
+            int count = 0;
+            char linha[512];
+            while (fgets(linha, sizeof(linha), fp)) count++;
+            if (count == 0) { fclose(fp); return NULL; }
+            rewind(fp);
+            Fornecedor_parceiro* arr = malloc(sizeof(Fornecedor_parceiro) * count);
+            if (!arr) { fclose(fp); return NULL; }
+            int idx = 0;
+            while (fgets(linha, sizeof(linha), fp) && idx < count) {
+                Fornecedor_parceiro f = {0};
+                sscanf(linha, "%d;%49[^;];%49[^;];%99[^;];%14[^;];%11[^;];%49[^\n]",
+                    &f.id, f.nome_fantasia, f.razao_social, f.endereco_completo,
+                    f.cnpj, f.tel, f.tipo_servico);
+                f.cnpj[sizeof(f.cnpj)-1] = '\0';
+                arr[idx++] = f;
+            }
+            fclose(fp);
+            *out_count = idx;
+            return arr;
+        }
+        case BINARIO: {
+            FILE* fp = fopen("fornecedores.bin", "rb");
+            if (!fp) return NULL;
+            int count = 0;
+            Fornecedor_parceiro tmp;
+            while (fread(&tmp, sizeof(Fornecedor_parceiro), 1, fp) == 1) count++;
+            if (count == 0) { fclose(fp); return NULL; }
+            rewind(fp);
+            Fornecedor_parceiro* arr = malloc(sizeof(Fornecedor_parceiro) * count);
+            if (!arr) { fclose(fp); return NULL; }
+            int idx = 0;
+            while (fread(&arr[idx], sizeof(Fornecedor_parceiro), 1, fp) == 1) {
+                arr[idx].cnpj[sizeof(arr[idx].cnpj)-1] = '\0';
+                idx++;
+            }
+            fclose(fp);
+            *out_count = idx;
+            return arr;
+        }
         default:
-            printf("Tipo de armazenamento invalido!\n");
-            return;
+            return NULL;
+    }
+}
+
+// Remove todos os registros do armazenamento especificado. Retorna 1 em sucesso, 0 caso contrário.
+int limpar_fornecedores(TipoArmazenamento tipo) {
+    switch (tipo) {
+        case MEMORIA:
+            qtd = 0;
+            // memset(fornecedores_memoria, 0, sizeof(fornecedores_memoria));
+            return 1;
+        case TEXTO:
+            remove("fornecedores.txt");
+            return 1;
+        case BINARIO:
+            remove("fornecedores.bin");
+            return 1;
+        default:
+            return 0;
     }
 }
 
