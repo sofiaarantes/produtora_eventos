@@ -44,7 +44,7 @@ RecursosEquipamentos* adicionar_equipamento(RecursosEquipamentos* equipamento, T
 
                 qtd++; // Incrementa o contador de funcionários na memória
 
-                printf("Equipamento %s salvo em MEMÓRIA!\n", equipamento->descricao);
+                printf("Equipamento %s salvo em MEMÓRIA! ID: %d\n", equipamento->descricao, equipamento->id);
                 return salvo; // Retorna o endereço do funcion salvo
             } else {
                 printf("Erro: limite de equipamentos na memória atingido!\n");
@@ -90,7 +90,7 @@ RecursosEquipamentos* adicionar_equipamento(RecursosEquipamentos* equipamento, T
                     equipamento->operador_id);
             fclose(fp);
 
-            printf("Equipamento %s salvo em TEXTO!\n", equipamento->descricao);
+            printf("Equipamento %s salvo em TEXTO! ID: %d\n", equipamento->descricao, equipamento->id);
             return equipamento;// Retorna o equipamento que foi salvo
         }
 
@@ -124,7 +124,7 @@ RecursosEquipamentos* adicionar_equipamento(RecursosEquipamentos* equipamento, T
             fwrite(equipamento, sizeof(RecursosEquipamentos), 1, fp);
             fclose(fp);
 
-            printf("Equipamento %s salvo em BINÁRIO! \n", equipamento->descricao);
+            printf("Equipamento %s salvo em BINÁRIO! ID: %d\n", equipamento->descricao, equipamento->id);
             return equipamento; // retorno o equipamento que foi salvo
         }
 
